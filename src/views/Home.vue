@@ -50,7 +50,12 @@
               <h2 class="dis-title f-color">Credentials</h2>
               <h1 class="dis-count f-color">500</h1>
             </div>
-            <div class="display-right"></div>
+            <div class="display-right">
+              <h2 class="w-color">Credential Verifier</h2>
+              <br>
+              <h3 class="w-color" @click="goVerifyAction">Easy Verify</h3>
+            >
+            </div>
           </div>
 
           <div class="verify-entrance-view">
@@ -95,12 +100,19 @@ export default {
   methods: {
     toVerifyAction() {
         this.$router.push({name: 'personInfo'});
+    },
+    goVerifyAction() {
+      alert("haha")
     }
   }
 }
 </script>
 
 <style scoped>
+.w-color {
+  color: white;
+}
+
 .f-color {
   color: #1d2129;
 }
@@ -272,7 +284,36 @@ export default {
 }
 
 .display-right {
-  margin-left: 930px;
+  margin-left: 63%;
+  width: 390px;
+  height: 140px;
+  background-image: url(../assets/img/verify@2x.png);
+  background-repeat: no-repeat;
+  background-position: 0;
+  background-size: contain;
+}
+
+.display-right h2 {
+  margin-left: 20px;
+  padding-top: 20px;
+  width: 208px;
+height: 31px;
+font-size: 22px;
+font-family: Poppins-Bold, Poppins;
+font-weight: bold;
+color: #FFFFFF;
+line-height: 33px;
+}
+
+.display-right h3 {
+  margin-left: 20px;
+  margin-top: 20px;
+  width: 160px;
+height: 44px;
+background: #1D2129;
+border-radius: 24px;
+padding: 10px;
+text-align: center;
 }
 
 .verify-entrance-view {
@@ -287,6 +328,6 @@ export default {
 }
 
 .verify-right {
-  margin-left: 1080px;
+  margin-left: 84%;
 }
 </style>
