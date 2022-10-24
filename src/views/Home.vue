@@ -52,31 +52,59 @@
             </div>
             <div class="display-right">
               <h2 class="w-color">Credential Verifier</h2>
-              <br>
+              <br />
               <h3 class="w-color" @click="goVerifyAction">Easy Verify</h3>
-            >
+              >
             </div>
           </div>
 
           <div class="verify-entrance-view">
-          <div class="verify-left">
-            <h2 class="f-color">Verifiable Credentials</h2>
-            <h4 class="l-color">
-              Here are all the credentials you issued. You can revoke/unrevoke
-              credentials and view persistent credentials stored in Dock Certs.
-            </h4>
+            <div class="verify-left">
+              <h2 class="f-color">Verifiable Credentials</h2>
+              <h4 class="l-color">
+                Here are all the credentials you issued. You can revoke/unrevoke
+                credentials and view persistent credentials stored in Dock
+                Certs.
+              </h4>
+            </div>
+            <div class="verify-right">
+              <el-button
+                color="#1E5CEF"
+                class="verify-btn"
+                type="primary"
+                @click="toVerifyAction"
+                round
+                >Create Verifiable Credential</el-button
+              >
+            </div>
           </div>
-          <div class="verify-right">
-            <el-button color="#1E5CEF" class="verify-btn" type="primary" @click="toVerifyAction" round
+
+          <div v-if="hasVc" class="vctable-view">
+            <n-data-table
+              :columns="columns"
+              :data="data"
+              :pagination="pagination"
+              :max-height="250"
+              :scroll-x="1800"
+            />
+          </div>
+
+          <div v-else class="emptyView">
+            <el-button
+              color="#1E5CEF"
+              class="verify-btn create-vc-btn"
+              type="primary"
+              @click="creatVcAction"
+              round
               >Create Verifiable Credential</el-button
             >
           </div>
         </div>
 
+        <div class="bottomLogo">
+          <img src="../assets/img/LOGOblue@2x.png" alt="">
         </div>
       </el-main>
-
-      <!-- <el-footer>Footer</el-footer> -->
     </el-container>
   </div>
 </template>
@@ -84,28 +112,93 @@
   <script>
 import { ref } from "vue";
 
+import VCtable from "../components/vctable.vue";
+
+import { h } from "vue";
+
+const createColumns = () => [
+  {
+    type: "selection",
+    fixed: "left",
+  },
+  {
+    title: "Name",
+    key: "name",
+    width: 200,
+    fixed: "left",
+  },
+  {
+    title: "Age",
+    key: "age",
+    width: 100,
+    fixed: "left",
+  },
+  {
+    title: "Row",
+    key: "row",
+    render(row, index) {
+      return h("span", ["row ", index]);
+    },
+  },
+  {
+    title: "Row1",
+    key: "row1",
+    render(row, index) {
+      return h("span", ["row ", index]);
+    },
+  },
+  {
+    title: "Row2",
+    key: "row2",
+    render(row, index) {
+      return h("span", ["row ", index]);
+    },
+    width: 100,
+    fixed: "right",
+  },
+  {
+    title: "Address",
+    key: "address",
+    width: 200,
+    fixed: "right",
+  },
+];
+
 export default {
   name: "Home",
+  components: {
+    VCtable,
+  },
   data() {
     return {
       activeIndex: ref("1"),
-    }
+      hasVc: true,
+      data: Array.from({ length: 46 }).map((_, index) => ({
+        key: index,
+        name: `Edward King ${index}`,
+        age: 32,
+        address: `London, Park Lane no. ${index}`,
+      })),
+      columns: createColumns(),
+      pagination: { pageSize: 10 },
+      width: 1200,
+      height: 734,
+    };
   },
-  created() {
-
-  },
-  mounted() {
-
-  },
+  created() {},
+  mounted() {},
   methods: {
     toVerifyAction() {
-        this.$router.push({name: 'personInfo'});
+      this.$router.push({ name: "personInfo" });
     },
     goVerifyAction() {
-      alert("haha")
-    }
-  }
-}
+      alert("haha");
+    },
+    creatVcAction() {
+      alert("creatVcAction");
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -118,7 +211,7 @@ export default {
 }
 
 .l-color {
-  color: #A9AEB8;
+  color: #a9aeb8;
 }
 </style>
   
@@ -164,10 +257,9 @@ export default {
 }
 
 .did-main {
-  padding: 0;
   width: 100%;
-  height: 868px;
   background: linear-gradient(360deg, #eef1f8 0%, #d1dbf4 60%, #eef1f8 100%);
+  overflow-y: hidden;
 }
 
 .did-footer {
@@ -182,6 +274,7 @@ export default {
   margin-top: 100px;
   padding-top: 60px;
   padding-left: 120px;
+  padding-bottom: 20px;
 }
 
 .info-icon {
@@ -297,23 +390,23 @@ export default {
   margin-left: 20px;
   padding-top: 20px;
   width: 208px;
-height: 31px;
-font-size: 22px;
-font-family: Poppins-Bold, Poppins;
-font-weight: bold;
-color: #FFFFFF;
-line-height: 33px;
+  height: 31px;
+  font-size: 22px;
+  font-family: Poppins-Bold, Poppins;
+  font-weight: bold;
+  color: #ffffff;
+  line-height: 33px;
 }
 
 .display-right h3 {
   margin-left: 20px;
   margin-top: 20px;
   width: 160px;
-height: 44px;
-background: #1D2129;
-border-radius: 24px;
-padding: 10px;
-text-align: center;
+  height: 44px;
+  background: #1d2129;
+  border-radius: 24px;
+  padding: 10px;
+  text-align: center;
 }
 
 .verify-entrance-view {
@@ -329,5 +422,30 @@ text-align: center;
 
 .verify-right {
   margin-left: 84%;
+}
+</style>
+
+<style scoped>
+.emptyView {
+  width: 1200px;
+  height: 326px;
+  background: linear-gradient(270deg, #0b224f 0%, #1d2129 100%);
+  border-radius: 8px;
+}
+
+.create-vc-btn {
+  margin-top: 222px;
+  margin-left: 140px;
+}
+
+.vctable-view {
+  width: 1200px;
+}
+
+.bottomLogo img {
+  widows: 85px;
+  height: 25px;
+  margin-left: 120px;
+  margin-top: 20px;
 }
 </style>
