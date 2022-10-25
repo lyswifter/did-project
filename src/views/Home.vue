@@ -106,7 +106,8 @@
         </div>
       </el-main>
 
-      <!-- SCHEMA DRAWER -->
+      <!-- DRAWER -->
+
       <el-drawer
         v-model="schemaVisible"
         :show-close="false"
@@ -124,16 +125,97 @@
         </template>
 
         <div class="select-schema-step">
-          <el-button type="primary" class="step-btn" circle>1</el-button>
-          Select Schema
-          <el-button type="primary" class="continue-btn" @click="toAddRecipient"
-            >Continue >
-          </el-button>
+          <el-row>
+            <el-col span="2">
+              <el-button
+                v-if="vcStep == 1"
+                type="primary"
+                class="step-btn"
+                circle
+                >{{ vcStep }}</el-button
+              >
+              <el-button
+                v-else-if="vcStep == 2"
+                type="primary"
+                class="step-btn"
+                circle
+                >{{ vcStep }}</el-button
+              >
+              <el-button
+                v-else-if="vcStep == 3"
+                type="primary"
+                class="step-btn"
+                circle
+                >{{ vcStep }}</el-button
+              >
+            </el-col>
+
+            <el-col span="18">
+              <div v-if="vcStep == 1">
+                <h3 class="step-title">Select Schema</h3>
+                <h4 class="step-subtitle">xxxxxxx</h4>
+              </div>
+              <div v-else-if="vcStep == 2">
+                <h3 v-if="!processing" class="step-title">Add Recipients</h3>
+                <h3 v-else class="step-title">Issuing credential...</h3>
+
+                <h4 v-if="!processing" class="step-subtitle">YYYYY</h4>
+                <h4 v-else class="step-subtitle">
+                  Please don’t close this window.
+                </h4>
+              </div>
+              <div v-else-if="vcStep == 3">
+                <h3 v-if="createOk" class="step-title">Issued 10 Verifiable Credential</h3>
+                <h3 v-else class="step-title">Issue failed</h3>
+
+                <h4 v-if="createOk" class="step-subtitle">
+                  The VC certificate has been successfully sent to the recipient
+                  and has been backed up on the chain.
+                </h4>
+                <h4 v-else class="step-subtitle">
+                  Description of the reason for the failure
+                </h4>
+              </div>
+            </el-col>
+
+            <el-col span="4" :offset="18">
+              <div v-if="vcStep == 1">
+                <el-button
+                  type="primary"
+                  class="continue-btn"
+                  @click="toAddRecipient"
+                  >Continue ></el-button
+                >
+              </div>
+
+              <div v-else-if="vcStep == 2">
+                <div v-if="!processing">
+                  <el-button
+                  type="plain"
+                  class="back-btn"
+                  @click="backAction"
+                  round
+                  >Back</el-button
+                >
+                </div>
+              </div>
+
+              <div v-else-if="vcStep == 3">
+                <div v-if="!createOk">
+                  <el-button
+                  type="plain"
+                  class="back-btn"
+                  @click="backAction"
+                  round
+                  >Back</el-button
+                >
+                </div>
+              </div>
+            </el-col>
+          </el-row>
         </div>
 
-        <br />
-
-        <div class="select-schema-content">
+        <div v-if="vcStep == 1" class="select-schema-content">
           <el-row :gutter="5">
             <el-col :span="6">
               <div class="card" @click="selectedOne">
@@ -193,119 +275,218 @@
             </el-col>
           </el-row>
         </div>
-      </el-drawer>
 
-      <!-- RECIPIENT DRAWER -->
-      <el-drawer
-        v-model="recipientVisiable"
-        :show-close="false"
-        size="90%"
-        :direction="direction"
-      >
-        <template #header="{ close }">
-          <h4 class="drawer-title">Create Verifiable Credential</h4>
-          <img
-            class="drawer-close"
-            src="../assets/img/close_black@2x.png"
-            @click="close"
-            alt=""
-          />
-        </template>
+        <div v-else-if="vcStep == 2">
+          <div v-if="isEmptyRecipient" class="emptyRecipient">
+            <img
+              style="width: 144px; height: 144px"
+              src="../assets/img/add recipients@2x.png"
+              alt=""
+            />
+            <div class="mamualView">
+              <el-button
+                type="primary"
+                class="manually-add-btn"
+                color="#1D2129"
+                @click="addManualAction"
+                round
+                >Add Manually</el-button
+              >
+              <el-button
+                type="plain"
+                class="import-btn"
+                @click="importSheetAction"
+                round
+                >Import Spreadsheet</el-button
+              >
+            </div>
+          </div>
 
-        <div class="select-schema-step">
-          <el-button type="primary" class="step-btn" circle>2</el-button>
-          Add Recipients
-          <el-button type="plain" class="back-btn" round>Back</el-button>
-        </div>
+          <div v-else class="recipientTableView">
+            <div class="recipientTopView">
+              <el-row gutter="5">
+                <el-col span="4">
+                  <el-button
+                    type="primary"
+                    class="manually-add-btn"
+                    color="#1D2129"
+                    @click="addManualAction"
+                    round
+                    >Add Manually</el-button
+                  >
+                </el-col>
 
-        <div v-if="isEmptyRecipient" class="emptyRecipient">
-          <img
-            style="width: 144px; height: 144px"
-            src="../assets/img/add recipients@2x.png"
-            alt=""
-          />
-          <div class="mamualView">
-            <el-button
-              type="primary"
-              class="manually-add-btn"
-              color="#1D2129"
-              @click="addManualAction"
-              round
-              >Add Manually</el-button
-            >
-            <el-button
-              type="plain"
-              class="import-btn"
-              @click="importSheetAction"
-              round
-              >Import Spreadsheet</el-button
-            >
+                <el-col span="4">
+                  <el-button
+                    type="plain"
+                    class="import-btn"
+                    @click="importSheetAction"
+                    round
+                    >Import Spreadsheet</el-button
+                  >
+                </el-col>
+
+                <el-col span="4" :offset="15">
+                  <el-button
+                    type="primary"
+                    class="issue-btn"
+                    @click="toIssueCredentials"
+                    >Issue Credentials
+                  </el-button>
+                </el-col>
+              </el-row>
+            </div>
+
+            <!-- table -->
+            <n-data-table
+              :columns="columns"
+              :data="data"
+              :pagination="pagination"
+              :max-height="734"
+              :scroll-x="1800"
+            />
+
+            <div v-if="processing" class="maskview">
+              <el-progress
+                class="progressView"
+                type="circle"
+                :percentage="percentageCount"
+              />
+            </div>
           </div>
         </div>
 
-        <div v-else class="recipientTableView">
-          <div class="recipientTopView">
-            <el-row gutter="5">
-              <el-col span="4">
+        <div v-else-if="vcStep == 3">
+          <div v-if="createOk" class="okCreatedVc">
+            <el-row>
+              <el-col span="2" :offset="17">
                 <el-button
-                  type="primary"
-                  class="manually-add-btn"
-                  color="#1D2129"
-                  @click="addManualAction"
-                  round
-                  >Add Manually</el-button
-                >
+                    type="plain"
+                    class="manually-add-btn"
+                    @click="toDownloadAction"
+                    round
+                    >Download Credential</el-button
+                  >
               </el-col>
 
-              <el-col span="4">
+              <el-col span="2" style="margin-left: 10px;">
                 <el-button
-                  type="plain"
-                  class="import-btn"
-                  @click="importSheetAction"
-                  round
-                  >Import Spreadsheet</el-button
-                >
-              </el-col>
-
-              <el-col span="4" :offset="15">
-                <el-button
-                  type="primary"
-                  class="issue-btn"
-                  @click="toIssueCredentials"
-                  >Issue Credentials
-                </el-button>
+                    type="primary"
+                    class="manually-add-btn"
+                    color="#1E5CEF"
+                    @click="toViewVcsAction"
+                    round
+                    >View Credential</el-button
+                  >
               </el-col>
             </el-row>
           </div>
-
-          <!-- table -->
-          <n-data-table
-            :columns="columns"
-            :data="data"
-            :pagination="pagination"
-            :max-height="734"
-            :scroll-x="1800"
-          />
         </div>
       </el-drawer>
 
-      <!-- input recipient information -->
-      <el-drawer
-        v-model="addInfoVisiable"
+      <!-- dialog input recipient information -->
+
+      <el-dialog
+        v-model="inputRecipientVisiable"
         :show-close="false"
-        size="90%"
         :direction="direction"
       >
         <template #header="{ close }">
-          <h4 class="drawer-title">Create Verifiable Credential</h4>
+          <h4 class="dialog-header-title">Add Recipients</h4>
           <img
-            class="drawer-close"
+            class="dialog-close"
             src="../assets/img/close_black@2x.png"
             @click="close"
             alt=""
           />
         </template>
-      </el-drawer>
+
+        <div class="addRecipientContent">
+          <div>
+            <h3 class="dialog-title">* Holder ID</h3>
+            <el-input
+              class="inputw"
+              v-model="holderID"
+              placeholder="Please input"
+            />
+            <h4 class="dialog-subtitle">
+              A unique identifier of recipient. Enter email address.
+            </h4>
+          </div>
+
+          <div>
+            <h3 class="dialog-title">* Holder name</h3>
+            <el-input
+              class="inputw"
+              v-model="holderName"
+              placeholder="Please input"
+            />
+            <h4 class="dialog-subtitle">The name of the credential holder.</h4>
+          </div>
+
+          <div>
+            <h3 class="dialog-title">* Credential title</h3>
+            <el-input
+              class="inputw"
+              v-model="credetialTitle"
+              placeholder="Please input"
+            />
+            <h4 class="dialog-subtitle">The Credential.</h4>
+          </div>
+
+          <div>
+            <h3 class="dialog-title">* Membership level</h3>
+            <el-input
+              class="inputw"
+              v-model="credetialTitle"
+              placeholder="Please input"
+            />
+          </div>
+
+          <div>
+            <el-checkbox
+              v-model="checked1"
+              label=" Expire this credential"
+              size="large"
+            />
+            <h4 class="dialog-subtitle">
+              This option will expire the credential after the specified date.
+            </h4>
+          </div>
+
+          <div>
+            <el-row gutter="5">
+              <el-col span="11">
+                <h3 class="dialog-title">* Issue Date</h3>
+                <el-date-picker
+                  v-model="value1"
+                  type="date"
+                  placeholder="Pick a day"
+                />
+              </el-col>
+              <el-col span="11" :offset="1">
+                <h3 class="dialog-title">Expiration Date</h3>
+                <el-date-picker
+                  v-model="value1"
+                  type="date"
+                  placeholder="Pick a day"
+                />
+              </el-col>
+            </el-row>
+          </div>
+        </div>
+
+        <div class="addRecipientBotView">
+          <el-button
+            type="primary"
+            size="large"
+            class="add-recipient-info-btn"
+            @click="addRecipientAction"
+            round
+            >Add Recipient
+          </el-button>
+        </div>
+      </el-dialog>
     </el-container>
   </div>
 </template>
@@ -379,6 +560,13 @@ export default {
       width: 1200,
       height: 734,
 
+      vcStep: 1,
+      processing: ref(false),
+      percentageCount: 0,
+      percentageTotal: 100,
+      timer: {},
+      createOk: true,
+
       // schema
       schemaVisible: ref(false),
       direction: ref("btt"),
@@ -388,20 +576,24 @@ export default {
       //recipient
       recipientVisiable: ref(false),
       isEmptyRecipient: true,
+
+      //input recipient
+      inputRecipientVisiable: ref(false),
     };
   },
   created() {},
-  mounted() {
-    this.isEmptyRecipient = false;
-  },
+  mounted() {},
   methods: {
+    backAction() {
+      this.vcStep = this.vcStep - 1;
+    },
     toVerifyAction() {
       // this.$router.push({ name: "personInfo" });
       alert("TO VERIFY ACTION");
     },
     toCreateAction() {
       this.schemaVisible = true;
-      this.recipientVisiable = false;
+      this.vcStep = 1;
     },
     selectedOne() {
       this.hasSelectedTwo = false;
@@ -412,18 +604,38 @@ export default {
       this.hasSelectedTwo = !this.hasSelectedTwo;
     },
     toAddRecipient() {
-      this.schemaVisible = false;
-      this.recipientVisiable = true;
+      this.vcStep = 2;
+      this.isEmptyRecipient = false;
     },
     addManualAction() {
-      alert("addManualAction");
+      this.inputRecipientVisiable = true;
     },
     importSheetAction() {
       alert("importSheetAction");
     },
     toIssueCredentials() {
-      alert("toIssueCredentials");
+      this.processing = true;
+
+      this.timer = setInterval(() => {
+        this.percentageCount = this.percentageCount + 20;
+
+        if (this.percentageCount >= 100) {
+          this.timer = {};
+          this.processing = false;
+          this.vcStep = 3;
+          this.createOk = false;
+        }
+      }, 2000);
     },
+    toDownloadAction() {
+      alert("toDownloadAction");
+    },
+    toViewVcsAction() {
+      alert("toViewVcsAction");
+    }
+  },
+  unmounted() {
+    this.timer = {};
   },
 };
 </script>
@@ -461,6 +673,22 @@ export default {
   font-weight: bold;
   color: #1d2129;
   line-height: 42px;
+}
+
+.dialog-header-title {
+  float: left;
+  width: 95%;
+  height: 39px;
+  font-size: 28px;
+  font-family: Poppins-Bold, Poppins;
+  font-weight: bold;
+  color: #1d2129;
+  line-height: 42px;
+}
+
+.dialog-close {
+  width: 33px;
+  height: 33px;
 }
 </style>
   
@@ -714,7 +942,6 @@ export default {
   height: 100px;
   border-radius: 8px;
   border: 2px solid #272e3b;
-  line-height: 100px;
   padding-left: 20px;
   font-size: 22px;
   font-family: Poppins-Medium, Poppins;
@@ -723,6 +950,7 @@ export default {
 }
 
 .step-btn {
+  margin-top: 20px;
   width: 32px;
   line-height: 25px;
   font-size: 16px;
@@ -732,8 +960,29 @@ export default {
   color: #ffffff;
 }
 
+.step-title {
+  margin-top: 10px;
+  padding-left: 10px;
+  height: 31px;
+  font-size: 22px;
+  font-family: Poppins-Medium, Poppins;
+  font-weight: 500;
+  color: #1d2129;
+  line-height: 33px;
+}
+
+.step-subtitle {
+  padding-left: 10px;
+  height: 23px;
+  font-size: 16px;
+  font-family: Poppins-Regular, Poppins;
+  font-weight: 400;
+  color: #86909c;
+  line-height: 25px;
+}
+
 .continue-btn {
-  margin-left: 75% !important;
+  margin-top: 30px;
   height: 34px;
   background: #1e5cef;
   border-radius: 24px;
@@ -745,6 +994,7 @@ export default {
 }
 
 .select-schema-content {
+  margin-top: 20px;
   padding-left: 100px;
 }
 
@@ -790,10 +1040,6 @@ export default {
 
 <!-- recipient step 2 -->
 <style scoped>
-.back-btn {
-  margin-left: 65% !important;
-}
-
 .issue-btn {
   background-color: #1e5cef;
 }
@@ -824,5 +1070,70 @@ export default {
 
 .recipientTopView {
   padding: 16px;
+}
+
+.maskview {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: #646973;
+  opacity: 0.9;
+  backdrop-filter: blur(5px);
+  z-index: 100;
+  text-align: center;
+}
+
+.progressView {
+  margin-top: 100px;
+}
+
+.okCreatedVc {
+  padding-top: 20px;
+  margin-left: 100px;
+  width: 1200px;
+height: 84px;
+background: #F7F8FA;
+border-radius: 8px;
+}
+</style>
+
+<style scoped>
+.dialog-title {
+  height: 20px;
+  font-size: 14px;
+  font-family: Poppins-SemiBold, Poppins;
+  font-weight: 600;
+  color: #1d2129;
+  line-height: 21px;
+}
+
+.dialog-subtitle {
+  height: 17px;
+  font-size: 12px;
+  font-family: Poppins-Regular, Poppins;
+  font-weight: 400;
+  color: #86909c;
+  line-height: 18px;
+}
+
+.inputw {
+  width: 640px;
+  height: 48px;
+  background: #f2f3f5;
+  border-radius: 4px;
+}
+
+.addRecipientBotView {
+  text-align: center;
+  padding: 20px;
+}
+
+.add-recipient-info-btn {
+  width: 400px;
+  height: 44px;
+  background: #c9cdd4;
+  border-radius: 24px;
 }
 </style>
