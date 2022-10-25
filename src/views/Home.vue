@@ -1,16 +1,6 @@
 <template>
-  <n-layout>
-      <n-layout-header>颐和园路</n-layout-header>
-      <n-layout-content content-style="padding: 24px;">
-        平山道
-      </n-layout-content>
-      <n-layout-footer>成府路</n-layout-footer>
-    </n-layout>
-    
   <div class="common-layout">
     <el-container>
-      <!-- <div class="schemaView" v-if="isSelectSchema"></div> -->
-
       <el-header class="headerview">
         <el-menu
           :default-active="activeIndex"
@@ -115,14 +105,141 @@
           <img src="../assets/img/LOGOblue@2x.png" alt="" />
         </div>
       </el-main>
+
+      <!-- SCHEMA DRAWER -->
+      <el-drawer
+        v-model="schemaVisible"
+        :show-close="false"
+        size="85%"
+        :direction="direction"
+      >
+        <template #header="{ close }">
+          <h4 class="drawer-title">Create Verifiable Credential</h4>
+          <img
+            class="drawer-close"
+            src="../assets/img/close_black@2x.png"
+            @click="close"
+            alt=""
+          />
+        </template>
+
+        <div class="select-schema-step">
+          <el-button type="primary" class="step-btn" circle>1</el-button>
+          Select Schema
+          <el-button type="primary" class="continue-btn" @click="toAddRecipient"
+            >Continue >
+          </el-button>
+        </div>
+
+        <br />
+
+        <div class="select-schema-content">
+          <el-row :gutter="5">
+            <el-col :span="6">
+              <div class="card" @click="selectedOne">
+                <div
+                  class="card-top cardtopnormal"
+                  :class="{ cardtopselected: hasSelectedOne }"
+                >
+                  <img
+                    style="width: 285px; height: 250px"
+                    src="../assets/img/schema_membership@2x.png"
+                    alt=""
+                  />
+                </div>
+                <div
+                  class="card-bot cardbotnormal"
+                  :class="{ cardbotselected: hasSelectedOne }"
+                >
+                  Membership Card
+                </div>
+              </div>
+            </el-col>
+
+            <el-col :span="6">
+              <div class="card" @click="selectedTwo">
+                <div
+                  class="card-top cardtopnormal"
+                  :class="{ cardtopselected: hasSelectedTwo }"
+                >
+                  <img
+                    style="width: 285px; height: 250px"
+                    src="../assets/img/schema_acticit_1y@2x.png"
+                    alt=""
+                  />
+                </div>
+                <div
+                  class="card-bot cardbotnormal"
+                  :class="{ cardbotselected: hasSelectedTwo }"
+                >
+                  Activity Certificate
+                </div>
+              </div>
+            </el-col>
+
+            <el-col :span="6">
+              <div class="card">
+                <div class="card-top cardtopnormal">
+                  <img
+                    style="width: 285px; height: 250px"
+                    src="../assets/img/schema_coming@2x.png"
+                    alt=""
+                  />
+                </div>
+                <div class="card-bot cardbotnormal">
+                  More schema coming soon…
+                </div>
+              </div>
+            </el-col>
+          </el-row>
+        </div>
+      </el-drawer>
+
+      <!-- RECIPIENT DRAWER -->
+      <el-drawer
+        v-model="recipientVisiable "
+        :show-close="false"
+        size="85%"
+        :direction="direction"
+      >
+        <template #header="{ close }">
+          <h4 class="drawer-title">Create Verifiable Credential</h4>
+          <img
+            class="drawer-close"
+            src="../assets/img/close_black@2x.png"
+            @click="close"
+            alt=""
+          />
+        </template>
+
+        <div class="select-schema-step">
+          <el-button type="primary" class="step-btn" circle>2</el-button>
+          Add Recipients
+          <el-button type="plain" class="back-btn" round>Back</el-button>
+          <el-button type="primary" class="issue-btn" @click="toIssueCredentials"
+            >Issue Credentials
+          </el-button>
+        </div>
+
+        <div v-if="isEmptyRecipient" class="emptyRecipient">
+          <img style="width: 144px; height: 144px;" src="../assets/img/add recipients@2x.png" alt="">
+          <div class="mamualView">
+            <el-button type="primary" class="manually-add-btn" color="#1D2129" @click="addManualAction" round>Add Manually</el-button>
+            <el-button type="plain" class="import-btn" @click="importSheetAction" round>Import Spreadsheet</el-button>
+          </div>
+        </div>
+
+        <div v-else>
+          TABLES
+        </div>
+
+        </el-drawer>
     </el-container>
   </div>
 </template>
   
 <script>
 import { ref, h } from "vue";
-import VCtable from "../components/vctable.vue";
-import SchemaView from "../components/schema.vue";
 
 const createColumns = () => [
   {
@@ -175,8 +292,6 @@ const createColumns = () => [
 export default {
   name: "Home",
   components: {
-    VCtable,
-    SchemaView,
   },
   data() {
     return {
@@ -193,24 +308,53 @@ export default {
       width: 1200,
       height: 734,
 
-      isSelectSchema: false,
+      // schema
+      schemaVisible: ref(false),
+      direction: ref("btt"),
+      hasSelectedOne: false,
+      hasSelectedTwo: false,
+
+      //recipient
+      recipientVisiable: ref(false),
+      isEmptyRecipient: true,
     };
   },
   created() {},
-  mounted() {},
+  mounted() {
+    this.isEmptyRecipient = true
+  },
   methods: {
     toVerifyAction() {
       // this.$router.push({ name: "personInfo" });
       alert("TO VERIFY ACTION");
     },
     toCreateAction() {
-      // alert("TO CREATE ACTION")
-      // this.$router.push({ name: "schema" });
-      this.isSelectSchema = true;
+      this.schemaVisible = true;
+      this.recipientVisiable = false;
     },
+    selectedOne() {
+      this.hasSelectedTwo = false;
+      this.hasSelectedOne = !this.hasSelectedOne;
+    },
+    selectedTwo() {
+      this.hasSelectedOne = false;
+      this.hasSelectedTwo = !this.hasSelectedTwo;
+    },
+    toAddRecipient() {
+      this.schemaVisible = false;
+      this.recipientVisiable = true;
+    },
+    addManualAction() {
+      alert("addManualAction")
+    },
+    importSheetAction() {
+      alert("importSheetAction")
+    }
   },
 };
 </script>
+
+<!-- common -->
 
 <style scoped>
 .w-color {
@@ -224,8 +368,30 @@ export default {
 .l-color {
   color: #a9aeb8;
 }
+
+.round-drawer {
+  border-radius: 80px 80px 0px 0px;
+}
+
+.drawer-close {
+  width: 33px;
+  height: 33px;
+}
+
+.drawer-title {
+  padding-left: 100px;
+  width: 403px;
+  height: 39px;
+  font-size: 28px;
+  font-family: Poppins-Bold, Poppins;
+  font-weight: bold;
+  color: #1d2129;
+  line-height: 42px;
+}
 </style>
   
+<!-- layout -->
+
 <style scoped>
 .headerview {
   padding: 0;
@@ -277,6 +443,8 @@ export default {
   background: #f5f7fd;
 }
 </style>
+
+<!-- content 1 -->
 
 <style scoped>
 .content-view {
@@ -436,6 +604,8 @@ export default {
 }
 </style>
 
+<!-- content 2 -->
+
 <style scoped>
 .emptyView {
   width: 1200px;
@@ -461,16 +631,111 @@ export default {
 }
 </style>
 
+<!-- schema step 1 -->
+
 <style scoped>
-.schemaView {
-  /* width: 100%; */
-  /* height: 100%; */
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  background: #1d2129;
-  opacity: 0.7;
+.select-schema-step {
+  margin: 0 auto;
+  width: 1200px;
+  height: 100px;
+  border-radius: 8px;
+  border: 2px solid #272e3b;
+  line-height: 100px;
+  padding-left: 20px;
+  font-size: 22px;
+  font-family: Poppins-Medium, Poppins;
+  font-weight: 500;
+  color: #1d2129;
+}
+
+.step-btn {
+  width: 32px;
+  line-height: 25px;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: Poppins-Medium, Poppins;
+  background: #1e5cef;
+  color: #ffffff;
+}
+
+.continue-btn {
+  margin-left: 75% !important;
+  height: 34px;
+  background: #1e5cef;
+  border-radius: 24px;
+}
+
+.card {
+  width: 285px;
+  height: 326px;
+}
+
+.select-schema-content {
+  padding-left: 100px;
+}
+
+.card-top {
+  border-width: 1px;
+}
+
+.card-bot {
+  text-align: center;
+  width: 285px;
+  height: 76px;
+  font-size: 20px;
+  font-family: Poppins-Medium, Poppins;
+  font-weight: 500;
+  color: #1d2129;
+  line-height: 76px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.cardtopnormal {
+  border-color: #a9aeb8;
+  border-style: dashed;
+}
+
+.cardtopselected {
+  border-color: #1e5cef;
+  border-style: solid;
+}
+
+.cardbotnormal {
+  border-left: 1px solid #a9aeb8;
+  border-right: 1px solid #a9aeb8;
+  border-bottom: 1px solid #a9aeb8;
+}
+
+.cardbotselected {
+  border-left: 1px solid #1e5cef;
+  border-right: 1px solid #1e5cef;
+  border-bottom: 1px solid #1e5cef;
+}
+</style>
+
+<!-- recipient step 2 -->
+<style scoped>
+.back-btn {
+  margin-left: 65% !important;
+}
+
+.issue-btn {
+  background-color: #1e5cef;
+}
+
+.emptyRecipient {
+  margin-top: 10px;
+  margin-left: 100px;
+  width: 1200px;
+height: 351px;
+border-radius: 8px;
+border: 1px solid #A9AEB8;
+text-align: center;
+}
+
+.emptyRecipient img {
+  margin: 0 auto;
+  margin-top: 48px;
 }
 </style>
