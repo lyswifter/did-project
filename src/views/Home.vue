@@ -110,7 +110,7 @@
       <el-drawer
         v-model="schemaVisible"
         :show-close="false"
-        size="85%"
+        size="90%"
         :direction="direction"
       >
         <template #header="{ close }">
@@ -197,9 +197,9 @@
 
       <!-- RECIPIENT DRAWER -->
       <el-drawer
-        v-model="recipientVisiable "
+        v-model="recipientVisiable"
         :show-close="false"
-        size="85%"
+        size="90%"
         :direction="direction"
       >
         <template #header="{ close }">
@@ -216,24 +216,96 @@
           <el-button type="primary" class="step-btn" circle>2</el-button>
           Add Recipients
           <el-button type="plain" class="back-btn" round>Back</el-button>
-          <el-button type="primary" class="issue-btn" @click="toIssueCredentials"
-            >Issue Credentials
-          </el-button>
         </div>
 
         <div v-if="isEmptyRecipient" class="emptyRecipient">
-          <img style="width: 144px; height: 144px;" src="../assets/img/add recipients@2x.png" alt="">
+          <img
+            style="width: 144px; height: 144px"
+            src="../assets/img/add recipients@2x.png"
+            alt=""
+          />
           <div class="mamualView">
-            <el-button type="primary" class="manually-add-btn" color="#1D2129" @click="addManualAction" round>Add Manually</el-button>
-            <el-button type="plain" class="import-btn" @click="importSheetAction" round>Import Spreadsheet</el-button>
+            <el-button
+              type="primary"
+              class="manually-add-btn"
+              color="#1D2129"
+              @click="addManualAction"
+              round
+              >Add Manually</el-button
+            >
+            <el-button
+              type="plain"
+              class="import-btn"
+              @click="importSheetAction"
+              round
+              >Import Spreadsheet</el-button
+            >
           </div>
         </div>
 
-        <div v-else>
-          TABLES
-        </div>
+        <div v-else class="recipientTableView">
+          <div class="recipientTopView">
+            <el-row gutter="5">
+              <el-col span="4">
+                <el-button
+                  type="primary"
+                  class="manually-add-btn"
+                  color="#1D2129"
+                  @click="addManualAction"
+                  round
+                  >Add Manually</el-button
+                >
+              </el-col>
 
-        </el-drawer>
+              <el-col span="4">
+                <el-button
+                  type="plain"
+                  class="import-btn"
+                  @click="importSheetAction"
+                  round
+                  >Import Spreadsheet</el-button
+                >
+              </el-col>
+
+              <el-col span="4" :offset="15">
+                <el-button
+                  type="primary"
+                  class="issue-btn"
+                  @click="toIssueCredentials"
+                  >Issue Credentials
+                </el-button>
+              </el-col>
+            </el-row>
+          </div>
+
+          <!-- table -->
+          <n-data-table
+            :columns="columns"
+            :data="data"
+            :pagination="pagination"
+            :max-height="734"
+            :scroll-x="1800"
+          />
+        </div>
+      </el-drawer>
+
+      <!-- input recipient information -->
+      <el-drawer
+        v-model="addInfoVisiable"
+        :show-close="false"
+        size="90%"
+        :direction="direction"
+      >
+        <template #header="{ close }">
+          <h4 class="drawer-title">Create Verifiable Credential</h4>
+          <img
+            class="drawer-close"
+            src="../assets/img/close_black@2x.png"
+            @click="close"
+            alt=""
+          />
+        </template>
+      </el-drawer>
     </el-container>
   </div>
 </template>
@@ -291,8 +363,7 @@ const createColumns = () => [
 
 export default {
   name: "Home",
-  components: {
-  },
+  components: {},
   data() {
     return {
       activeIndex: ref("1"),
@@ -321,7 +392,7 @@ export default {
   },
   created() {},
   mounted() {
-    this.isEmptyRecipient = true
+    this.isEmptyRecipient = false;
   },
   methods: {
     toVerifyAction() {
@@ -345,11 +416,14 @@ export default {
       this.recipientVisiable = true;
     },
     addManualAction() {
-      alert("addManualAction")
+      alert("addManualAction");
     },
     importSheetAction() {
-      alert("importSheetAction")
-    }
+      alert("importSheetAction");
+    },
+    toIssueCredentials() {
+      alert("toIssueCredentials");
+    },
   },
 };
 </script>
@@ -728,14 +802,27 @@ export default {
   margin-top: 10px;
   margin-left: 100px;
   width: 1200px;
-height: 351px;
-border-radius: 8px;
-border: 1px solid #A9AEB8;
-text-align: center;
+  height: 351px;
+  border-radius: 8px;
+  border: 1px solid #a9aeb8;
+  text-align: center;
 }
 
 .emptyRecipient img {
   margin: 0 auto;
   margin-top: 48px;
+}
+
+.recipientTableView {
+  padding-bottom: 20px;
+  margin-left: 100px;
+  margin-top: 20px;
+  width: 1200px;
+  border-radius: 8px;
+  border: 1px solid #a9aeb8;
+}
+
+.recipientTopView {
+  padding: 16px;
 }
 </style>
