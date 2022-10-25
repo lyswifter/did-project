@@ -1,6 +1,16 @@
 <template>
+  <n-layout>
+      <n-layout-header>颐和园路</n-layout-header>
+      <n-layout-content content-style="padding: 24px;">
+        平山道
+      </n-layout-content>
+      <n-layout-footer>成府路</n-layout-footer>
+    </n-layout>
+    
   <div class="common-layout">
     <el-container>
+      <!-- <div class="schemaView" v-if="isSelectSchema"></div> -->
+
       <el-header class="headerview">
         <el-menu
           :default-active="activeIndex"
@@ -53,7 +63,7 @@
             <div class="display-right">
               <h2 class="w-color">Credential Verifier</h2>
               <br />
-              <h3 class="w-color" @click="goVerifyAction">Easy Verify</h3>
+              <h3 class="w-color" @click="toVerifyAction">Easy Verify</h3>
               >
             </div>
           </div>
@@ -72,7 +82,7 @@
                 color="#1E5CEF"
                 class="verify-btn"
                 type="primary"
-                @click="toVerifyAction"
+                @click="toCreateAction"
                 round
                 >Create Verifiable Credential</el-button
               >
@@ -94,7 +104,7 @@
               color="#1E5CEF"
               class="verify-btn create-vc-btn"
               type="primary"
-              @click="creatVcAction"
+              @click="toCreateAction"
               round
               >Create Verifiable Credential</el-button
             >
@@ -102,19 +112,17 @@
         </div>
 
         <div class="bottomLogo">
-          <img src="../assets/img/LOGOblue@2x.png" alt="">
+          <img src="../assets/img/LOGOblue@2x.png" alt="" />
         </div>
       </el-main>
     </el-container>
   </div>
 </template>
   
-  <script>
-import { ref } from "vue";
-
+<script>
+import { ref, h } from "vue";
 import VCtable from "../components/vctable.vue";
-
-import { h } from "vue";
+import SchemaView from "../components/schema.vue";
 
 const createColumns = () => [
   {
@@ -168,6 +176,7 @@ export default {
   name: "Home",
   components: {
     VCtable,
+    SchemaView,
   },
   data() {
     return {
@@ -183,19 +192,21 @@ export default {
       pagination: { pageSize: 10 },
       width: 1200,
       height: 734,
+
+      isSelectSchema: false,
     };
   },
   created() {},
   mounted() {},
   methods: {
     toVerifyAction() {
-      this.$router.push({ name: "personInfo" });
+      // this.$router.push({ name: "personInfo" });
+      alert("TO VERIFY ACTION");
     },
-    goVerifyAction() {
-      alert("haha");
-    },
-    creatVcAction() {
-      alert("creatVcAction");
+    toCreateAction() {
+      // alert("TO CREATE ACTION")
+      // this.$router.push({ name: "schema" });
+      this.isSelectSchema = true;
     },
   },
 };
@@ -447,5 +458,19 @@ export default {
   height: 25px;
   margin-left: 120px;
   margin-top: 20px;
+}
+</style>
+
+<style scoped>
+.schemaView {
+  /* width: 100%; */
+  /* height: 100%; */
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: #1d2129;
+  opacity: 0.7;
 }
 </style>
