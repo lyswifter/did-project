@@ -677,7 +677,7 @@ export default {
   },
   methods: {
     async getUserInfo(){
-      const res = await axios.post(getUserInfoUrl,{},{
+      const res = await axios.get(getUserInfoUrl,{
         headers: {
           Authorization: localStorage.getItem("token"),
         }
@@ -942,9 +942,10 @@ export default {
     },
     async singleDownloadAction(id) {
       const res = await axios.get(singleDownloadUrl+id,{
+        responseType: 'blob',
+      },{
         headers: {
           Authorization: localStorage.getItem("token"),
-          Accept: "application/x-www-form-urlencoded",
         }
       });
 
