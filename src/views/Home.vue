@@ -71,7 +71,7 @@
                 color="#1E5CEF"
                 class="verify-btn"
                 type="primary"
-                @click="toCreateAction"
+                @click="toCreateVcAction"
                 round
                 >Create Verifiable Credential</el-button
               >
@@ -93,7 +93,7 @@
               color="#1E5CEF"
               class="verify-btn create-vc-btn"
               type="primary"
-              @click="toCreateAction"
+              @click="toCreateVcAction"
               round
               >Create Verifiable Credential</el-button
             >
@@ -340,10 +340,10 @@
 
             <!-- table -->
             <n-data-table
-              :columns="columns"
-              :data="data"
+              :columns="recipientTableColumns"
+              :data="recipientTableData"
               :pagination="pagination"
-              :max-height="734"
+              :max-height="600"
               :scroll-x="1800"
             />
 
@@ -481,45 +481,16 @@
         </template>
 
         <div class="addRecipientContent">
-          <div>
-            <h3 class="dialog-title">* Holder ID</h3>
+          <div v-for="item in inputRecipientsData" :key="item.claimSort">
+            <h3 class="dialog-title">{{item.claimName}}</h3>
             <el-input
               class="inputw"
-              v-model="holderID"
+              v-model="item.claimContent"
               placeholder="Please input"
             />
             <h4 class="dialog-subtitle">
-              A unique identifier of recipient. Enter email address.
+              {{item.claimDesc}}
             </h4>
-          </div>
-
-          <div>
-            <h3 class="dialog-title">* Holder name</h3>
-            <el-input
-              class="inputw"
-              v-model="holderName"
-              placeholder="Please input"
-            />
-            <h4 class="dialog-subtitle">The name of the credential holder.</h4>
-          </div>
-
-          <div>
-            <h3 class="dialog-title">* Credential title</h3>
-            <el-input
-              class="inputw"
-              v-model="credetialTitle"
-              placeholder="Please input"
-            />
-            <h4 class="dialog-subtitle">The Credential.</h4>
-          </div>
-
-          <div>
-            <h3 class="dialog-title">* Membership level</h3>
-            <el-input
-              class="inputw"
-              v-model="credetialTitle"
-              placeholder="Please input"
-            />
           </div>
 
           <div>
@@ -538,17 +509,21 @@
               <el-col span="11">
                 <h3 class="dialog-title">* Issue Date</h3>
                 <el-date-picker
-                  v-model="value1"
+                  v-model="issueDate"
                   type="date"
                   placeholder="Pick a day"
+                  format="YYYY/MM/DD"
+                  value-format="YYYY-MM-DD"
                 />
               </el-col>
               <el-col span="11" :offset="1">
                 <h3 class="dialog-title">Expiration Date</h3>
                 <el-date-picker
-                  v-model="value1"
+                  v-model="expireDate"
                   type="date"
                   placeholder="Pick a day"
+                  format="YYYY/MM/DD"
+                  value-format="YYYY-MM-DD"
                 />
               </el-col>
             </el-row>
@@ -578,6 +553,8 @@ import axios from "axios";
 import Domain from "../router/domain.js";
 let getUserInfoUrl = Domain.domainUrl + "/tr/did-user/get-info";
 let vcTableUrl = Domain.domainUrl + "/tr/did-document-credential/credential-list";
+let getTemplListUrl = Domain.domainUrl + "/tr/did-document-credential/template-list";
+let templateClaimUrl = Domain.domainUrl + "/tr/did-document-credential/template-claim";
 
 import { ElMessage } from 'element-plus'
 
@@ -657,6 +634,9 @@ export default {
 
       // schema
       schemaVisible: ref(false),
+      schemaList: [],
+      schemaType: "",
+      schemaId: 0,
       direction: ref("btt"),
       hasSelectedOne: false,
       hasSelectedTwo: false,
@@ -664,9 +644,14 @@ export default {
       //recipient
       recipientVisiable: ref(false),
       isEmptyRecipient: true,
+      recipientTableData: [],
+      recipientTableColumns: [],
 
       //input recipient
       inputRecipientVisiable: ref(false),
+      inputRecipientsData: [],
+      issueDate: null,
+      expireDate: null,
 
       //verify crendentail
       veriferVisible: ref(false),
@@ -720,24 +705,92 @@ export default {
     toVerifyAction() {
       this.veriferVisible = true;
     },
-    toCreateAction() {
-      this.schemaVisible = true;
-      this.vcStep = 1;
+    async toCreateVcAction() {
+      // 1.get template list
+      const res = await axios.get(getTemplListUrl, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+
+      if (res.data.code == 0) {
+        this.schemaList = res.data.data;
+        this.schemaVisible = true;
+        this.vcStep = 1;
+      }
     },
     selectedOne() {
       this.hasSelectedTwo = false;
       this.hasSelectedOne = !this.hasSelectedOne;
+
+      if (this.hasSelectedOne) {
+        this.schemaType = "Membership Card";
+      } else {
+        this.schemaType = "";
+      }
     },
     selectedTwo() {
       this.hasSelectedOne = false;
       this.hasSelectedTwo = !this.hasSelectedTwo;
+
+      if (this.hasSelectedTwo) {
+        this.schemaType = "Activity Certificate";
+      } else {
+        this.schemaType = "";
+      }
     },
-    toAddRecipient() {
+    async toAddRecipient() {
+      if (this.schemaType == "") {
+        alert("Schema type must not be empty");
+        return  
+      }
+
+      // get recipients list
+
       this.vcStep = 2;
       this.isEmptyRecipient = false;
+
+      if (this.schemaType == "Membership Card") {
+        this.schemaId = 1;
+      } else if (this.schemaType == "Activity Certificate") {
+        this.schemaId = 2;
+      }
+
+      // get template claim infornation
+      const res = await axios.post(templateClaimUrl,{
+        templateId: this.schemaId,
+      },{
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        }
+      });
+
+      if (res.data.code == 0) {
+        this.inputRecipientsData = res.data.data;
+        this.createRecipientColumns(this.inputRecipientsData);
+      }
+      else {
+      }
     },
-    addManualAction() {
+    async addManualAction() {
+      this.inputRecipientsData.forEach(element => {
+        element.claimContent = null
+      });
+
       this.inputRecipientVisiable = true;
+    },
+    addRecipientAction() {
+      let obj = {}
+      this.inputRecipientsData.forEach(element => {
+        obj[element.claimCode] = element.claimContent;
+      });
+
+      obj["issueDate"] = this.issueDate;
+      obj["expireDate"] = this.expireDate;
+
+      this.recipientTableData.push(obj);
+
+      this.inputRecipientVisiable = false;
     },
     importSheetAction() {
       alert("importSheetAction");
@@ -762,6 +815,51 @@ export default {
     toViewVcsAction() {
       alert("toViewVcsAction");
     },
+
+    createRecipientColumns(orign) {
+      let cols = []
+      let first = {
+        type: "selection",
+        fixed: "left",
+        width: 25,
+      }
+      cols.push(first);
+
+      orign.forEach(element => {
+        let claimName = "";
+        let isinclude = element.claimName.includes('* ');
+        if (isinclude) {
+          claimName = element.claimName.substring(1);
+        } else {
+          claimName = element.claimName;
+        }
+
+        let obj = {
+          title: claimName,
+          key: element.claimCode,
+          width: 80,
+        }
+
+        cols.push(obj);
+      });
+
+      let issue = {
+        title: "Issue AT",
+        key: "issueDate",
+        width: 80,
+      }
+
+      let expire = {
+        title: "Expire AT",
+        key: "expireDate",
+        width: 80,
+      }
+
+      cols.push(issue);
+      cols.push(expire);
+
+      this.recipientTableColumns = cols;
+    }
   },
   unmounted() {
     this.timer = {};
