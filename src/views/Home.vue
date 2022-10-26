@@ -419,8 +419,8 @@
                 <h3 class="filenamesView">xxxxx.json</h3>
               </el-col>
               <el-col span="6" :offset="18">
-                <el-button round>Round</el-button>
-                <el-button type="primary" round>Round</el-button>
+                <el-button round>Delete</el-button>
+                <el-button type="primary" round>Verify</el-button>
               </el-col>
             </el-row>
           </div>
