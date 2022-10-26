@@ -384,6 +384,69 @@
         </div>
       </el-drawer>
 
+      <!-- Verify Credential -->
+
+      <el-drawer
+        v-model="veriferVisible"
+        :show-close="false"
+        size="90%"
+        :direction="direction"
+      >
+        <template #header="{ close }">
+          <h4 class="drawer-title">Credential Verifier</h4>
+          <img
+            class="drawer-close"
+            src="../assets/img/close_black@2x.png"
+            @click="close"
+            alt=""
+          />
+        </template>
+
+        <div class="verifyContentView">
+          <div class="verifyFile">
+            <img style="width: 64px;height: 64px;" src="../assets/img/file@2x.png" alt="">
+            <div class="addFileView">
+              <h3>Drag & drop your file</h3>
+            <el-button
+                type="plain"
+                class="import-btn" @click="chooseJsonFile" round>Choose JSON File</el-button>
+            </div>
+          </div>
+
+          <div class="fileShowView">
+            <el-row>
+              <el-col span="18" :offset="1">
+                <h3 class="filenamesView">xxxxx.json</h3>
+              </el-col>
+              <el-col span="6" :offset="18">
+                <el-button round>Round</el-button>
+                <el-button type="primary" round>Round</el-button>
+              </el-col>
+            </el-row>
+          </div>
+
+          <div class="verifyResultView">
+            <div class="resTopView">
+              <img style="width: 32px;height: 32px;" src="../assets/img/success@2x.png" alt="">
+              <h2>Verified</h2>
+            </div>
+
+            <div class="resBotView">
+              <h3>Alice Haynes issued to Lulu Reyes</h3>
+            <h4>Issuer: Alice Haynes</h4>
+            <h4>IssuerDid: xxxxx</h4>
+            <h4>Type: ["VerifiaableCredential", "Membership Card"]</h4>
+            <h4>Issue date: 2022-10-23T12:45:10.302Z</h4>
+            <h4>Expire date: xxxx</h4>
+            <h4>Holder: Lulu Reyes</h4>
+            <h4>Holder did: YYYY</h4>
+            <h4>Credential type:</h4>
+            <h4>Proof: hfoiwefgoenfmosdnfsdofjsdofsodfshdifhsdohfsodfhsodhfsodhfo</h4>
+            </div>
+          </div>
+        </div>
+      </el-drawer>
+
       <!-- dialog input recipient information -->
 
       <el-dialog
@@ -579,6 +642,9 @@ export default {
 
       //input recipient
       inputRecipientVisiable: ref(false),
+
+      //verify crendentail
+      veriferVisible: ref(false),
     };
   },
   created() {},
@@ -588,8 +654,7 @@ export default {
       this.vcStep = this.vcStep - 1;
     },
     toVerifyAction() {
-      // this.$router.push({ name: "personInfo" });
-      alert("TO VERIFY ACTION");
+      this.veriferVisible = true
     },
     toCreateAction() {
       this.schemaVisible = true;
@@ -623,7 +688,7 @@ export default {
           this.timer = {};
           this.processing = false;
           this.vcStep = 3;
-          this.createOk = false;
+          this.createOk = true;
         }
       }, 2000);
     },
@@ -1135,5 +1200,112 @@ border-radius: 8px;
   height: 44px;
   background: #c9cdd4;
   border-radius: 24px;
+}
+</style>
+
+<!-- Verify -->
+
+<style scoped>
+
+.verifyContentView {
+  margin-left: 100px;
+}
+
+.verifyFile {
+  width: 1200px;
+height: 200px;
+background: #F2F3F5;
+border-radius: 8px;
+border: 2px solid #272E3B;
+/* text-align: center; */
+}
+
+.fileShowView {
+  width: 1200px;
+height: 84px;
+background: #F7F8FA;
+border-radius: 8px;
+line-height: 84px;
+}
+
+.verifyResultView {
+  margin-top: 20px;
+  width: 1200px;
+height: 340px;
+background: #FFFFFF;
+border-radius: 8px;
+border: 1px solid #A9AEB8;
+}
+
+.verifyFile img {
+  float: left;
+  margin-top: 40px;
+  margin-left: 35%;
+    margin-right: 10px;
+}
+
+.addFileView {
+  margin-top: 40px;
+  padding-left: 10px;
+}
+
+.addFileView h3 {
+height: 31px;
+font-size: 22px;
+font-family: Poppins-Medium, Poppins;
+font-weight: 500;
+color: #1D2129;
+line-height: 33px;
+}
+
+.filenamesView {
+height: 20px;
+font-size: 14px;
+font-family: Poppins-Regular, Poppins;
+font-weight: 400;
+color: #1D2129;
+}
+
+.resTopView {
+  width: 1200px;
+height: 72px;
+padding-left: 20px;
+background: #F2F3F5;;
+border-top-left-radius: 8px;
+border-top-right-radius: 8px;
+line-height: 72px;
+}
+
+.resTopView img {
+  margin-top: 20px;
+  float: left;
+  margin-right: 5px;
+}
+
+.resTopView h2 {
+  font-size: 18px;
+font-family: Poppins-Bold, Poppins;
+font-weight: bold;
+color: #1D2129;
+}
+
+.resBotView {
+  padding-left: 20px;
+}
+
+.verifyResultView h3 {
+  font-size: 12px;
+font-family: Poppins-Regular, Poppins;
+font-weight: 400;
+color: #1D2129;
+line-height: 18px;
+}
+
+.verifyResultView h4 {
+  font-size: 12px;
+font-family: Poppins-Regular, Poppins;
+font-weight: 400;
+color: #1D2129;
+line-height: 18px;
 }
 </style>
