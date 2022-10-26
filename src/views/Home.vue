@@ -83,8 +83,8 @@
               :columns="columns"
               :data="data"
               :pagination="pagination"
-              :max-height="250"
-              :scroll-x="1800"
+              :max-height="600"
+              :scroll-x="1000"
             />
           </div>
 
@@ -152,20 +152,20 @@
             <el-col span="18">
               <div v-if="vcStep == 1">
                 <h3 class="step-title">Select Schema</h3>
-                <h4 class="step-subtitle">xxxxxxx</h4>
+                <h4 class="step-subtitle"></h4>
               </div>
               <div v-else-if="vcStep == 2">
                 <h3 v-if="!processing" class="step-title">Add Recipients</h3>
                 <h3 v-else class="step-title">Issuing credential...</h3>
 
-                <h4 v-if="!processing" class="step-subtitle">YYYYY</h4>
+                <h4 v-if="!processing" class="step-subtitle"></h4>
                 <h4 v-else class="step-subtitle">
                   Please don’t close this window.
                 </h4>
               </div>
               <div v-else-if="vcStep == 3">
                 <h3 v-if="createOk" class="step-title">
-                  Issued 10 Verifiable Credential
+                  {{newVcNum}}
                 </h3>
                 <h3 v-else class="step-title">Issue failed</h3>
 
@@ -344,7 +344,9 @@
               :data="recipientTableData"
               :pagination="pagination"
               :max-height="600"
-              :scroll-x="1800"
+              :scroll-x="1000"
+              :row-key="rowKey"
+              v-model:checked-row-keys="recipientCheckedRowKeys"
             />
 
             <div v-if="processing" class="maskview">
@@ -375,7 +377,7 @@
                   type="primary"
                   class="manually-add-btn"
                   color="#1E5CEF"
-                  @click="toViewVcsAction"
+                  @click="toViewVcsAction(newVcId[0])"
                   round
                   >View Credential</el-button
                 >
@@ -555,6 +557,10 @@ let getUserInfoUrl = Domain.domainUrl + "/tr/did-user/get-info";
 let vcTableUrl = Domain.domainUrl + "/tr/did-document-credential/credential-list";
 let getTemplListUrl = Domain.domainUrl + "/tr/did-document-credential/template-list";
 let templateClaimUrl = Domain.domainUrl + "/tr/did-document-credential/template-claim";
+let issueVcUrl = Domain.domainUrl + "/tr/did-document-credential/credential";
+let singleDownloadUrl = Domain.domainUrl + "/tr/did-document-credential/credential-download/";
+let batchDownloadUrl = Domain.domainUrl + "/tr/did-document-credential/credential-download";
+let viewVcPicUrl = Domain.domainUrl + "/tr/did-document-credential/view-credential/";
 
 import { ElMessage } from 'element-plus'
 
@@ -562,16 +568,17 @@ const createColumns = () => [
   {
     type: "selection",
     fixed: "left",
+    width: 25,
   },
   {
     title: "Credential ID",
     key: "credentialId",
-    width: 50,
+    width: 80,
   },
   {
     title: "Holder Did",
     key: "holderDid",
-    width: 50,
+    width: 80,
   },
   {
     title: "Holder Name",
@@ -646,12 +653,18 @@ export default {
       isEmptyRecipient: true,
       recipientTableData: [],
       recipientTableColumns: [],
+      recipientCheckedRowKeys: [],
+      recipientIdx: 1,
 
       //input recipient
       inputRecipientVisiable: ref(false),
       inputRecipientsData: [],
       issueDate: null,
       expireDate: null,
+
+      //credential
+      newVcId: [],
+      newVcNum: "",
 
       //verify crendentail
       veriferVisible: ref(false),
@@ -749,6 +762,7 @@ export default {
 
       this.vcStep = 2;
       this.isEmptyRecipient = false;
+      this.recipientIdx = 1;
 
       if (this.schemaType == "Membership Card") {
         this.schemaId = 1;
@@ -776,7 +790,6 @@ export default {
       this.inputRecipientsData.forEach(element => {
         element.claimContent = null
       });
-
       this.inputRecipientVisiable = true;
     },
     addRecipientAction() {
@@ -784,36 +797,91 @@ export default {
       this.inputRecipientsData.forEach(element => {
         obj[element.claimCode] = element.claimContent;
       });
-
       obj["issueDate"] = this.issueDate;
       obj["expireDate"] = this.expireDate;
+      obj["idx"] = this.recipientIdx;
 
       this.recipientTableData.push(obj);
 
+      this.recipientIdx = this.recipientIdx + 1;
       this.inputRecipientVisiable = false;
     },
     importSheetAction() {
       alert("importSheetAction");
     },
-    toIssueCredentials() {
+    async toIssueCredentials() {
+      console.log(this.recipientCheckedRowKeys);
+      console.log(this.recipientTableData);
       this.processing = true;
 
-      this.timer = setInterval(() => {
-        this.percentageCount = this.percentageCount + 20;
+      // let timer = setInterval(() => {
 
-        if (this.percentageCount >= 100) {
-          this.timer = {};
-          this.processing = false;
-          this.vcStep = 3;
-          this.createOk = true;
+      // }, 500)
+
+      let needClaims = []
+      this.recipientCheckedRowKeys.forEach(checkKeys => {
+        for (let i = 0; i < this.recipientTableData.length; i++) {
+          const element = this.recipientTableData[i];
+          if (checkKeys == element.idx) {
+            let obj = {
+              "issueDate": element.issueDate,
+              "expireDate": element.expireDate,
+              "expireFlag": 0,
+            }
+
+            let objCopy = element;
+            delete objCopy.issueDate;
+            delete objCopy.expireDate;
+            delete objCopy.idx;
+
+            obj["claimsStr"] = JSON.stringify(objCopy);
+
+            needClaims.push(obj);
+            break
+          }
         }
-      }, 2000);
+      });
+
+      if (needClaims.length == 0) {
+        alert("need claim must not be empty");
+        return
+      }
+
+      const res = await axios.post(issueVcUrl,{
+        claims: needClaims,
+        templateId: this.schemaId,
+      },{
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        }
+      });
+
+      if (res.data.code == 0) {
+        // clearInterval(timer);
+        this.newVcId = res.data.data;
+        this.newVcNum = "Issued " + this.newVcId.length + " Verifiable Credential";
+        this.processing = false;
+        this.vcStep = 3;
+        this.createOk = true;
+      } else {
+
+      }
     },
     toDownloadAction() {
-      alert("toDownloadAction");
+      if (this.newVcId.length > 1) {
+        this.batchDownloadAction(this.newVcId);
+      } else {
+        this.singleDownloadAction(this.newVcId[0]);
+      }
     },
-    toViewVcsAction() {
-      alert("toViewVcsAction");
+    async toViewVcsAction(vcid) {
+      const res = await axios.get(viewVcPicUrl+vcid,{
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        }
+      });
+
+      console.log(res.data);
     },
 
     createRecipientColumns(orign) {
@@ -859,7 +927,30 @@ export default {
       cols.push(expire);
 
       this.recipientTableColumns = cols;
-    }
+    },
+    rowKey: (row) => row.idx,
+    async batchDownloadAction(ids) {
+      const res = await axios.post(batchDownloadUrl,{
+        credentialIds: ids,
+      },{
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        }
+      });
+
+      console.localStorage(res.data);
+    },
+    async singleDownloadAction(id) {
+      const res = await axios.get(singleDownloadUrl+id,{
+        headers: {
+          Authorization: localStorage.getItem("token"),
+          Accept: "application/x-www-form-urlencoded",
+        }
+      });
+
+      //
+      console.log(res.data);
+    },
   },
   unmounted() {
     this.timer = {};
