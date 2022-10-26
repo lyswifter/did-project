@@ -7,7 +7,6 @@
           class="el-menu-demo did-menu"
           mode="horizontal"
           :ellipsis="false"
-          @select="handleSelect"
         >
           <el-menu-item index="0">
             <img class="logoview" src="../assets/img/LOGO@2x.png" alt="" />
@@ -34,13 +33,13 @@
         </div>
 
         <div class="info-right">
-          <h2 class="name">Mona Brewer</h2>
+          <h2 class="name">{{userInfo.firstName + userInfo.lastname}}</h2>
           <h3 class="did">
-            did:did:z6MkjeNFyRtJzSnBjLKBkMWUyhDSw3hTrRWCoasrjE8UjLq9
+            {{userInfo.did}}
           </h3>
           <div class="org">
             <img src="../assets/img/icon_company@2x.png" alt="" />
-            <span>Tianru network technology</span>
+            <span>{{userInfo.company}}</span>
           </div>
         </div>
 
@@ -48,7 +47,7 @@
           <div class="credential-display">
             <div class="display-left">
               <h2 class="dis-title f-color">Credentials</h2>
-              <h1 class="dis-count f-color">500</h1>
+              <h1 class="dis-count f-color">{{userInfo.credentialCount}}</h1>
             </div>
             <div class="display-right">
               <h2 class="w-color">Credential Verifier</h2>
@@ -165,7 +164,9 @@
                 </h4>
               </div>
               <div v-else-if="vcStep == 3">
-                <h3 v-if="createOk" class="step-title">Issued 10 Verifiable Credential</h3>
+                <h3 v-if="createOk" class="step-title">
+                  Issued 10 Verifiable Credential
+                </h3>
                 <h3 v-else class="step-title">Issue failed</h3>
 
                 <h4 v-if="createOk" class="step-subtitle">
@@ -191,24 +192,24 @@
               <div v-else-if="vcStep == 2">
                 <div v-if="!processing">
                   <el-button
-                  type="plain"
-                  class="back-btn"
-                  @click="backAction"
-                  round
-                  >Back</el-button
-                >
+                    type="plain"
+                    class="back-btn"
+                    @click="backAction"
+                    round
+                    >Back</el-button
+                  >
                 </div>
               </div>
 
               <div v-else-if="vcStep == 3">
                 <div v-if="!createOk">
                   <el-button
-                  type="plain"
-                  class="back-btn"
-                  @click="backAction"
-                  round
-                  >Back</el-button
-                >
+                    type="plain"
+                    class="back-btn"
+                    @click="backAction"
+                    round
+                    >Back</el-button
+                  >
                 </div>
               </div>
             </el-col>
@@ -361,23 +362,23 @@
             <el-row>
               <el-col span="2" :offset="17">
                 <el-button
-                    type="plain"
-                    class="manually-add-btn"
-                    @click="toDownloadAction"
-                    round
-                    >Download Credential</el-button
-                  >
+                  type="plain"
+                  class="manually-add-btn"
+                  @click="toDownloadAction"
+                  round
+                  >Download Credential</el-button
+                >
               </el-col>
 
-              <el-col span="2" style="margin-left: 10px;">
+              <el-col span="2" style="margin-left: 10px">
                 <el-button
-                    type="primary"
-                    class="manually-add-btn"
-                    color="#1E5CEF"
-                    @click="toViewVcsAction"
-                    round
-                    >View Credential</el-button
-                  >
+                  type="primary"
+                  class="manually-add-btn"
+                  color="#1E5CEF"
+                  @click="toViewVcsAction"
+                  round
+                  >View Credential</el-button
+                >
               </el-col>
             </el-row>
           </div>
@@ -404,12 +405,20 @@
 
         <div class="verifyContentView">
           <div class="verifyFile">
-            <img style="width: 64px;height: 64px;" src="../assets/img/file@2x.png" alt="">
+            <img
+              style="width: 64px; height: 64px"
+              src="../assets/img/file@2x.png"
+              alt=""
+            />
             <div class="addFileView">
               <h3>Drag & drop your file</h3>
-            <el-button
+              <el-button
                 type="plain"
-                class="import-btn" @click="chooseJsonFile" round>Choose JSON File</el-button>
+                class="import-btn"
+                @click="chooseJsonFile"
+                round
+                >Choose JSON File</el-button
+              >
             </div>
           </div>
 
@@ -427,21 +436,28 @@
 
           <div class="verifyResultView">
             <div class="resTopView">
-              <img style="width: 32px;height: 32px;" src="../assets/img/success@2x.png" alt="">
+              <img
+                style="width: 32px; height: 32px"
+                src="../assets/img/success@2x.png"
+                alt=""
+              />
               <h2>Verified</h2>
             </div>
 
             <div class="resBotView">
               <h3>Alice Haynes issued to Lulu Reyes</h3>
-            <h4>Issuer: Alice Haynes</h4>
-            <h4>IssuerDid: xxxxx</h4>
-            <h4>Type: ["VerifiaableCredential", "Membership Card"]</h4>
-            <h4>Issue date: 2022-10-23T12:45:10.302Z</h4>
-            <h4>Expire date: xxxx</h4>
-            <h4>Holder: Lulu Reyes</h4>
-            <h4>Holder did: YYYY</h4>
-            <h4>Credential type:</h4>
-            <h4>Proof: hfoiwefgoenfmosdnfsdofjsdofsodfshdifhsdohfsodfhsodhfsodhfo</h4>
+              <h4>Issuer: Alice Haynes</h4>
+              <h4>IssuerDid: xxxxx</h4>
+              <h4>Type: ["VerifiaableCredential", "Membership Card"]</h4>
+              <h4>Issue date: 2022-10-23T12:45:10.302Z</h4>
+              <h4>Expire date: xxxx</h4>
+              <h4>Holder: Lulu Reyes</h4>
+              <h4>Holder did: YYYY</h4>
+              <h4>Credential type:</h4>
+              <h4>
+                Proof:
+                hfoiwefgoenfmosdnfsdofjsdofsodfshdifhsdohfsodfhsodhfsodhfo
+              </h4>
             </div>
           </div>
         </div>
@@ -557,51 +573,64 @@
 <script>
 import { ref, h } from "vue";
 
+import axios from "axios";
+
+import Domain from "../router/domain.js";
+let getUserInfoUrl = Domain.domainUrl + "/tr/did-user/get-info";
+let vcTableUrl = Domain.domainUrl + "/tr/did-document-credential/credential-list";
+
+import { ElMessage } from 'element-plus'
+
 const createColumns = () => [
   {
     type: "selection",
     fixed: "left",
   },
   {
-    title: "Name",
-    key: "name",
-    width: 200,
-    fixed: "left",
+    title: "Credential ID",
+    key: "credentialId",
+    width: 50,
   },
   {
-    title: "Age",
-    key: "age",
-    width: 100,
-    fixed: "left",
+    title: "Holder Did",
+    key: "holderDid",
+    width: 50,
   },
   {
-    title: "Row",
-    key: "row",
+    title: "Holder Name",
+    key: "holderName",
+    width: 50,
+  },
+  {
+    title: "Type",
+    key: "credentialType",
+    width: 50,
+  },
+  {
+    title: "Issue AT",
+    key: "issueDate",
+    width: 50,
+  },
+  {
+    title: "Expires AT",
+    key: "expireDate",
+    width: 50,
+  },
+  {
+    title: "State",
+    key: "",
+    width: 50,
     render(row, index) {
       return h("span", ["row ", index]);
     },
   },
   {
-    title: "Row1",
-    key: "row1",
+    title: "Operations",
+    key: "",
+    width: 50,
     render(row, index) {
       return h("span", ["row ", index]);
     },
-  },
-  {
-    title: "Row2",
-    key: "row2",
-    render(row, index) {
-      return h("span", ["row ", index]);
-    },
-    width: 100,
-    fixed: "right",
-  },
-  {
-    title: "Address",
-    key: "address",
-    width: 200,
-    fixed: "right",
   },
 ];
 
@@ -612,12 +641,8 @@ export default {
     return {
       activeIndex: ref("1"),
       hasVc: true,
-      data: Array.from({ length: 46 }).map((_, index) => ({
-        key: index,
-        name: `Edward King ${index}`,
-        age: 32,
-        address: `London, Park Lane no. ${index}`,
-      })),
+      userInfo: {},
+      data: [],
       columns: createColumns(),
       pagination: { pageSize: 10 },
       width: 1200,
@@ -648,13 +673,52 @@ export default {
     };
   },
   created() {},
-  mounted() {},
+  mounted() {
+    this.getUserInfo();
+    this.getVcTableInfo();
+  },
   methods: {
+    async getUserInfo(){
+      const res = await axios.post(getUserInfoUrl,{},{
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        }
+      });
+
+      if (res.data.code == 0) {
+        this.userInfo = res.data.data;
+      }
+      else if(res.data.code == 100002) {
+        this.$router.push({name: 'personInfo'});
+      }
+      else {
+      }
+    },
+    async getVcTableInfo() {
+      const res = await axios.post(vcTableUrl, {
+          page: 1,
+          size: 10,
+        },{
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+
+      console.log(res.data)
+
+      if (res.data.code == 0) {
+        this.data = res.data.data.records;
+
+        if (this.data.length == 0) {
+          this.hasVc = false;
+        }
+      }
+    },
     backAction() {
       this.vcStep = this.vcStep - 1;
     },
     toVerifyAction() {
-      this.veriferVisible = true
+      this.veriferVisible = true;
     },
     toCreateAction() {
       this.schemaVisible = true;
@@ -697,7 +761,7 @@ export default {
     },
     toViewVcsAction() {
       alert("toViewVcsAction");
-    }
+    },
   },
   unmounted() {
     this.timer = {};
@@ -979,11 +1043,11 @@ export default {
   height: 326px;
   background: linear-gradient(270deg, #0b224f 0%, #1d2129 100%);
   border-radius: 8px;
+  text-align: center;
 }
 
 .create-vc-btn {
-  margin-top: 222px;
-  margin-left: 140px;
+  margin-top: 150px;
 }
 
 .vctable-view {
@@ -1158,9 +1222,9 @@ export default {
   padding-top: 20px;
   margin-left: 100px;
   width: 1200px;
-height: 84px;
-background: #F7F8FA;
-border-radius: 8px;
+  height: 84px;
+  background: #f7f8fa;
+  border-radius: 8px;
 }
 </style>
 
@@ -1206,42 +1270,41 @@ border-radius: 8px;
 <!-- Verify -->
 
 <style scoped>
-
 .verifyContentView {
   margin-left: 100px;
 }
 
 .verifyFile {
   width: 1200px;
-height: 200px;
-background: #F2F3F5;
-border-radius: 8px;
-border: 2px solid #272E3B;
-/* text-align: center; */
+  height: 200px;
+  background: #f2f3f5;
+  border-radius: 8px;
+  border: 2px solid #272e3b;
+  /* text-align: center; */
 }
 
 .fileShowView {
   width: 1200px;
-height: 84px;
-background: #F7F8FA;
-border-radius: 8px;
-line-height: 84px;
+  height: 84px;
+  background: #f7f8fa;
+  border-radius: 8px;
+  line-height: 84px;
 }
 
 .verifyResultView {
   margin-top: 20px;
   width: 1200px;
-height: 340px;
-background: #FFFFFF;
-border-radius: 8px;
-border: 1px solid #A9AEB8;
+  height: 340px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #a9aeb8;
 }
 
 .verifyFile img {
   float: left;
   margin-top: 40px;
   margin-left: 35%;
-    margin-right: 10px;
+  margin-right: 10px;
 }
 
 .addFileView {
@@ -1250,30 +1313,30 @@ border: 1px solid #A9AEB8;
 }
 
 .addFileView h3 {
-height: 31px;
-font-size: 22px;
-font-family: Poppins-Medium, Poppins;
-font-weight: 500;
-color: #1D2129;
-line-height: 33px;
+  height: 31px;
+  font-size: 22px;
+  font-family: Poppins-Medium, Poppins;
+  font-weight: 500;
+  color: #1d2129;
+  line-height: 33px;
 }
 
 .filenamesView {
-height: 20px;
-font-size: 14px;
-font-family: Poppins-Regular, Poppins;
-font-weight: 400;
-color: #1D2129;
+  height: 20px;
+  font-size: 14px;
+  font-family: Poppins-Regular, Poppins;
+  font-weight: 400;
+  color: #1d2129;
 }
 
 .resTopView {
   width: 1200px;
-height: 72px;
-padding-left: 20px;
-background: #F2F3F5;;
-border-top-left-radius: 8px;
-border-top-right-radius: 8px;
-line-height: 72px;
+  height: 72px;
+  padding-left: 20px;
+  background: #f2f3f5;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  line-height: 72px;
 }
 
 .resTopView img {
@@ -1284,9 +1347,9 @@ line-height: 72px;
 
 .resTopView h2 {
   font-size: 18px;
-font-family: Poppins-Bold, Poppins;
-font-weight: bold;
-color: #1D2129;
+  font-family: Poppins-Bold, Poppins;
+  font-weight: bold;
+  color: #1d2129;
 }
 
 .resBotView {
@@ -1295,17 +1358,17 @@ color: #1D2129;
 
 .verifyResultView h3 {
   font-size: 12px;
-font-family: Poppins-Regular, Poppins;
-font-weight: 400;
-color: #1D2129;
-line-height: 18px;
+  font-family: Poppins-Regular, Poppins;
+  font-weight: 400;
+  color: #1d2129;
+  line-height: 18px;
 }
 
 .verifyResultView h4 {
   font-size: 12px;
-font-family: Poppins-Regular, Poppins;
-font-weight: 400;
-color: #1D2129;
-line-height: 18px;
+  font-family: Poppins-Regular, Poppins;
+  font-weight: 400;
+  color: #1d2129;
+  line-height: 18px;
 }
 </style>

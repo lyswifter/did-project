@@ -7,7 +7,6 @@
           class="el-menu-demo did-menu"
           mode="horizontal"
           :ellipsis="false"
-          @select="handleSelect"
         >
           <el-menu-item index="0">
             <img class="logoview" src="../assets/img/LOGO@2x.png" alt="" />
@@ -65,30 +64,31 @@
           <div>
             <h3 class="f-color fill-title">Which industry do you operate in</h3>
             <el-input
-              v-model="input3"
+              v-model="industryName"
               placeholder="Please input"
               class="input-with-select"
             >
               <template #append>
-                <el-select class=""
+                <el-select
+                  class=""
                   v-model="select"
                   placeholder="Select"
                   style="width: 115px"
                 >
-                  <el-option label="Restaurant" value="1" />
-                  <el-option label="Order No." value="2" />
-                  <el-option label="Tel" value="3" />
+                  <el-option label="Blockchain" value="1" />
+                  <el-option label="Information Technology" value="2" />
+                  <el-option label="Software" value="3" />
                 </el-select>
               </template>
             </el-input>
           </div>
 
-          <br>
-          <br>
+          <br />
+          <br />
 
           <el-button class="continue-btn" @click="continueAction"
-        >Continue</el-button
-      >
+            >Continue</el-button
+          >
         </div>
       </el-main>
 
@@ -99,27 +99,53 @@
 
 <script>
 import { ref } from "vue";
+import axios from "axios";
+
+import Domain from "../router/domain.js";
+let addInfoUrl = Domain.domainUrl + "/tr/did-user/additional-information"
+
+import { ElMessage } from 'element-plus'
 
 export default {
   name: "PersonInfo",
   data() {
     return {
-      firstnamecontent: "xxx",
-      lastnamecontent: "YYy",
+      orgcontent: "",
+      firstnamecontent: "",
+      lastnamecontent: "",
+      industryName: "",
+
       activeIndex: ref("1"),
-    }
+    };
   },
-  created() {
-
-  },
-  mounted() {
-
-  },
+  created() {},
+  mounted() {},
   methods: {
-    continueAction() {
-        this.$router.push({name: 'home'});
-    }
-  }
+    async continueAction() {
+      const res = await axios.post(addInfoUrl, {
+        company: this.orgcontent,
+        firstName: this.firstnamecontent,
+        lastName: this.lastnamecontent,
+        industry: this.industryName,
+      },{
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        }
+      });
+
+      if (res.data.code == 0) {
+        localStorage.setItem("token", res.data.data.token)
+
+        this.$router.push({ name: "home" });
+
+        ElMessage({
+            message: 'Add addition information successed.',
+            type: 'success',
+          })
+      } else {
+      }
+    },
+  },
 };
 </script>
 
@@ -183,12 +209,12 @@ export default {
 }
 
 .fill-title {
-height: 20px;
-font-size: 14px;
-font-family: Poppins-SemiBold, Poppins;
-font-weight: 600;
-color: #1D2129;
-line-height: 21px;
+  height: 20px;
+  font-size: 14px;
+  font-family: Poppins-SemiBold, Poppins;
+  font-weight: 600;
+  color: #1d2129;
+  line-height: 21px;
 }
 
 .fill-t-view {
@@ -205,12 +231,12 @@ line-height: 21px;
 
 .tell-sub-title {
   width: 292px;
-height: 17px;
-font-size: 12px;
-font-family: Poppins-Regular, Poppins;
-font-weight: 400;
-color: #A9AEB8;
-line-height: 18px;
+  height: 17px;
+  font-size: 12px;
+  font-family: Poppins-Regular, Poppins;
+  font-weight: 400;
+  color: #a9aeb8;
+  line-height: 18px;
 }
 
 .name-left-v {
@@ -228,5 +254,5 @@ line-height: 18px;
   background: #1e5cef;
   border-radius: 24px;
   color: white;
-} 
+}
 </style>

@@ -27,14 +27,14 @@
           v-model="emailvccontent"
           placeholder="Please input"
         />
-        <el-button class="email-vc-btn">Send</el-button>
+        <el-button class="email-vc-btn" @click="sendAction">Send</el-button>
       </div>
 
       <br />
       <br />
       <br />
 
-      <el-button class="continue-btn" @click="continueAction"
+      <el-button class="continue-btn" @click="loginAction"
         >Continue</el-button
       >
     </div>
@@ -45,36 +45,73 @@
   </div>
 </template>
 
-<script>
+<script lang="js">
 import axios from "axios";
+
+import Domain from "../router/domain.js";
+
+let sendCodeUrl = Domain.domainUrl + "/tr/did-user/send"
+let loginUrl = Domain.domainUrl + "/tr/did-user/login"
+
+import { ElMessage } from 'element-plus'
 
 export default {
   name: "LoginView",
   data() {
     return {
-      emailcontent: "xxx",
-      emailvccontent: "yyy",
+      emailcontent: "ly70835@163.com",
+      emailvccontent: "",
     };
   },
-  async created() {
-    try {
-      const res = await axios.get(`http://localhost:3000/items`);
-      this.items = res.data;
-    } catch (error) {
-      console.log(error);
-    }
-  },
+  async created() {},
   mounted() {},
   methods: {
-    async addItem() {
-      const res = await axios.post(`http://localhost:3000/items`, {
-        name: this.itemName,
+    async loginAction() {
+      const res = await axios.post(loginUrl, {
+        email: this.emailcontent,
+        code: this.emailvccontent,
       });
-      this.items = [...this.items, res.data];
-      this.itemName = "";
+
+      console.log(res)
+
+      if (res.data.code == 0) {
+        window.localStorage.setItem("token", res.data.data.token);
+
+        if (res.data.data.needAddInformation) {
+          //push to add information page
+          this.$router.push({name: 'personInfo'}); 
+        } else {
+          // push to home page
+          ElMessage({
+            message: 'Login successed.',
+            type: 'success',
+          })
+
+          this.$router.push({ name: "home" });
+        }
+      } else {
+        ElMessage({
+          message: 'Login error',
+          type: 'error',
+        })
+      }
     },
-    continueAction() {
-        this.$router.push({name: 'personInfo'});
+    async sendAction() {
+      const res = await axios.post(sendCodeUrl, {
+        email: this.emailcontent,
+      });
+
+      if (res.data.code == 0) {
+        ElMessage({
+          message: 'Send auth code to your email successed.',
+          type: 'success',
+        })
+      } else {
+        ElMessage({
+          message: 'Send auth code to your email error, please retry',
+          type: 'error',
+        })
+      }
     }
   },
 };
