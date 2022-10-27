@@ -17,7 +17,7 @@
               src="../assets/img/avatar48px@2x.png"
               alt=""
             />
-            <div class="profileview">M</div>
+            <div class="profileview">{{ profileName }}</div>
           </el-menu-item>
         </el-menu>
       </el-header>
@@ -435,7 +435,11 @@
                 <!-- <h3 class="filenamesView">xxxxx.json</h3> -->
               </el-col>
               <el-col span="6" :offset="20">
-                <el-button size="large" type="primary" @click="verifyFileAction" round
+                <el-button
+                  size="large"
+                  type="primary"
+                  @click="verifyFileAction"
+                  round
                   >Verify</el-button
                 >
               </el-col>
@@ -589,17 +593,25 @@ let viewVcPicUrl =
   Domain.domainUrl + "/tr/did-document-credential/view-credential/";
 let VerifyVcUrl =
   Domain.domainUrl + "/tr/did-document-credential/verify-credential";
+let delVcUrl = Domain.domainUrl + "/tr/did-document-credential/credential-delete/";
 
 // import { ElMessage } from 'element-plus'
 
-import { NButton, NIcon } from "naive-ui";
-import { DotsVertical, CircleCheck } from "@vicons/tabler";
+import { NButton, NIcon, NPopover } from "naive-ui";
+import {
+  DotsVertical,
+  CircleCheck,
+  Eye,
+  Download,
+  Trash,
+} from "@vicons/tabler";
 
 export default {
   name: "Home",
   components: {},
   data() {
     return {
+      profileName: "",
       activeIndex: ref("1"),
 
       hasVc: true,
@@ -609,6 +621,7 @@ export default {
       pagination: {},
       width: 1200,
       height: 734,
+      popviewShow: false,
 
       vcStep: 1,
       processing: ref(false),
@@ -655,11 +668,15 @@ export default {
       verifyResultShow: false,
     };
   },
-  created() {},
+  created() {
+    let username = localStorage.getItem("username");
+    if (username != null) {
+      this.profileName = username.substring(0, 1).toUpperCase();
+    }
+  },
   mounted() {
-    let that = this;
     this.pagination = reactive({
-      page: 2,
+      page: 1,
       pageSize: 5,
       showSizePicker: true,
       pageSizes: [3, 5, 7],
@@ -672,22 +689,27 @@ export default {
       },
     });
 
+    let that = this;
     this.columns = this.createColumns({
       moreOpsRow(row) {
-        console.log(row);
-        let cid = row.credentialId;
-
-        console.log(that);
-
-        that.toViewVcsAction(cid);
+        that.popviewShow = !that.popviewShow;
       },
+      viewOpRow(row){
+        that.toViewVcsAction(row.credentialId);
+      }, 
+      downloadOpRow(row){
+        that.singleDownloadAction(row.credentialId);
+      }, 
+      trashOpRow(row){
+        that.singleTrashAction(row.credentialId);
+      }
     });
 
     this.getUserInfo();
     this.getVcTableInfo();
   },
   methods: {
-    createColumns({ moreOpsRow }) {
+    createColumns({ moreOpsRow, viewOpRow, downloadOpRow, trashOpRow }) {
       return [
         {
           type: "selection",
@@ -749,18 +771,81 @@ export default {
           width: 50,
           render(row, index) {
             return h(
-              NButton,
+              NPopover,
               {
-                style: {
-                  width: "33px",
-                  height: "33px",
-                  bordered: "false",
-                  circle: true,
-                },
-                onClick: () => moreOpsRow(row),
+                trigger: "click",
+                placement: 'left',
               },
               {
-                icon: () => h(NIcon, null, { default: () => h(DotsVertical) }),
+                trigger: () =>
+                  h(
+                    NButton,
+                    {
+                      style: {
+                        width: "33px",
+                        height: "33px",
+                        bordered: "false",
+                        circle: true,
+                      },
+                      onClick: () => moreOpsRow(row),
+                    },
+                    {
+                      icon: () =>
+                        h(NIcon, null, { default: () => h(DotsVertical) }),
+                    }
+                  ),
+
+                default: () =>
+                  h("div", { class: "popView" }, [
+                    h("div", null, [
+                      h(
+                        NButton,
+                        {
+                          style: {
+                            width: "120px",
+                          },
+                          onClick: () => viewOpRow(row),
+                        },
+                        {
+                          icon: () => h(NIcon, null, { default: () => h(Eye) }),
+                          default: () => h("span", ["view"]),
+                        }
+                      ),
+                    ]),
+                    h("div", null, [
+                      h(
+                        NButton,
+                        {
+                          style: {
+                            width: "120px",
+                          },
+                          onClick: () => downloadOpRow(row),
+                        },
+                        {
+                          icon: () =>
+                            h(NIcon, null, { default: () => h(Download) }),
+                          default: () => h("span", ["download"]),
+                        }
+                      ),
+                    ]),
+                    h("div", null, [
+                      h(
+                        NButton,
+                        {
+                          'text-color': "red",
+                          style: {
+                            width: "120px",
+                          },
+                          onClick: () => trashOpRow(row),
+                        },
+                        {
+                          icon: () =>
+                            h(NIcon, null, { default: () => h(Trash) }),
+                          default: () => h("span", ["delete"]),
+                        }
+                      ),
+                    ]),
+                  ]),
               }
             );
           },
@@ -879,7 +964,7 @@ export default {
       // get recipients list
 
       this.vcStep = 2;
-      this.isEmptyRecipient = false;
+      this.isEmptyRecipient = true;
       this.recipientIdx = 1;
 
       if (this.schemaType == "Membership Card") {
@@ -935,9 +1020,9 @@ export default {
       console.log(this.recipientTableData);
       this.processing = true;
 
-      // let timer = setInterval(() => {
-
-      // }, 500)
+      let timer = setInterval(() => {
+        this.percentageCount += 1;
+      }, 30);
 
       let needClaims = [];
       this.recipientCheckedRowKeys.forEach((checkKeys) => {
@@ -982,7 +1067,7 @@ export default {
       );
 
       if (res.data.code == 0) {
-        // clearInterval(timer);
+        clearInterval(timer);
         this.newVcId = res.data.data;
         this.newVcNum =
           "Issued " + this.newVcId.length + " Verifiable Credential";
@@ -1095,6 +1180,29 @@ export default {
       window.URL.revokeObjectURL(a.href);
       document.body.removeChild(a);
     },
+    async singleTrashAction(id) {
+      const res = await axios.delete(delVcUrl+id,{
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        });
+
+        if (res.data.code == 0) {
+          let index = -1;
+          this.data.forEach(element => {
+            if (element.credentialId == id) {
+              index = this.data.indexOf(element);
+            }
+          });
+
+          if (index > -1) {
+            this.data.splice(index, 1);
+          }
+
+          // reload total count
+          this.getUserInfo();
+        }
+    }
   },
   unmounted() {
     this.timer = {};
@@ -1172,7 +1280,7 @@ export default {
 }
 
 .profileview {
-  margin-top: 10px;
+  margin-top: 5px;
   width: 40px;
   height: 40px;
   border-radius: 20px;

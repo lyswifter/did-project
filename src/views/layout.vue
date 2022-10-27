@@ -32,9 +32,7 @@
   import { ref } from "vue";
   
   const activeIndex = ref("1");
-  // const handleSelect = (key: string, keyPath: string[]) => {
-  //   console.log(key, keyPath)
-  // }
+  
   </script>
   
   <style scoped>
@@ -53,7 +51,7 @@
   }
   
   .profileview {
-    margin-top: 10px;
+    margin-top: 5px;
     width: 40px;
     height: 40px;
     border-radius: 20px;

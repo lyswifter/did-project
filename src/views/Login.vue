@@ -52,6 +52,7 @@ import Domain from "../router/domain.js";
 
 let sendCodeUrl = Domain.domainUrl + "/tr/did-user/send"
 let loginUrl = Domain.domainUrl + "/tr/did-user/login"
+let getUserInfoUrl = Domain.domainUrl + "/tr/did-user/get-info";
 
 import { ElMessage } from 'element-plus'
 
@@ -77,6 +78,8 @@ export default {
       if (res.data.code == 0) {
         window.localStorage.setItem("token", res.data.data.token);
 
+        this.getUserInfo();
+
         if (res.data.data.needAddInformation) {
           //push to add information page
           this.$router.push({name: 'personInfo'}); 
@@ -94,6 +97,17 @@ export default {
           message: 'Login error',
           type: 'error',
         })
+      }
+    },
+    async getUserInfo() {
+      const res = await axios.get(getUserInfoUrl, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+
+      if (res.data.code == 0) {
+        localStorage.setItem("username", res.data.data.firstName)
       }
     },
     async sendAction() {
