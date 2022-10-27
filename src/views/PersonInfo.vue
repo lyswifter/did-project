@@ -102,7 +102,7 @@ import { ref } from "vue";
 import axios from "axios";
 
 import Domain from "../router/domain.js";
-let addInfoUrl = Domain.domainUrl + "/tr/did-user/additional-information"
+let addInfoUrl = Domain.domainUrl + "/api/did-user/additional-information"
 
 import { ElMessage } from 'element-plus'
 

@@ -50,9 +50,9 @@ import axios from "axios";
 
 import Domain from "../router/domain.js";
 
-let sendCodeUrl = Domain.domainUrl + "/tr/did-user/send"
-let loginUrl = Domain.domainUrl + "/tr/did-user/login"
-let getUserInfoUrl = Domain.domainUrl + "/tr/did-user/get-info";
+let sendCodeUrl = Domain.domainUrl + "/api/did-user/send"
+let loginUrl = Domain.domainUrl + "/api/did-user/login"
+let getUserInfoUrl = Domain.domainUrl + "/api/did-user/get-info";
 
 import { ElMessage } from 'element-plus'
 

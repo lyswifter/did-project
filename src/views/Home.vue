@@ -577,23 +577,23 @@ import { ref, h, reactive } from "vue";
 import axios from "axios";
 
 import Domain from "../router/domain.js";
-let getUserInfoUrl = Domain.domainUrl + "/tr/did-user/get-info";
+let getUserInfoUrl = Domain.domainUrl + "/api/did-user/get-info";
 let vcTableUrl =
-  Domain.domainUrl + "/tr/did-document-credential/credential-list";
+  Domain.domainUrl + "/api/did-document-credential/credential-list";
 let getTemplListUrl =
-  Domain.domainUrl + "/tr/did-document-credential/template-list";
+  Domain.domainUrl + "/api/did-document-credential/template-list";
 let templateClaimUrl =
-  Domain.domainUrl + "/tr/did-document-credential/template-claim";
-let issueVcUrl = Domain.domainUrl + "/tr/did-document-credential/credential";
+  Domain.domainUrl + "/api/did-document-credential/template-claim";
+let issueVcUrl = Domain.domainUrl + "/api/did-document-credential/credential";
 let singleDownloadUrl =
-  Domain.domainUrl + "/tr/did-document-credential/credential-download/";
+  Domain.domainUrl + "/api/did-document-credential/credential-download/";
 let batchDownloadUrl =
-  Domain.domainUrl + "/tr/did-document-credential/credential-download";
+  Domain.domainUrl + "/api/did-document-credential/credential-download";
 let viewVcPicUrl =
-  Domain.domainUrl + "/tr/did-document-credential/view-credential/";
+  Domain.domainUrl + "/api/did-document-credential/view-credential/";
 let VerifyVcUrl =
-  Domain.domainUrl + "/tr/did-document-credential/verify-credential";
-let delVcUrl = Domain.domainUrl + "/tr/did-document-credential/credential-delete/";
+  Domain.domainUrl + "/api/did-document-credential/verify-credential";
+let delVcUrl = Domain.domainUrl + "/api/did-document-credential/credential-delete/";
 
 // import { ElMessage } from 'element-plus'
 
@@ -1011,6 +1011,8 @@ export default {
 
       this.recipientIdx = this.recipientIdx + 1;
       this.inputRecipientVisiable = false;
+
+      this.isEmptyRecipient = false;
     },
     importSheetAction() {
       alert("importSheetAction");
