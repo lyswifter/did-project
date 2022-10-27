@@ -14,7 +14,9 @@ import {
     // create naive ui
     create,
     // component
-    NDataTable
+    NDataTable,
+    NButton,
+    NIcon,
   } from 'naive-ui'
 
 import "./assets/main.css";
@@ -22,7 +24,7 @@ import "./assets/main.css";
 const app = createApp(App);
 
 const naive = create({
-    components: [NDataTable]
+    components: [NDataTable, NButton, NIcon]
 })
 
 app.use(createPinia());

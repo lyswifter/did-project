@@ -33,13 +33,13 @@
         </div>
 
         <div class="info-right">
-          <h2 class="name">{{userInfo.firstName + userInfo.lastname}}</h2>
+          <h2 class="name">{{ userInfo.firstName + userInfo.lastname }}</h2>
           <h3 class="did">
-            {{userInfo.did}}
+            {{ userInfo.did }}
           </h3>
           <div class="org">
             <img src="../assets/img/icon_company@2x.png" alt="" />
-            <span>{{userInfo.company}}</span>
+            <span>{{ userInfo.company }}</span>
           </div>
         </div>
 
@@ -47,7 +47,7 @@
           <div class="credential-display">
             <div class="display-left">
               <h2 class="dis-title f-color">Credentials</h2>
-              <h1 class="dis-count f-color">{{userInfo.credentialCount}}</h1>
+              <h1 class="dis-count f-color">{{ userInfo.credentialCount }}</h1>
             </div>
             <div class="display-right">
               <h2 class="w-color">Credential Verifier</h2>
@@ -165,7 +165,7 @@
               </div>
               <div v-else-if="vcStep == 3">
                 <h3 v-if="createOk" class="step-title">
-                  {{newVcNum}}
+                  {{ newVcNum }}
                 </h3>
                 <h3 v-else class="step-title">Issue failed</h3>
 
@@ -281,7 +281,7 @@
           <div v-if="isEmptyRecipient" class="emptyRecipient">
             <img
               style="width: 144px; height: 144px"
-              src="../assets/img/add recipients@2x.png"
+              src="../assets/img/add_recipients@2x.png"
               alt=""
             />
             <div class="mamualView">
@@ -484,14 +484,14 @@
 
         <div class="addRecipientContent">
           <div v-for="item in inputRecipientsData" :key="item.claimSort">
-            <h3 class="dialog-title">{{item.claimName}}</h3>
+            <h3 class="dialog-title">{{ item.claimName }}</h3>
             <el-input
               class="inputw"
               v-model="item.claimContent"
               placeholder="Please input"
             />
             <h4 class="dialog-subtitle">
-              {{item.claimDesc}}
+              {{ item.claimDesc }}
             </h4>
           </div>
 
@@ -543,6 +543,17 @@
           </el-button>
         </div>
       </el-dialog>
+
+      <!-- view vc image -->
+      <el-dialog
+        v-model="vcViewVisiable"
+        :show-close="true"
+        :direction="direction"
+      >
+        <div style="text-align: center;width: 600px;">
+          <img style="width: 600px;height: 842px;" :src="vcViewLink" alt="" />
+        </div>
+      </el-dialog>
     </el-container>
   </div>
 </template>
@@ -554,69 +565,23 @@ import axios from "axios";
 
 import Domain from "../router/domain.js";
 let getUserInfoUrl = Domain.domainUrl + "/tr/did-user/get-info";
-let vcTableUrl = Domain.domainUrl + "/tr/did-document-credential/credential-list";
-let getTemplListUrl = Domain.domainUrl + "/tr/did-document-credential/template-list";
-let templateClaimUrl = Domain.domainUrl + "/tr/did-document-credential/template-claim";
+let vcTableUrl =
+  Domain.domainUrl + "/tr/did-document-credential/credential-list";
+let getTemplListUrl =
+  Domain.domainUrl + "/tr/did-document-credential/template-list";
+let templateClaimUrl =
+  Domain.domainUrl + "/tr/did-document-credential/template-claim";
 let issueVcUrl = Domain.domainUrl + "/tr/did-document-credential/credential";
-let singleDownloadUrl = Domain.domainUrl + "/tr/did-document-credential/credential-download/";
-let batchDownloadUrl = Domain.domainUrl + "/tr/did-document-credential/credential-download";
-let viewVcPicUrl = Domain.domainUrl + "/tr/did-document-credential/view-credential/";
+let singleDownloadUrl =
+  Domain.domainUrl + "/tr/did-document-credential/credential-download/";
+let batchDownloadUrl =
+  Domain.domainUrl + "/tr/did-document-credential/credential-download";
+let viewVcPicUrl =
+  Domain.domainUrl + "/tr/did-document-credential/view-credential/";
 
-import { ElMessage } from 'element-plus'
-
-const createColumns = () => [
-  {
-    type: "selection",
-    fixed: "left",
-    width: 25,
-  },
-  {
-    title: "Credential ID",
-    key: "credentialId",
-    width: 80,
-  },
-  {
-    title: "Holder Did",
-    key: "holderDid",
-    width: 80,
-  },
-  {
-    title: "Holder Name",
-    key: "holderName",
-    width: 50,
-  },
-  {
-    title: "Type",
-    key: "credentialType",
-    width: 50,
-  },
-  {
-    title: "Issue AT",
-    key: "issueDate",
-    width: 50,
-  },
-  {
-    title: "Expires AT",
-    key: "expireDate",
-    width: 50,
-  },
-  {
-    title: "State",
-    key: "",
-    width: 50,
-    render(row, index) {
-      return h("span", ["row ", index]);
-    },
-  },
-  {
-    title: "Operations",
-    key: "",
-    width: 50,
-    render(row, index) {
-      return h("span", ["row ", index]);
-    },
-  },
-];
+// import { ElMessage } from 'element-plus'
+import { NButton, NIcon } from "naive-ui";
+import { DotsVertical } from "@vicons/tabler";
 
 export default {
   name: "Home",
@@ -627,7 +592,7 @@ export default {
       hasVc: true,
       userInfo: {},
       data: [],
-      columns: createColumns(),
+      columns: [],
       pagination: { pageSize: 10 },
       width: 1200,
       height: 734,
@@ -668,41 +633,129 @@ export default {
 
       //verify crendentail
       veriferVisible: ref(false),
+
+      //view credential image
+      vcViewVisiable: false,
+      vcViewLink: "",
     };
   },
-  created() {},
+  created() {
+  },
   mounted() {
+    let that = this;
+    this.columns = this.createColumns({
+      moreOpsRow(row) {
+        console.log(row);
+        let cid = row.credentialId;
+
+        console.log(that);
+
+        that.toViewVcsAction(cid);
+      },
+    });
+
     this.getUserInfo();
     this.getVcTableInfo();
   },
   methods: {
-    async getUserInfo(){
-      const res = await axios.get(getUserInfoUrl,{
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        }
-      });
-
-      if (res.data.code == 0) {
-        this.userInfo = res.data.data;
-      }
-      else if(res.data.code == 100002) {
-        this.$router.push({name: 'personInfo'});
-      }
-      else {
-      }
+    createColumns({ moreOpsRow }) {
+      return [
+        {
+          type: "selection",
+          fixed: "left",
+          width: 25,
+        },
+        {
+          title: "Credential ID",
+          key: "credentialId",
+          width: 80,
+        },
+        {
+          title: "Holder Did",
+          key: "holderDid",
+          width: 80,
+        },
+        {
+          title: "Holder Name",
+          key: "holderName",
+          width: 50,
+        },
+        {
+          title: "Type",
+          key: "credentialType",
+          width: 50,
+        },
+        {
+          title: "Issue AT",
+          key: "issueDate",
+          width: 50,
+        },
+        {
+          title: "Expires AT",
+          key: "expireDate",
+          width: 50,
+        },
+        {
+          title: "State",
+          key: "",
+          width: 50,
+          render(row, index) {
+            return h("span", ["row ", index]);
+          },
+        },
+        {
+          title: "Operations",
+          key: "",
+          width: 50,
+          render(row, index) {
+            return h(
+              NButton,
+              {
+                style: {
+                  width: "33px",
+                  height: "33px",
+                  bordered: "false",
+                  circle: true,
+                },
+                onClick: () => moreOpsRow(row),
+              },
+              {
+                icon: () => h(NIcon, null, { default: () => h(DotsVertical) }),
+              }
+            );
+          },
+        },
+      ];
     },
-    async getVcTableInfo() {
-      const res = await axios.post(vcTableUrl, {
-          page: 1,
-          size: 10,
-        },{
+    async getUserInfo() {
+      const res = await axios.get(getUserInfoUrl, {
         headers: {
           Authorization: localStorage.getItem("token"),
         },
       });
 
-      console.log(res.data)
+      if (res.data.code == 0) {
+        this.userInfo = res.data.data;
+      } else if (res.data.code == 100002) {
+        this.$router.push({ name: "personInfo" });
+      } else {
+      }
+    },
+    async getVcTableInfo() {
+      const res = await axios.post(
+        vcTableUrl,
+        {
+          page: 1,
+          size: 10,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+
+      console.log(res.data);
 
       if (res.data.code == 0) {
         this.data = res.data.data.records;
@@ -755,7 +808,7 @@ export default {
     async toAddRecipient() {
       if (this.schemaType == "") {
         alert("Schema type must not be empty");
-        return  
+        return;
       }
 
       // get recipients list
@@ -771,30 +824,33 @@ export default {
       }
 
       // get template claim infornation
-      const res = await axios.post(templateClaimUrl,{
-        templateId: this.schemaId,
-      },{
-        headers: {
-          Authorization: localStorage.getItem("token"),
+      const res = await axios.post(
+        templateClaimUrl,
+        {
+          templateId: this.schemaId,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
         }
-      });
+      );
 
       if (res.data.code == 0) {
         this.inputRecipientsData = res.data.data;
         this.createRecipientColumns(this.inputRecipientsData);
-      }
-      else {
+      } else {
       }
     },
     async addManualAction() {
-      this.inputRecipientsData.forEach(element => {
-        element.claimContent = null
+      this.inputRecipientsData.forEach((element) => {
+        element.claimContent = null;
       });
       this.inputRecipientVisiable = true;
     },
     addRecipientAction() {
-      let obj = {}
-      this.inputRecipientsData.forEach(element => {
+      let obj = {};
+      this.inputRecipientsData.forEach((element) => {
         obj[element.claimCode] = element.claimContent;
       });
       obj["issueDate"] = this.issueDate;
@@ -818,16 +874,16 @@ export default {
 
       // }, 500)
 
-      let needClaims = []
-      this.recipientCheckedRowKeys.forEach(checkKeys => {
+      let needClaims = [];
+      this.recipientCheckedRowKeys.forEach((checkKeys) => {
         for (let i = 0; i < this.recipientTableData.length; i++) {
           const element = this.recipientTableData[i];
           if (checkKeys == element.idx) {
             let obj = {
-              "issueDate": element.issueDate,
-              "expireDate": element.expireDate,
-              "expireFlag": 0,
-            }
+              issueDate: element.issueDate,
+              expireDate: element.expireDate,
+              expireFlag: 0,
+            };
 
             let objCopy = element;
             delete objCopy.issueDate;
@@ -837,34 +893,38 @@ export default {
             obj["claimsStr"] = JSON.stringify(objCopy);
 
             needClaims.push(obj);
-            break
+            break;
           }
         }
       });
 
       if (needClaims.length == 0) {
         alert("need claim must not be empty");
-        return
+        return;
       }
 
-      const res = await axios.post(issueVcUrl,{
-        claims: needClaims,
-        templateId: this.schemaId,
-      },{
-        headers: {
-          Authorization: localStorage.getItem("token"),
+      const res = await axios.post(
+        issueVcUrl,
+        {
+          claims: needClaims,
+          templateId: this.schemaId,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
         }
-      });
+      );
 
       if (res.data.code == 0) {
         // clearInterval(timer);
         this.newVcId = res.data.data;
-        this.newVcNum = "Issued " + this.newVcId.length + " Verifiable Credential";
+        this.newVcNum =
+          "Issued " + this.newVcId.length + " Verifiable Credential";
         this.processing = false;
         this.vcStep = 3;
         this.createOk = true;
       } else {
-
       }
     },
     toDownloadAction() {
@@ -875,27 +935,30 @@ export default {
       }
     },
     async toViewVcsAction(vcid) {
-      const res = await axios.get(viewVcPicUrl+vcid,{
+      const res = await axios.get(viewVcPicUrl + vcid, {
         headers: {
           Authorization: localStorage.getItem("token"),
-        }
+        },
       });
 
-      console.log(res.data);
+      if (res.data.code == 0) {
+        this.vcViewVisiable = true;
+        this.vcViewLink = res.data.data;
+      }
     },
 
     createRecipientColumns(orign) {
-      let cols = []
+      let cols = [];
       let first = {
         type: "selection",
         fixed: "left",
         width: 25,
-      }
+      };
       cols.push(first);
 
-      orign.forEach(element => {
+      orign.forEach((element) => {
         let claimName = "";
-        let isinclude = element.claimName.includes('* ');
+        let isinclude = element.claimName.includes("* ");
         if (isinclude) {
           claimName = element.claimName.substring(1);
         } else {
@@ -906,7 +969,7 @@ export default {
           title: claimName,
           key: element.claimCode,
           width: 80,
-        }
+        };
 
         cols.push(obj);
       });
@@ -915,13 +978,13 @@ export default {
         title: "Issue AT",
         key: "issueDate",
         width: 80,
-      }
+      };
 
       let expire = {
         title: "Expire AT",
         key: "expireDate",
         width: 80,
-      }
+      };
 
       cols.push(issue);
       cols.push(expire);
@@ -930,27 +993,42 @@ export default {
     },
     rowKey: (row) => row.idx,
     async batchDownloadAction(ids) {
-      const res = await axios.post(batchDownloadUrl,{
-        credentialIds: ids,
-      },{
-        headers: {
-          Authorization: localStorage.getItem("token"),
+      const res = await axios.post(
+        batchDownloadUrl,
+        {
+          credentialIds: ids,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
         }
-      });
+      );
 
       console.localStorage(res.data);
     },
     async singleDownloadAction(id) {
-      const res = await axios.get(singleDownloadUrl+id,{
-        responseType: 'blob',
-      },{
-        headers: {
-          Authorization: localStorage.getItem("token"),
+      const res = await axios.get(
+        singleDownloadUrl + id,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        },
+        {
+          responseType: "blob",
         }
-      });
+      );
 
-      //
-      console.log(res.data);
+      let url = window.URL.createObjectURL(new Blob([res.data]));
+      let a = document.createElement("a");
+      a.style.display = "none";
+      a.href = url;
+      a.setAttribute("download", "file.json");
+      document.body.appendChild(a);
+      a.click(); //执行下载
+      window.URL.revokeObjectURL(a.href);
+      document.body.removeChild(a);
     },
   },
   unmounted() {
