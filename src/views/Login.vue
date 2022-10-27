@@ -60,7 +60,7 @@ export default {
   name: "LoginView",
   data() {
     return {
-      emailcontent: "ly70835@163.com",
+      emailcontent: "",
       emailvccontent: "",
     };
   },
