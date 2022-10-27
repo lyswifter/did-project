@@ -3,7 +3,6 @@
     <el-container>
       <el-header class="headerview">
         <el-menu
-          :default-active="activeIndex"
           class="el-menu-demo did-menu"
           mode="horizontal"
           :ellipsis="false"
@@ -33,7 +32,9 @@
         </div>
 
         <div class="info-right">
-          <h2 class="name">{{ userInfo.firstName + userInfo.lastname }}</h2>
+          <h2 class="name">
+            {{ userInfo.firstName + " " + userInfo.lastName }}
+          </h2>
           <h3 class="did">
             {{ userInfo.did }}
           </h3>
@@ -406,37 +407,42 @@
         </template>
 
         <div class="verifyContentView">
-          <div class="verifyFile">
+          <el-upload
+            class="verifyFile"
+            drag
+            :limit="1"
+            :auto-upload="false"
+            v-model:file-list="fileList"
+          >
             <img
               style="width: 64px; height: 64px"
               src="../assets/img/file@2x.png"
               alt=""
             />
-            <div class="addFileView">
-              <h3>Drag & drop your file</h3>
-              <el-button
-                type="plain"
-                class="import-btn"
-                @click="chooseJsonFile"
-                round
-                >Choose JSON File</el-button
-              >
+            <div class="el-upload__text">
+              Drop json file here or <em>click to upload</em>
             </div>
-          </div>
+            <template #tip>
+              <div class="el-upload__tip">
+                jpg/png files with a size less than 500kb
+              </div>
+            </template>
+          </el-upload>
 
           <div class="fileShowView">
             <el-row>
               <el-col span="18" :offset="1">
-                <h3 class="filenamesView">xxxxx.json</h3>
+                <!-- <h3 class="filenamesView">xxxxx.json</h3> -->
               </el-col>
-              <el-col span="6" :offset="18">
-                <el-button round>Delete</el-button>
-                <el-button type="primary" round>Verify</el-button>
+              <el-col span="6" :offset="20">
+                <el-button size="large" type="primary" @click="verifyFileAction" round
+                  >Verify</el-button
+                >
               </el-col>
             </el-row>
           </div>
 
-          <div class="verifyResultView">
+          <div class="verifyResultView" v-if="verifyResultShow">
             <div class="resTopView">
               <img
                 style="width: 32px; height: 32px"
@@ -447,19 +453,23 @@
             </div>
 
             <div class="resBotView">
-              <h3>Alice Haynes issued to Lulu Reyes</h3>
-              <h4>Issuer: Alice Haynes</h4>
-              <h4>IssuerDid: xxxxx</h4>
-              <h4>Type: ["VerifiaableCredential", "Membership Card"]</h4>
-              <h4>Issue date: 2022-10-23T12:45:10.302Z</h4>
-              <h4>Expire date: xxxx</h4>
-              <h4>Holder: Lulu Reyes</h4>
-              <h4>Holder did: YYYY</h4>
-              <h4>Credential type:</h4>
-              <h4>
+              <h3>
+                <span>{{ vcVerifyRet.issueName }}</span> issued to
+                <span>{{ vcVerifyRet.holderName }}</span>
+              </h3>
+
+              <h4>Issuer: {{ vcVerifyRet.issueName }}</h4>
+              <h4>IssuerDid: {{ vcVerifyRet.issueDid }}</h4>
+              <h4>Type: {{ vcVerifyRet.types[0] }}</h4>
+              <h4>Issue date: {{ vcVerifyRet.issueDate }}</h4>
+              <h4>Expire date: {{ vcVerifyRet.expireDate }}</h4>
+              <h4>Holder: {{ vcVerifyRet.holderName }}</h4>
+              <h4>Holder did: {{ vcVerifyRet.holderDid }}</h4>
+              <!-- <h4>Credential type:</h4> -->
+              <!-- <h4>
                 Proof:
                 hfoiwefgoenfmosdnfsdofjsdofsodfshdifhsdohfsodfhsodhfsodhfo
-              </h4>
+              </h4> -->
             </div>
           </div>
         </div>
@@ -550,8 +560,8 @@
         :show-close="true"
         :direction="direction"
       >
-        <div style="text-align: center;width: 600px;">
-          <img style="width: 600px;height: 842px;" :src="vcViewLink" alt="" />
+        <div style="text-align: center; width: 600px">
+          <img style="width: 600px; height: 842px" :src="vcViewLink" alt="" />
         </div>
       </el-dialog>
     </el-container>
@@ -559,8 +569,7 @@
 </template>
   
 <script>
-import { ref, h } from "vue";
-
+import { ref, h, reactive } from "vue";
 import axios from "axios";
 
 import Domain from "../router/domain.js";
@@ -578,10 +587,13 @@ let batchDownloadUrl =
   Domain.domainUrl + "/tr/did-document-credential/credential-download";
 let viewVcPicUrl =
   Domain.domainUrl + "/tr/did-document-credential/view-credential/";
+let VerifyVcUrl =
+  Domain.domainUrl + "/tr/did-document-credential/verify-credential";
 
 // import { ElMessage } from 'element-plus'
+
 import { NButton, NIcon } from "naive-ui";
-import { DotsVertical } from "@vicons/tabler";
+import { DotsVertical, CircleCheck } from "@vicons/tabler";
 
 export default {
   name: "Home",
@@ -589,11 +601,12 @@ export default {
   data() {
     return {
       activeIndex: ref("1"),
+
       hasVc: true,
       userInfo: {},
       data: [],
       columns: [],
-      pagination: { pageSize: 10 },
+      pagination: {},
       width: 1200,
       height: 734,
 
@@ -604,7 +617,7 @@ export default {
       timer: {},
       createOk: true,
 
-      // schema
+      //schema
       schemaVisible: ref(false),
       schemaList: [],
       schemaType: "",
@@ -637,12 +650,28 @@ export default {
       //view credential image
       vcViewVisiable: false,
       vcViewLink: "",
+      fileList: [],
+      vcVerifyRet: {},
+      verifyResultShow: false,
     };
   },
-  created() {
-  },
+  created() {},
   mounted() {
     let that = this;
+    this.pagination = reactive({
+      page: 2,
+      pageSize: 5,
+      showSizePicker: true,
+      pageSizes: [3, 5, 7],
+      onChange: (page) => {
+        this.pagination.page = page;
+      },
+      onUpdatePageSize: (pageSize) => {
+        this.pagination.pageSize = pageSize;
+        this.pagination.page = 1;
+      },
+    });
+
     this.columns = this.createColumns({
       moreOpsRow(row) {
         console.log(row);
@@ -698,9 +727,20 @@ export default {
         {
           title: "State",
           key: "",
-          width: 50,
+          width: 40,
           render(row, index) {
-            return h("span", ["row ", index]);
+            if (row.state == 0) {
+              return h(
+                NIcon,
+                {
+                  size: 33,
+                  color: "#FFA9AEB8",
+                },
+                { default: () => h(CircleCheck) }
+              );
+            } else {
+              return h("span", ["Expired"]);
+            }
           },
         },
         {
@@ -735,6 +775,12 @@ export default {
       });
 
       if (res.data.code == 0) {
+        if (res.data.data.firstName == undefined) {
+          res.data.data.firstName = "";
+        }
+        if (res.data.data == undefined) {
+          res.data.data.lastName = "";
+        }
         this.userInfo = res.data.data;
       } else if (res.data.code == 100002) {
         this.$router.push({ name: "personInfo" });
@@ -746,7 +792,7 @@ export default {
         vcTableUrl,
         {
           page: 1,
-          size: 10,
+          size: 100,
         },
         {
           headers: {
@@ -754,8 +800,6 @@ export default {
           },
         }
       );
-
-      console.log(res.data);
 
       if (res.data.code == 0) {
         this.data = res.data.data.records;
@@ -770,6 +814,27 @@ export default {
     },
     toVerifyAction() {
       this.veriferVisible = true;
+      this.fileList = [];
+      this.verifyResultShow = false;
+    },
+    handleExceed() {},
+    async verifyFileAction() {
+      let formData = new FormData();
+      formData.append("multipartFile", this.fileList[0].raw);
+
+      const res = await axios.post(VerifyVcUrl, formData, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log(res.data);
+
+      if (res.data.code == 0 && res.data.data.verify) {
+        this.verifyResultShow = true;
+        this.vcVerifyRet = res.data.data;
+      }
     },
     async toCreateVcAction() {
       // 1.get template list
@@ -1544,11 +1609,9 @@ export default {
 
 .verifyFile {
   width: 1200px;
-  height: 200px;
   background: #f2f3f5;
   border-radius: 8px;
   border: 2px solid #272e3b;
-  /* text-align: center; */
 }
 
 .fileShowView {
@@ -1562,17 +1625,10 @@ export default {
 .verifyResultView {
   margin-top: 20px;
   width: 1200px;
-  height: 340px;
+  padding-bottom: 10px;
   background: #ffffff;
   border-radius: 8px;
   border: 1px solid #a9aeb8;
-}
-
-.verifyFile img {
-  float: left;
-  margin-top: 40px;
-  margin-left: 35%;
-  margin-right: 10px;
 }
 
 .addFileView {
@@ -1622,6 +1678,37 @@ export default {
 
 .resBotView {
   padding-left: 20px;
+}
+
+.resBotView h3 {
+  padding-left: 5px;
+  margin-top: 5px;
+  width: 1160px;
+  height: 46px;
+  font-size: 18px;
+  background: #f2f3f5;
+  border-radius: 8px;
+  line-height: 46px;
+}
+
+.resBotView h3 span {
+  height: 20px;
+  font-size: 20px;
+  font-family: Poppins-SemiBold, Poppins;
+  font-weight: 600;
+  color: #1d2129;
+  line-height: 46px;
+  background: #e5e6eb;
+  border-radius: 8px;
+}
+
+.resBotView h4 {
+  margin-top: 2px;
+  font-size: 12px;
+  font-family: Poppins-Regular, Poppins;
+  font-weight: 400;
+  color: #4e5969;
+  line-height: 18px;
 }
 
 .verifyResultView h3 {
