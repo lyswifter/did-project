@@ -1398,7 +1398,7 @@ export default {
 .display-left {
   float: left;
   padding-left: 20px;
-  width: 790px;
+  width: 70%;
   height: 140px;
   border-radius: 8px;
   border: 2px solid #272e3b;
@@ -1463,7 +1463,7 @@ export default {
 }
 
 .verify-entrance-view {
-  width: 1200px;
+  width: 95%;
   height: 116px;
   margin-top: 30px;
   background: #ffffff;
@@ -1482,7 +1482,7 @@ export default {
 
 <style scoped>
 .emptyView {
-  width: 1200px;
+  width: 95%;
   height: 326px;
   background: linear-gradient(270deg, #0b224f 0%, #1d2129 100%);
   border-radius: 8px;
@@ -1494,7 +1494,7 @@ export default {
 }
 
 .vctable-view {
-  width: 1200px;
+  width: 95%;
 }
 
 .bottomLogo img {
@@ -1510,7 +1510,7 @@ export default {
 <style scoped>
 .select-schema-step {
   margin: 0 auto;
-  width: 1200px;
+  width: 95%;
   height: 100px;
   border-radius: 8px;
   border: 2px solid #272e3b;
@@ -1617,9 +1617,8 @@ export default {
 }
 
 .emptyRecipient {
-  margin-top: 10px;
-  margin-left: 100px;
-  width: 1200px;
+  margin: 10px auto;
+  width: 95%;
   height: 351px;
   border-radius: 8px;
   border: 1px solid #a9aeb8;
@@ -1633,9 +1632,8 @@ export default {
 
 .recipientTableView {
   padding-bottom: 20px;
-  margin-left: 100px;
-  margin-top: 20px;
-  width: 1200px;
+  margin: 10px auto;
+  width: 95%;
   border-radius: 8px;
   border: 1px solid #a9aeb8;
 }
@@ -1663,8 +1661,8 @@ export default {
 
 .okCreatedVc {
   padding-top: 20px;
-  margin-left: 100px;
-  width: 1200px;
+  margin: 5px auto;
+  width: 95%;
   height: 84px;
   background: #f7f8fa;
   border-radius: 8px;
@@ -1718,14 +1716,14 @@ export default {
 }
 
 .verifyFile {
-  width: 1200px;
+  width: 95%;
   background: #f2f3f5;
   border-radius: 8px;
   border: 2px solid #272e3b;
 }
 
 .fileShowView {
-  width: 1200px;
+  width: 95%;
   height: 84px;
   background: #f7f8fa;
   border-radius: 8px;
@@ -1734,7 +1732,7 @@ export default {
 
 .verifyResultView {
   margin-top: 20px;
-  width: 1200px;
+  width: 95%;
   padding-bottom: 10px;
   background: #ffffff;
   border-radius: 8px;
@@ -1764,7 +1762,7 @@ export default {
 }
 
 .resTopView {
-  width: 1200px;
+  width: 95%;
   height: 72px;
   padding-left: 20px;
   background: #f2f3f5;
