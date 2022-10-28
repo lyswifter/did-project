@@ -14,11 +14,20 @@
           <el-menu-item index="1">
             <n-popover trigger="click" placement="bottom-start">
               <template #trigger>
-                <div class="profileView"><span style="margin-right: 13px;"></span>{{profileName}}</div>
+                <div class="profileView">
+                  <span style="margin-right: 13px"></span>{{ profileName }}
+                </div>
               </template>
 
               <div>
-                XXXX
+                <n-button text color="#ff69b4" @click="logoutAction">
+                  <template #icon>
+                    <n-icon>
+                      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-2"></path><path d="M7 12h14l-3-3m0 6l3-3"></path></g></svg>
+                    </n-icon>
+                  </template>
+                  Sign out
+                </n-button>
               </div>
             </n-popover>
           </el-menu-item>
@@ -52,16 +61,18 @@
             <el-row gutter="50" justify="center">
               <el-col span="16">
                 <div class="display-left" :style="{ width: autoWidth + 'px' }">
-              <h2 class="dis-title f-color">Credentials</h2>
-              <h1 class="dis-count f-color">{{ userInfo.credentialCount }}</h1>
-            </div>
+                  <h2 class="dis-title f-color">Credentials</h2>
+                  <h1 class="dis-count f-color">
+                    {{ userInfo.credentialCount }}
+                  </h1>
+                </div>
               </el-col>
               <el-col span="8">
                 <div class="display-right">
-              <h2 class="w-color">Credential Verifier</h2>
-              <br />
-              <h3 class="w-color" @click="toVerifyAction">Easy Verify</h3>
-            </div>
+                  <h2 class="w-color">Credential Verifier</h2>
+                  <br />
+                  <h3 class="w-color" @click="toVerifyAction">Easy Verify</h3>
+                </div>
               </el-col>
             </el-row>
           </div>
@@ -70,25 +81,25 @@
             <el-row gutter="20" justify="space-between">
               <el-col span="20">
                 <div class="verify-left">
-              <h2 class="f-color">Verifiable Credentials</h2>
-              <h4 class="l-color">
-                Here are all the credentials you issued. You can revoke/unrevoke
-                credentials and view persistent credentials stored in Dock
-                Certs.
-              </h4>
-            </div>
+                  <h2 class="f-color">Verifiable Credentials</h2>
+                  <h4 class="l-color">
+                    Here are all the credentials you issued. You can
+                    revoke/unrevoke credentials and view persistent credentials
+                    stored in Dock Certs.
+                  </h4>
+                </div>
               </el-col>
               <el-col span="4">
                 <div class="verify-right">
-              <el-button
-                color="#1E5CEF"
-                class="verify-btn"
-                type="primary"
-                @click="toCreateVcAction"
-                round
-                >Create Verifiable Credential</el-button
-              >
-            </div>
+                  <el-button
+                    color="#1E5CEF"
+                    class="verify-btn"
+                    type="primary"
+                    @click="toCreateVcAction"
+                    round
+                    >Create Verifiable Credential</el-button
+                  >
+                </div>
               </el-col>
             </el-row>
           </div>
@@ -98,11 +109,12 @@
               <el-row justify="end">
                 <el-col span="24">
                   <el-button
-                  class="batch-download-btn"
-                  type="plain"
-                  @click="tiggerBatchDownloadAction"
-                  round
-                  >Download</el-button>
+                    class="batch-download-btn"
+                    type="plain"
+                    @click="tiggerBatchDownloadAction"
+                    round
+                    >Download</el-button
+                  >
                 </el-col>
               </el-row>
             </div>
@@ -182,13 +194,17 @@
             <el-col span="18">
               <div v-if="vcStep == 1">
                 <h3 class="step-title">Select Schema</h3>
-                <h4 class="step-subtitle">Select the schema you want to issue an credenitial</h4>
+                <h4 class="step-subtitle">
+                  Select the schema you want to issue an credenitial
+                </h4>
               </div>
               <div v-else-if="vcStep == 2">
                 <h3 v-if="!processing" class="step-title">Add Recipients</h3>
                 <h3 v-else class="step-title">Issuing credential...</h3>
 
-                <h4 v-if="!processing" class="step-subtitle">You can add some more information according to the schema</h4>
+                <h4 v-if="!processing" class="step-subtitle">
+                  You can add some more information according to the schema
+                </h4>
                 <h4 v-else class="step-subtitle">
                   Please don’t close this window.
                 </h4>
@@ -379,7 +395,12 @@
               v-model:checked-row-keys="recipientCheckedRowKeys"
             />
 
-            <div v-if="processing" class="maskview" color="#FF427AFF" stroke-width="12">
+            <div
+              v-if="processing"
+              class="maskview"
+              color="#FF427AFF"
+              stroke-width="12"
+            >
               <el-progress
                 class="progressView"
                 type="circle"
@@ -550,7 +571,7 @@
             </h4>
           </div>
 
-          <div style="margin-top: 5px;">
+          <div style="margin-top: 5px">
             <el-row gutter="5">
               <el-col span="11">
                 <h3 class="dialog-title">* Issue Date</h3>
@@ -623,7 +644,8 @@ let viewVcPicUrl =
   Domain.domainUrl + "/api/did-document-credential/view-credential/";
 let VerifyVcUrl =
   Domain.domainUrl + "/api/did-document-credential/verify-credential";
-let delVcUrl = Domain.domainUrl + "/api/did-document-credential/credential-delete/";
+let delVcUrl =
+  Domain.domainUrl + "/api/did-document-credential/credential-delete/";
 
 // import { ElMessage } from 'element-plus'
 
@@ -728,21 +750,27 @@ export default {
       moreOpsRow(row) {
         that.popviewShow = !that.popviewShow;
       },
-      viewOpRow(row){
+      viewOpRow(row) {
         that.toViewVcsAction(row.credentialId);
-      }, 
-      downloadOpRow(row){
+      },
+      downloadOpRow(row) {
         that.singleDownloadAction(row.credentialId);
-      }, 
-      trashOpRow(row){
+      },
+      trashOpRow(row) {
         that.singleTrashAction(row.credentialId);
-      }
+      },
     });
 
     this.getUserInfo();
     this.getVcTableInfo();
   },
   methods: {
+    logoutAction() {
+      window.localStorage.removeItem("token");
+      window.localStorage.removeItem("username");
+
+      window.location.reload();
+    },
     createColumns({ moreOpsRow, viewOpRow, downloadOpRow, trashOpRow }) {
       return [
         {
@@ -808,7 +836,7 @@ export default {
               NPopover,
               {
                 trigger: "click",
-                placement: 'left',
+                placement: "left",
               },
               {
                 trigger: () =>
@@ -866,7 +894,7 @@ export default {
                       h(
                         NButton,
                         {
-                          'text-color': "red",
+                          "text-color": "red",
                           style: {
                             width: "120px",
                           },
@@ -1097,8 +1125,8 @@ export default {
           templateId: this.schemaId,
         },
         {
-          onDownloadProgress: ({progress}) => {
-            console.log((progress* 100).toFixed(2));
+          onDownloadProgress: ({ progress }) => {
+            console.log((progress * 100).toFixed(2));
           },
           headers: {
             Authorization: localStorage.getItem("token"),
@@ -1193,16 +1221,16 @@ export default {
           credentialIds: ids,
         },
         {
+          responseType: "blob",
           headers: {
             Authorization: localStorage.getItem("token"),
-            // "Content-Type": 'application/json; application/octet-stream',
           },
-        },{
-          responseType: "blob",
         }
       );
 
-      let url = window.URL.createObjectURL(new Blob([res.data], { type: "application/zip"}));
+      let zipfile = new Blob([res.data], { type: "application/zip" });
+
+      let url = window.URL.createObjectURL(zipfile);
       let a = document.createElement("a");
       a.style.display = "none";
       a.href = url;
@@ -1236,28 +1264,28 @@ export default {
       document.body.removeChild(a);
     },
     async singleTrashAction(id) {
-      const res = await axios.delete(delVcUrl+id,{
-          headers: {
-            Authorization: localStorage.getItem("token"),
-          },
+      const res = await axios.delete(delVcUrl + id, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+
+      if (res.data.code == 0) {
+        let index = -1;
+        this.data.forEach((element) => {
+          if (element.credentialId == id) {
+            index = this.data.indexOf(element);
+          }
         });
 
-        if (res.data.code == 0) {
-          let index = -1;
-          this.data.forEach(element => {
-            if (element.credentialId == id) {
-              index = this.data.indexOf(element);
-            }
-          });
-
-          if (index > -1) {
-            this.data.splice(index, 1);
-          }
-
-          // reload total count
-          this.getUserInfo();
+        if (index > -1) {
+          this.data.splice(index, 1);
         }
-    }
+
+        // reload total count
+        this.getUserInfo();
+      }
+    },
   },
   unmounted() {
     this.timer = {};
@@ -1543,7 +1571,7 @@ export default {
 .vctable-view {
   width: 95%;
   margin: 0 auto;
-  border: 1px solid #A9AEB8;
+  border: 1px solid #a9aeb8;
   border-radius: 8px;
 }
 
