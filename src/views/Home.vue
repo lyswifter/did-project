@@ -1385,6 +1385,10 @@ export default {
         this.vcStep = 3;
         this.createOk = true;
       } else {
+        clearInterval(timer);
+        this.processing = false;
+        this.createOk = false;
+
         ElMessage({
           message: res.data.msg,
           type: "error",
