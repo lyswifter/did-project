@@ -402,6 +402,7 @@
                   <el-button
                     type="primary"
                     class="issue-btn"
+                    :disabled="disableIssueVc"
                     @click="toIssueCredentials"
                     >Issue Credentials
                   </el-button>
@@ -417,7 +418,7 @@
               :max-height="600"
               :scroll-x="1000"
               :row-key="rowKey"
-              v-model:checked-row-keys="recipientCheckedRowKeys"
+              @update:checked-row-keys="handleRecipientCheck"
             />
 
             <div
@@ -655,7 +656,7 @@
         :width="540"
       >
         <template #header="{ close }">
-          <h4 class="dialog-header-title">Issue multiple credentials</h4>
+          <h4 class="dialog-header-title-m-credential">Issue multiple credentials</h4>
           <img
             class="dialog-close"
             src="../assets/img/close_black@2x.png"
@@ -841,12 +842,17 @@ export default {
     return {
       autoWidth: "",
       ableToDownload: true,
+      disableIssueVc: true,
 
       profileName: "",
       activeIndex: ref("1"),
 
       hasVc: true,
-      userInfo: {},
+      userInfo: {
+        firstName: "",
+        lastName: "",
+        did: "",
+      },
       data: [],
       columns: [],
       vcTableCheckRowKey: [],
@@ -957,6 +963,14 @@ export default {
     this.getVcTableInfo();
   },
   methods: {
+    handleRecipientCheck(row) {
+      this.recipientCheckedRowKeys = row;
+      if (this.recipientCheckedRowKeys.length == 0) {
+        this.disableIssueVc = true;
+      } else {
+        this.disableIssueVc = false;
+      }
+    },
     handleCheck(rows) {
       this.vcTableCheckRowKey = rows;
 
@@ -969,7 +983,6 @@ export default {
     logoutAction() {
       window.localStorage.removeItem("token");
       window.localStorage.removeItem("username");
-
       window.location.reload();
     },
     createColumns({
@@ -1663,6 +1676,15 @@ export default {
 }
 
 .dialog-header-title-recipient {
+  float: left;
+  width: 90%;
+  font-size: 28px;
+  font-weight: bold;
+  color: #1d2129;
+  line-height: 42px;
+}
+
+.dialog-header-title-m-credential {
   float: left;
   width: 90%;
   font-size: 28px;
