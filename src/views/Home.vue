@@ -46,7 +46,6 @@
 
         <div class="content-view">
           <div class="credential-display">
-
             <el-row gutter="50" justify="center">
               <el-col span="16">
                 <div class="display-left" :style="{ width: autoWidth + 'px' }">
@@ -59,11 +58,9 @@
               <h2 class="w-color">Credential Verifier</h2>
               <br />
               <h3 class="w-color" @click="toVerifyAction">Easy Verify</h3>
-              >
             </div>
               </el-col>
             </el-row>
-
           </div>
 
           <div class="verify-entrance-view">
@@ -94,12 +91,27 @@
           </div>
 
           <div v-if="hasVc" class="vctable-view">
+            <div class="vctableHeaderView">
+              <el-row justify="end">
+                <el-col span="24">
+                  <el-button
+                  class="batch-download-btn"
+                  type="plain"
+                  @click="tiggerBatchDownloadAction"
+                  round
+                  >Download</el-button>
+                </el-col>
+              </el-row>
+            </div>
+
             <n-data-table
               :columns="columns"
               :data="data"
               :pagination="pagination"
               :max-height="600"
               :scroll-x="1000"
+              :row-key="vcRowKey"
+              v-model:checked-row-keys="vcTableCheckRowKey"
             />
           </div>
 
@@ -167,13 +179,13 @@
             <el-col span="18">
               <div v-if="vcStep == 1">
                 <h3 class="step-title">Select Schema</h3>
-                <h4 class="step-subtitle"></h4>
+                <h4 class="step-subtitle">Select the schema you want to issue an credenitial</h4>
               </div>
               <div v-else-if="vcStep == 2">
                 <h3 v-if="!processing" class="step-title">Add Recipients</h3>
                 <h3 v-else class="step-title">Issuing credential...</h3>
 
-                <h4 v-if="!processing" class="step-subtitle"></h4>
+                <h4 v-if="!processing" class="step-subtitle">You can add some more information according to the schema</h4>
                 <h4 v-else class="step-subtitle">
                   Please don’t close this window.
                 </h4>
@@ -194,7 +206,7 @@
               </div>
             </el-col>
 
-            <el-col span="4" :offset="18">
+            <el-col span="4" :offset="14">
               <div v-if="vcStep == 1">
                 <el-button
                   type="primary"
@@ -364,7 +376,7 @@
               v-model:checked-row-keys="recipientCheckedRowKeys"
             />
 
-            <div v-if="processing" class="maskview">
+            <div v-if="processing" class="maskview" color="#FF427AFF" stroke-width="12">
               <el-progress
                 class="progressView"
                 type="circle"
@@ -635,6 +647,7 @@ export default {
       userInfo: {},
       data: [],
       columns: [],
+      vcTableCheckRowKey: [],
       pagination: {},
       width: 1200,
       height: 734,
@@ -1029,20 +1042,21 @@ export default {
 
       this.recipientIdx = this.recipientIdx + 1;
       this.inputRecipientVisiable = false;
-
       this.isEmptyRecipient = false;
     },
     importSheetAction() {
       alert("importSheetAction");
     },
     async toIssueCredentials() {
-      console.log(this.recipientCheckedRowKeys);
-      console.log(this.recipientTableData);
       this.processing = true;
 
-      let timer = setInterval(() => {
-        this.percentageCount += 1;
-      }, 30);
+      // let timer = setInterval(() => {
+      //   this.percentageCount += 1;
+
+      //   if (this.percentageCount > 100) {
+      //     this.percentageCount = 100;
+      //   }
+      // }, 30);
 
       let needClaims = [];
       this.recipientCheckedRowKeys.forEach((checkKeys) => {
@@ -1080,6 +1094,9 @@ export default {
           templateId: this.schemaId,
         },
         {
+          onDownloadProgress: ({progress}) => {
+            console.log((progress* 100).toFixed(2));
+          },
           headers: {
             Authorization: localStorage.getItem("token"),
           },
@@ -1087,7 +1104,7 @@ export default {
       );
 
       if (res.data.code == 0) {
-        clearInterval(timer);
+        // clearInterval(timer);
         this.newVcId = res.data.data;
         this.newVcNum =
           "Issued " + this.newVcId.length + " Verifiable Credential";
@@ -1161,7 +1178,11 @@ export default {
 
       this.recipientTableColumns = cols;
     },
+    tiggerBatchDownloadAction() {
+      this.batchDownloadAction(this.vcTableCheckRowKey);
+    },
     rowKey: (row) => row.idx,
+    vcRowKey: (row) => row.credentialId,
     async batchDownloadAction(ids) {
       const res = await axios.post(
         batchDownloadUrl,
@@ -1171,11 +1192,22 @@ export default {
         {
           headers: {
             Authorization: localStorage.getItem("token"),
+            // "Content-Type": 'application/json; application/octet-stream',
           },
+        },{
+          responseType: "blob",
         }
       );
 
-      console.localStorage(res.data);
+      let url = window.URL.createObjectURL(new Blob([res.data], { type: "application/zip"}));
+      let a = document.createElement("a");
+      a.style.display = "none";
+      a.href = url;
+      a.setAttribute("download", "file.zip");
+      document.body.appendChild(a);
+      a.click(); //执行下载
+      window.URL.revokeObjectURL(a.href);
+      document.body.removeChild(a);
     },
     async singleDownloadAction(id) {
       const res = await axios.get(
@@ -1506,6 +1538,8 @@ export default {
 .vctable-view {
   width: 95%;
   margin: 0 auto;
+  border: 1px solid #A9AEB8;
+  border-radius: 8px;
 }
 
 .bottomLogo img {
@@ -1513,6 +1547,13 @@ export default {
   height: 25px;
   margin-left: 120px;
   margin-top: 20px;
+}
+
+.vctableHeaderView {
+  padding: 10px;
+  /* border-top: 1px solid #A9AEB8;
+  border-left: 1px solid #A9AEB8;
+  border-right: 1px solid #A9AEB8; */
 }
 </style>
 
@@ -1530,10 +1571,11 @@ export default {
   font-family: Poppins-Medium, Poppins;
   font-weight: 500;
   color: #1d2129;
+  line-height: 90px;
 }
 
 .step-btn {
-  margin-top: 20px;
+  /* margin-top: 20px; */
   width: 32px;
   line-height: 25px;
   font-size: 16px;
@@ -1565,7 +1607,7 @@ export default {
 }
 
 .continue-btn {
-  margin-top: 30px;
+  /* margin-top: 30px; */
   height: 34px;
   background: #1e5cef;
   border-radius: 24px;
