@@ -12,12 +12,15 @@
           </el-menu-item>
           <div class="flex-grow" />
           <el-menu-item index="1">
-            <img
-              class="avatarbg"
-              src="../assets/img/avatar48px@2x.png"
-              alt=""
-            />
-            <div class="profileview">{{ profileName }}</div>
+            <n-popover trigger="click" placement="bottom-start">
+              <template #trigger>
+                <div class="profileView"><span style="margin-right: 13px;"></span>{{profileName}}</div>
+              </template>
+
+              <div>
+                XXXX
+              </div>
+            </n-popover>
           </el-menu-item>
         </el-menu>
       </el-header>
@@ -1324,15 +1327,13 @@ export default {
 .logoview {
   width: 84px;
   height: 25px;
-  margin-top: 15px;
 }
 
 .flex-grow {
   flex-grow: 1;
 }
 
-.profileview {
-  margin-top: 5px;
+.profileView {
   width: 40px;
   height: 40px;
   border-radius: 20px;
@@ -1340,6 +1341,10 @@ export default {
   font-size: 24px;
   font-weight: 600;
   line-height: 40px;
+  background-image: url(../assets/img/avatar48px@2x.png);
+  background-repeat: no-repeat;
+  background-position: -1, -1;
+  background-size: contain;
 }
 
 .avatarbg {
