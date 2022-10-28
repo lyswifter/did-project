@@ -78,7 +78,7 @@ export default {
       if (res.data.code == 0) {
         window.localStorage.setItem("token", res.data.data.token);
 
-        this.getUserInfo();
+        // this.getUserInfo();
 
         if (res.data.data.needAddInformation) {
           //push to add information page

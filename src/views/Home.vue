@@ -58,8 +58,8 @@
 
         <div class="content-view">
           <div class="credential-display">
-            <el-row gutter="50" justify="center">
-              <el-col span="16">
+            <el-row gutter=50 justify="center">
+              <el-col span=16>
                 <div class="display-left" :style="{ width: autoWidth + 'px' }">
                   <h2 class="dis-title f-color">Credentials</h2>
                   <h1 class="dis-count f-color">
@@ -67,7 +67,7 @@
                   </h1>
                 </div>
               </el-col>
-              <el-col span="8">
+              <el-col span=8>
                 <div class="display-right">
                   <h2 class="w-color">Credential Verifier</h2>
                   <br />
@@ -78,8 +78,8 @@
           </div>
 
           <div class="verify-entrance-view">
-            <el-row gutter="20" justify="space-between">
-              <el-col span="20">
+            <el-row gutter=20 justify="space-between">
+              <el-col span=20>
                 <div class="verify-left">
                   <h2 class="f-color">Verifiable Credentials</h2>
                   <h4 class="l-color">
@@ -89,7 +89,7 @@
                   </h4>
                 </div>
               </el-col>
-              <el-col span="4">
+              <el-col span=4>
                 <div class="verify-right">
                   <el-button
                     color="#1E5CEF"
@@ -107,7 +107,7 @@
           <div v-if="hasVc" class="vctable-view">
             <div class="vctableHeaderView">
               <el-row justify="end">
-                <el-col span="24">
+                <el-col span=24>
                   <el-button
                     class="batch-download-btn"
                     type="plain"
@@ -167,7 +167,7 @@
 
         <div class="select-schema-step">
           <el-row>
-            <el-col span="2">
+            <el-col span=2>
               <el-button
                 v-if="vcStep == 1"
                 type="primary"
@@ -191,7 +191,7 @@
               >
             </el-col>
 
-            <el-col span="18">
+            <el-col span=18>
               <div v-if="vcStep == 1">
                 <h3 class="step-title">Select Schema</h3>
                 <h4 class="step-subtitle">
@@ -225,14 +225,14 @@
               </div>
             </el-col>
 
-            <el-col span="4" :offset="14">
+            <el-col span=4 :offset="14">
               <div v-if="vcStep == 1">
                 <el-button
                   type="primary"
                   class="continue-btn"
                   @click="toAddRecipient"
-                  >Continue ></el-button
-                >
+                  >Continue
+                  </el-button>
               </div>
 
               <div v-else-if="vcStep == 2">
@@ -263,8 +263,8 @@
         </div>
 
         <div v-if="vcStep == 1" class="select-schema-content">
-          <el-row :gutter="5">
-            <el-col :span="6">
+          <el-row gutter=5>
+            <el-col span=6>
               <div class="card" @click="selectedOne">
                 <div
                   class="card-top cardtopnormal"
@@ -285,7 +285,7 @@
               </div>
             </el-col>
 
-            <el-col :span="6">
+            <el-col span=6>
               <div class="card" @click="selectedTwo">
                 <div
                   class="card-top cardtopnormal"
@@ -351,8 +351,8 @@
 
           <div v-else class="recipientTableView">
             <div class="recipientTopView">
-              <el-row gutter="5">
-                <el-col span="4">
+              <el-row gutter=5>
+                <el-col span=4>
                   <el-button
                     type="primary"
                     class="manually-add-btn"
@@ -363,7 +363,7 @@
                   >
                 </el-col>
 
-                <el-col span="4">
+                <el-col span=4>
                   <el-button
                     type="plain"
                     class="import-btn"
@@ -373,7 +373,7 @@
                   >
                 </el-col>
 
-                <el-col span="4" :offset="15">
+                <el-col span=4 :offset="15">
                   <el-button
                     type="primary"
                     class="issue-btn"
@@ -413,7 +413,7 @@
         <div v-else-if="vcStep == 3">
           <div v-if="createOk" class="okCreatedVc">
             <el-row>
-              <el-col span="2" :offset="17">
+              <el-col span=2 :offset="17">
                 <el-button
                   type="plain"
                   class="manually-add-btn"
@@ -423,7 +423,7 @@
                 >
               </el-col>
 
-              <el-col span="2" style="margin-left: 10px">
+              <el-col span=2 style="margin-left: 10px">
                 <el-button
                   type="primary"
                   class="manually-add-btn"
@@ -481,10 +481,10 @@
 
           <div class="fileShowView">
             <el-row>
-              <el-col span="18" :offset="1">
+              <el-col span=18 :offset="1">
                 <!-- <h3 class="filenamesView">xxxxx.json</h3> -->
               </el-col>
-              <el-col span="6" :offset="20">
+              <el-col span=6 :offset="20">
                 <el-button
                   size="large"
                   type="primary"
@@ -572,8 +572,8 @@
           </div>
 
           <div style="margin-top: 5px">
-            <el-row gutter="5">
-              <el-col span="11">
+            <el-row gutter=5>
+              <el-col span=11>
                 <h3 class="dialog-title">* Issue Date</h3>
                 <el-date-picker
                   v-model="issueDate"
@@ -583,7 +583,7 @@
                   value-format="YYYY-MM-DD"
                 />
               </el-col>
-              <el-col span="11" :offset="1">
+              <el-col span=11 :offset="1">
                 <h3 class="dialog-title">Expiration Date</h3>
                 <el-date-picker
                   v-model="expireDate"
@@ -619,6 +619,96 @@
           <img style="width: 600px; height: 842px" :src="vcViewLink" alt="" />
         </div>
       </el-dialog>
+
+      <!-- import with vc -->
+
+      <el-dialog
+        v-model="issuleMultiVCVisiable"
+        :show-close="false"
+        :direction="direction"
+        :width="540"
+      >
+        <template #header="{ close }">
+          <h4 class="dialog-header-title">Issue multiple credentials</h4>
+          <img
+            class="dialog-close"
+            src="../assets/img/close_black@2x.png"
+            @click="close"
+            alt=""
+          />
+        </template>
+
+        <div class="multiVcView">
+          <div>
+            <h3>You can import a spreadsheet with your recipient information.</h3>
+            <h3><a :href="excelTempelUrl">Download this sample CSV template</a> to see an example of the format required. </h3>
+            <br>
+          </div>
+
+          <el-upload
+            class="multiVcUploadView"
+            drag
+            :limit="1"
+            :auto-upload="false"
+            v-model:file-list="multoVcFileList"
+          >
+            <div class="el-upload__text">
+              <em>Upload & drop your file</em>
+            </div>
+            <!-- <template #tip>
+              <div class="el-upload__tip">
+                jpg/png files with a size less than 500kb
+              </div>
+            </template> -->
+          </el-upload>
+        </div>
+
+        <template #footer>
+          <div class="multiFooterView">
+            <el-row gutter=10 justify="center">
+              <el-col span=12>
+                <el-button class="multi-vc-btn" type="plain" @click="multiVcCancelAction" round>Cancel</el-button>
+              </el-col>
+              <el-col span=12>
+                <el-button class="multi-vc-btn" type="plain" color="black" @click="multiVcImportAction" round>Import</el-button>
+              </el-col>
+            </el-row>
+          </div>
+        </template>
+      </el-dialog>
+
+      <!-- view personal tags -->
+
+      <el-dialog
+        v-model="personalTagsVisiable"
+        :show-close="false"
+        :direction="direction"
+        :width="540"
+      >
+        <template #header="{ close }">
+          <h4 class="dialog-header-title">Issue multiple credentials</h4>
+          <img
+            class="dialog-close"
+            src="../assets/img/close_black@2x.png"
+            @click="close"
+            alt=""
+          />
+        </template>
+
+        <div class="tagsView">
+          <el-tag
+            v-for="item in personalTags"
+            :key="item.label"
+            :type="item.type"
+            class="mx-1"
+            effect="dark"
+            round
+          >
+          {{ item.label }}
+        </el-tag>
+        </div>
+      </el-dialog>
+
     </el-container>
   </div>
 </template>
@@ -646,9 +736,11 @@ let VerifyVcUrl =
   Domain.domainUrl + "/api/did-document-credential/verify-credential";
 let delVcUrl =
   Domain.domainUrl + "/api/did-document-credential/credential-delete/";
+let multiVcCreationUrl = Domain.domainUrl + "/tr/did-document-credential/credential-parse/";
+let personalTagsUrl = Domain.domainUrl + "/tr/did-holder-tag/list/";
 
 // import { ElMessage } from 'element-plus'
-
+// import { Delete, Edit, Search, Share, Upload } from '@element-plus/icons-vue'
 import { NButton, NIcon, NPopover } from "naive-ui";
 import {
   DotsVertical,
@@ -721,16 +813,22 @@ export default {
       fileList: [],
       vcVerifyRet: {},
       verifyResultShow: false,
+
+      //issuleMultiVCVisiable
+      issuleMultiVCVisiable: false,
+      multoVcFileList: [],
+      excelTempelUrl: "",
+
+      //personalTagsVisiable
+      personalTagsVisiable: false,
+      personalTags: [],
     };
   },
   created() {
-    this.autoWidth = window.outerWidth * 0.6;
-    let username = localStorage.getItem("username");
-    if (username != null) {
-      this.profileName = username.substring(0, 1).toUpperCase();
-    }
   },
   mounted() {
+    this.autoWidth = window.outerWidth * 0.6;
+
     this.pagination = reactive({
       page: 1,
       pageSize: 5,
@@ -759,6 +857,10 @@ export default {
       trashOpRow(row) {
         that.singleTrashAction(row.credentialId);
       },
+      personalInfoRow(row) {
+        console.log(row)
+        that.personalTagsAction(row.holderDid);
+      }
     });
 
     this.getUserInfo();
@@ -771,7 +873,7 @@ export default {
 
       window.location.reload();
     },
-    createColumns({ moreOpsRow, viewOpRow, downloadOpRow, trashOpRow }) {
+    createColumns({ moreOpsRow, viewOpRow, downloadOpRow, trashOpRow, personalInfoRow }) {
       return [
         {
           type: "selection",
@@ -792,6 +894,12 @@ export default {
           title: "Holder Name",
           key: "holderName",
           width: 50,
+          render(row, index) {
+            return h('a', {
+              href: "javascript:void(0)",
+              onClick: () => personalInfoRow(row),
+            }, [row.holderName])
+          }
         },
         {
           title: "Type",
@@ -929,6 +1037,7 @@ export default {
           res.data.data.lastName = "";
         }
         this.userInfo = res.data.data;
+        this.profileName = this.userInfo.firstName.substring(0, 1).toUpperCase();
       } else if (res.data.code == 100002) {
         this.$router.push({ name: "personInfo" });
       } else {
@@ -1076,7 +1185,8 @@ export default {
       this.isEmptyRecipient = false;
     },
     importSheetAction() {
-      alert("importSheetAction");
+      this.excelTempelUrl = this.schemaList[this.schemaId-1].templateExcelUrl;
+      this.issuleMultiVCVisiable = true;
     },
     async toIssueCredentials() {
       this.processing = true;
@@ -1286,6 +1396,41 @@ export default {
         this.getUserInfo();
       }
     },
+
+    async multiVcImportAction() {
+      let formData = new FormData();
+      formData.append("multipartFile", this.multoVcFileList[0].raw);
+
+      const res = await axios.post(multiVcCreationUrl+this.schemaId, formData, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log(res.data);
+
+      if (res.data.code == 0) {
+      }
+    },
+    multiVcCancelAction() {
+      this.excelTempelUrl = "";
+      this.issuleMultiVCVisiable = false;
+    },
+    async personalTagsAction(holderDid) {
+      const res = await axios.get(personalTagsUrl+holderDid, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+
+      console.log(res.data);
+
+      if (res.data.code == 0) {
+      } else {
+
+      }
+    }
   },
   unmounted() {
     this.timer = {};
@@ -1557,6 +1702,7 @@ export default {
 
 <style scoped>
 .emptyView {
+  margin: 0 auto;
   width: 95%;
   height: 326px;
   background: linear-gradient(270deg, #0b224f 0%, #1d2129 100%);
@@ -1919,5 +2065,23 @@ export default {
   font-weight: 400;
   color: #1d2129;
   line-height: 18px;
+}
+</style>
+
+<style scoped>
+.multiVcView h3 {
+height: 17px;
+font-size: 14px;
+font-weight: 400;
+color: #A9AEB8;
+line-height: 18px;
+}
+
+.multiVcView a {
+height: 17px;
+font-size: 14px;
+font-weight: 400;
+color: #1D2129;
+line-height: 18px;
 }
 </style>
