@@ -25,9 +25,6 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-let fromStr = from.path;
-console.log(fromStr);
-
   let token = localStorage.getItem("token");
   let isAuthenticated = true;
   if (token == undefined || token == null) {
@@ -35,10 +32,10 @@ console.log(fromStr);
   }
 
   if (to.name !== 'login' && !isAuthenticated) next({ name: 'login' })
-  // else if () {
-
-  // }
-  else next()
+  else if (to.redirectedFrom) {
+    router.replace(to.redirectedFrom);
+  }
+  else next({ ...to })
 })
 
 export default router;
