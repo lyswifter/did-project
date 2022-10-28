@@ -31,11 +31,13 @@ router.beforeEach((to, from, next) => {
     isAuthenticated = false;
   }
 
+  console.log(to.redirectedFrom);
+
   if (to.name !== 'login' && !isAuthenticated) next({ name: 'login' })
-  else if (to.redirectedFrom) {
-    router.replace(to.redirectedFrom);
-  }
-  else next({ ...to })
+  // else if (to.redirectedFrom) {
+  //   router.replace(to.redirectedFrom);
+  // }
+  else next()
 })
 
 export default router;
