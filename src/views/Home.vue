@@ -107,9 +107,7 @@
                 <div class="verify-left">
                   <h2 class="f-color">Verifiable Credentials</h2>
                   <h4 class="l-color">
-                    Here are all the credentials you issued. You can
-                    revoke/unrevoke credentials and view persistent credentials
-                    stored in Dock Certs.
+                    Here are all the verifiable credentials you have issued. You can view, download or delete persistent credentials in D-pass.
                   </h4>
                 </div>
               </el-col>
@@ -1360,7 +1358,7 @@ export default {
         let obj2 = {}
         let keys = Object.keys(element);
         keys.forEach(key => {
-          if (key != "issueDate" && key != "expireDate" && key != "expireFlag") {
+          if (key != "issueDate" && key != "expireDate" && key != "expireFlag" && key != "idx") {
             obj2[key] = element[key]
           }
         });
