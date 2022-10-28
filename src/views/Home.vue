@@ -49,7 +49,7 @@
 
             <el-row gutter="50" justify="center">
               <el-col span="16">
-                <div class="display-left">
+                <div class="display-left" :style="{ width: autoWidth + 'px' }">
               <h2 class="dis-title f-color">Credentials</h2>
               <h1 class="dis-count f-color">{{ userInfo.credentialCount }}</h1>
             </div>
@@ -620,6 +620,8 @@ export default {
   components: {},
   data() {
     return {
+      autoWidth: "",
+
       profileName: "",
       activeIndex: ref("1"),
 
@@ -678,6 +680,7 @@ export default {
     };
   },
   created() {
+    this.autoWidth = window.outerWidth * 0.6;
     let username = localStorage.getItem("username");
     if (username != null) {
       this.profileName = username.substring(0, 1).toUpperCase();
