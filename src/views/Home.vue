@@ -1357,16 +1357,26 @@ export default {
           expireFlag: 0,
         };
 
-        let obj2 = {
-          holder: element.holder,
-          holder_name: element.holder_name,
-          credential_title: element.credential_title,
-          level: element.level,
-        };
+        let obj2 = {}
+        let keys = Object.keys(element);
+        keys.forEach(key => {
+          if (key != "issueDate" && key != "expireDate" && key != "expireFlag") {
+            obj2[key] = element[key]
+          }
+        });
+
+        // let obj2 = {
+        //   holder: element.holder,
+        //   holder_name: element.holder_name,
+        //   credential_title: element.credential_title,
+        //   level: element.level,
+        // };
 
         obj["claimsStr"] = JSON.stringify(obj2);
         needClaims.push(obj);
       });
+
+      console.log(needClaims)
 
       if (needClaims.length == 0) {
         alert("need claim must not be empty");
