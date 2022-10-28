@@ -485,6 +485,7 @@
         v-model="inputRecipientVisiable"
         :show-close="false"
         :direction="direction"
+        :width="680"
       >
         <template #header="{ close }">
           <h4 class="dialog-header-title">Add Recipients</h4>
@@ -520,7 +521,7 @@
             </h4>
           </div>
 
-          <div>
+          <div style="margin-top: 5px;">
             <el-row gutter="5">
               <el-col span="11">
                 <h3 class="dialog-title">* Issue Date</h3>
@@ -1249,7 +1250,7 @@ export default {
 
 .dialog-header-title {
   float: left;
-  width: 95%;
+  width: 90%;
   height: 39px;
   font-size: 28px;
   font-family: Poppins-Bold, Poppins;
@@ -1326,7 +1327,7 @@ export default {
   border-radius: 80px;
   margin-top: 100px;
   padding-top: 60px;
-  padding-left: 120px;
+  /* padding-left: 120px; */
   padding-bottom: 20px;
 }
 
@@ -1392,13 +1393,15 @@ export default {
 }
 
 .credential-display {
+  margin: 0 auto;
+  width: 98%;
   height: 140px;
 }
 
 .display-left {
   float: left;
   padding-left: 20px;
-  width: 70%;
+  width: 68%;
   height: 140px;
   border-radius: 8px;
   border: 2px solid #272e3b;
@@ -1430,8 +1433,8 @@ export default {
 }
 
 .display-right {
-  margin-left: 63%;
-  width: 390px;
+  margin-left: 70%;
+  width: 30%;
   height: 140px;
   background-image: url(../assets/img/verify@2x.png);
   background-repeat: no-repeat;
@@ -1463,7 +1466,7 @@ export default {
 }
 
 .verify-entrance-view {
-  width: 95%;
+  width: 100%;
   height: 116px;
   margin-top: 30px;
   background: #ffffff;
@@ -1471,10 +1474,11 @@ export default {
 
 .verify-left {
   float: left;
+  margin-left: 2%;
 }
 
 .verify-right {
-  margin-left: 84%;
+  margin-left: 82%;
 }
 </style>
 
@@ -1495,6 +1499,7 @@ export default {
 
 .vctable-view {
   width: 95%;
+  margin: 0 auto;
 }
 
 .bottomLogo img {
