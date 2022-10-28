@@ -25,6 +25,9 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+let fromStr = from.path;
+console.log(fromStr);
+
   let token = localStorage.getItem("token");
   let isAuthenticated = true;
   if (token == undefined || token == null) {
@@ -32,6 +35,9 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.name !== 'login' && !isAuthenticated) next({ name: 'login' })
+  // else if () {
+
+  // }
   else next()
 })
 

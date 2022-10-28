@@ -67,7 +67,9 @@
           </div>
 
           <div class="verify-entrance-view">
-            <div class="verify-left">
+            <el-row gutter="20" justify="space-between">
+              <el-col span="20">
+                <div class="verify-left">
               <h2 class="f-color">Verifiable Credentials</h2>
               <h4 class="l-color">
                 Here are all the credentials you issued. You can revoke/unrevoke
@@ -75,7 +77,9 @@
                 Certs.
               </h4>
             </div>
-            <div class="verify-right">
+              </el-col>
+              <el-col span="4">
+                <div class="verify-right">
               <el-button
                 color="#1E5CEF"
                 class="verify-btn"
@@ -85,6 +89,8 @@
                 >Create Verifiable Credential</el-button
               >
             </div>
+              </el-col>
+            </el-row>
           </div>
 
           <div v-if="hasVc" class="vctable-view">
@@ -1442,7 +1448,6 @@ export default {
 }
 
 .display-right {
-  /* margin-left: 70%; */
   width: 390px;
   height: 140px;
   background-image: url(../assets/img/verify@2x.png);
@@ -1475,19 +1480,11 @@ export default {
 }
 
 .verify-entrance-view {
-  width: 100%;
+  width: 94%;
+  margin: 0 auto;
   height: 116px;
   margin-top: 30px;
   background: #ffffff;
-}
-
-.verify-left {
-  float: left;
-  margin-left: 2%;
-}
-
-.verify-right {
-  margin-left: 82%;
 }
 </style>
 
