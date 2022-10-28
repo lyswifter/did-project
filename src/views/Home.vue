@@ -88,7 +88,7 @@
                 <div class="display-right">
                   <h2 class="w-color">Credential Verifier</h2>
                   <br />
-                  <h3 class="w-color" @click="toVerifyAction">Easy Verify</h3>
+                  <h3 @click="toVerifyAction"><a class="w-color" href="javascript:void();" style="text-decoration: none;">Easy Verify</a></h3>
                 </div>
               </el-col>
             </el-row>
@@ -243,7 +243,7 @@
               </div>
             </el-col>
 
-            <el-col span="4" :offset="14">
+            <el-col span="4" :offset="13">
               <div v-if="vcStep == 1">
                 <el-button
                   type="primary"
@@ -281,7 +281,7 @@
         </div>
 
         <div v-if="vcStep == 1" class="select-schema-content">
-          <el-row gutter="5">
+          <el-row gutter="20">
             <el-col span="6">
               <div class="card" @click="selectedOne">
                 <div
@@ -556,7 +556,7 @@
         :width="680"
       >
         <template #header="{ close }">
-          <h4 class="dialog-header-title">Add Recipients</h4>
+          <h4 class="dialog-header-title-recipient">Add Recipients</h4>
           <img
             class="dialog-close"
             src="../assets/img/close_black@2x.png"
@@ -747,7 +747,7 @@
             @click="clickTagAction(index)"
             round
           >
-            # {{ item.tagName }}
+          <a class="w-color" href="javascript:void();" style="text-decoration: none;"># {{ item.tagName }}</a>
           </el-tag>
         </div>
       </el-dialog>
@@ -761,7 +761,7 @@
         :width="540"
       >
         <template #header="{ close }">
-          <h4 class="dialog-header-title-detail">{{personalTagDetail.tagTitle}}</h4>
+          <h4 class="dialog-header-title-detail">{{personalTagDetail.tagName}}</h4>
           <img
             class="dialog-close"
             src="../assets/img/close_black@2x.png"
@@ -1621,11 +1621,9 @@ export default {
 }
 
 .drawer-title {
-  padding-left: 100px;
   width: 403px;
   height: 39px;
   font-size: 28px;
-  font-family: Poppins-Bold, Poppins;
   font-weight: bold;
   color: #1d2129;
   line-height: 42px;
@@ -1639,7 +1637,15 @@ export default {
 
 .dialog-header-title {
   font-size: 28px;
-  font-family: Poppins-Bold, Poppins;
+  font-weight: bold;
+  color: #1d2129;
+  line-height: 42px;
+}
+
+.dialog-header-title-recipient {
+  float: left;
+    width: 90%;
+    font-size: 28px;
   font-weight: bold;
   color: #1d2129;
   line-height: 42px;
@@ -1771,7 +1777,6 @@ line-height: 18px;
   width: 243px;
   height: 51px;
   font-size: 36px;
-  font-family: Poppins-Bold, Poppins;
   font-weight: bold;
   color: #272e3b;
   line-height: 55px;
@@ -1832,7 +1837,6 @@ line-height: 18px;
   width: 133px;
   height: 31px;
   font-size: 22px;
-  font-family: Poppins-Bold, Poppins;
   font-weight: bold;
   color: #1d2129;
   line-height: 33px;
@@ -1843,7 +1847,6 @@ line-height: 18px;
   width: 89px;
   height: 67px;
   font-size: 48px;
-  font-family: Poppins-Light, Poppins;
   font-weight: 300;
   color: #222222;
   line-height: 72px;
@@ -1864,7 +1867,6 @@ line-height: 18px;
   width: 208px;
   height: 31px;
   font-size: 22px;
-  font-family: Poppins-Bold, Poppins;
   font-weight: bold;
   color: #ffffff;
   line-height: 33px;
@@ -1939,19 +1941,16 @@ line-height: 18px;
   border: 2px solid #272e3b;
   padding-left: 20px;
   font-size: 22px;
-  font-family: Poppins-Medium, Poppins;
   font-weight: 500;
   color: #1d2129;
   line-height: 90px;
 }
 
 .step-btn {
-  /* margin-top: 20px; */
   width: 32px;
   line-height: 25px;
   font-size: 16px;
   font-weight: 500;
-  font-family: Poppins-Medium, Poppins;
   background: #1e5cef;
   color: #ffffff;
 }
@@ -1961,7 +1960,6 @@ line-height: 18px;
   padding-left: 10px;
   height: 31px;
   font-size: 22px;
-  font-family: Poppins-Medium, Poppins;
   font-weight: 500;
   color: #1d2129;
   line-height: 33px;
@@ -1999,10 +1997,8 @@ line-height: 18px;
 
 .card-bot {
   text-align: center;
-  width: 285px;
   height: 76px;
-  font-size: 20px;
-  font-family: Poppins-Medium, Poppins;
+  font-size: 18px;
   font-weight: 500;
   color: #1d2129;
   line-height: 76px;
@@ -2096,7 +2092,6 @@ line-height: 18px;
 .dialog-title {
   height: 20px;
   font-size: 14px;
-  font-family: Poppins-SemiBold, Poppins;
   font-weight: 600;
   color: #1d2129;
   line-height: 21px;
@@ -2182,7 +2177,7 @@ line-height: 18px;
 }
 
 .resTopView {
-  width: 95%;
+  /* width: 95%; */
   height: 72px;
   padding-left: 20px;
   background: #f2f3f5;
@@ -2210,7 +2205,7 @@ line-height: 18px;
 .resBotView h3 {
   padding-left: 5px;
   margin-top: 5px;
-  width: 1160px;
+  width: 99%;
   height: 46px;
   font-size: 18px;
   background: #f2f3f5;
@@ -2224,7 +2219,6 @@ line-height: 18px;
   font-weight: 600;
   color: #1d2129;
   line-height: 46px;
-  background: #e5e6eb;
   border-radius: 8px;
 }
 

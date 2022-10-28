@@ -301,7 +301,6 @@ border-radius: 4px;
 .fill-title {
   height: 20px;
   font-size: 14px;
-  font-family: Poppins-SemiBold, Poppins;
   font-weight: 600;
   color: #1d2129;
   line-height: 21px;

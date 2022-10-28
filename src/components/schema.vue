@@ -35,7 +35,6 @@ border-radius: 80px 80px 0px 0px;
   width: 403px;
   height: 39px;
   font-size: 28px;
-  font-family: Poppins-Bold, Poppins;
   font-weight: bold;
   color: #1d2129;
   line-height: 42px;
