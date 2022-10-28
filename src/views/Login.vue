@@ -73,12 +73,8 @@ export default {
         code: this.emailvccontent,
       });
 
-      console.log(res)
-
       if (res.data.code == 0) {
         window.localStorage.setItem("token", res.data.data.token);
-
-        // this.getUserInfo();
 
         if (res.data.data.needAddInformation) {
           //push to add information page

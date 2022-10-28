@@ -74,7 +74,9 @@
           <br />
 
           <div>
-            <div class="name-left-v">
+            <el-row gutter="20" justify="center">
+              <el-col span=12>
+                <div class="name-left-v">
               <h3 class="f-color fill-title">* First name</h3>
               <el-input
                 class="first-name-input h-48 w-310"
@@ -82,7 +84,9 @@
                 placeholder="Please input"
               />
             </div>
-            <div class="name-right-v">
+              </el-col>
+              <el-col span=12>
+                <div class="name-right-v">
               <h3 class="f-color fill-title">* Last name</h3>
               <el-input
                 class="last-name-input h-48 w-310"
@@ -90,6 +94,9 @@
                 placeholder="Please input"
               />
             </div>
+              </el-col>
+
+            </el-row>
           </div>
 
           <br />
@@ -328,12 +335,7 @@ border-radius: 4px;
 }
 
 .name-left-v {
-  float: left;
   width: 50%;
-}
-
-.name-right-v {
-  margin-left: 5px;
 }
 
 .continue-btn {
