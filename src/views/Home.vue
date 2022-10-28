@@ -46,16 +46,24 @@
 
         <div class="content-view">
           <div class="credential-display">
-            <div class="display-left">
+
+            <el-row gutter="50" justify="center">
+              <el-col span="16">
+                <div class="display-left">
               <h2 class="dis-title f-color">Credentials</h2>
               <h1 class="dis-count f-color">{{ userInfo.credentialCount }}</h1>
             </div>
-            <div class="display-right">
+              </el-col>
+              <el-col span="8">
+                <div class="display-right">
               <h2 class="w-color">Credential Verifier</h2>
               <br />
               <h3 class="w-color" @click="toVerifyAction">Easy Verify</h3>
               >
             </div>
+              </el-col>
+            </el-row>
+
           </div>
 
           <div class="verify-entrance-view">
@@ -1327,7 +1335,6 @@ export default {
   border-radius: 80px;
   margin-top: 100px;
   padding-top: 60px;
-  /* padding-left: 120px; */
   padding-bottom: 20px;
 }
 
@@ -1394,14 +1401,13 @@ export default {
 
 .credential-display {
   margin: 0 auto;
-  width: 98%;
+  width: 100%;
   height: 140px;
 }
 
 .display-left {
-  float: left;
   padding-left: 20px;
-  width: 68%;
+  min-width: 790px;
   height: 140px;
   border-radius: 8px;
   border: 2px solid #272e3b;
@@ -1433,8 +1439,8 @@ export default {
 }
 
 .display-right {
-  margin-left: 70%;
-  width: 30%;
+  /* margin-left: 70%; */
+  width: 390px;
   height: 140px;
   background-image: url(../assets/img/verify@2x.png);
   background-repeat: no-repeat;
@@ -1571,8 +1577,8 @@ export default {
 }
 
 .select-schema-content {
-  margin-top: 20px;
-  padding-left: 100px;
+  margin: 20px auto;
+  width: 95%;
 }
 
 .card-top {
