@@ -15,7 +15,7 @@
             <n-popover trigger="click" placement="bottom-start">
               <template #trigger>
                 <div class="profileView">
-                {{ profileName }}
+                  {{ profileName }}
                 </div>
               </template>
 
@@ -88,7 +88,14 @@
                 <div class="display-right">
                   <h2 class="w-color">Credential Verifier</h2>
                   <br />
-                  <h3 @click="toVerifyAction"><a class="w-color" href="javascript:void();" style="text-decoration: none;">Easy Verify</a></h3>
+                  <h3 @click="toVerifyAction">
+                    <a
+                      class="w-color"
+                      href="javascript:void();"
+                      style="text-decoration: none"
+                      >Easy Verify</a
+                    >
+                  </h3>
                 </div>
               </el-col>
             </el-row>
@@ -620,6 +627,7 @@
             type="primary"
             size="large"
             class="add-recipient-info-btn"
+            color="#1E5CEF"
             @click="addRecipientAction"
             round
             >Add Recipient
@@ -724,15 +732,15 @@
         <template #header="{ close }">
           <div>
             <div class="dialog-header-view">
-              <h4 class="dialog-header-title">{{personalTagTitle}}</h4>
-              <h3>{{personalTagDis}}</h3>
+              <h4 class="dialog-header-title">{{ personalTagTitle }}</h4>
+              <h3>{{ personalTagDis }}</h3>
             </div>
             <img
-            class="dialog-close"
-            src="../assets/img/close_black@2x.png"
-            @click="close"
-            alt=""
-          />
+              class="dialog-close"
+              src="../assets/img/close_black@2x.png"
+              @click="close"
+              alt=""
+            />
           </div>
         </template>
 
@@ -747,7 +755,12 @@
             @click="clickTagAction(index)"
             round
           >
-          <a class="w-color" href="javascript:void();" style="text-decoration: none;"># {{ item.tagName }}</a>
+            <a
+              class="w-color"
+              href="javascript:void();"
+              style="text-decoration: none"
+              ># {{ item.tagName }}</a
+            >
           </el-tag>
         </div>
       </el-dialog>
@@ -761,7 +774,9 @@
         :width="540"
       >
         <template #header="{ close }">
-          <h4 class="dialog-header-title-detail">{{personalTagDetail.tagName}}</h4>
+          <h4 class="dialog-header-title-detail">
+            {{ personalTagDetail.tagName }}
+          </h4>
           <img
             class="dialog-close"
             src="../assets/img/close_black@2x.png"
@@ -771,10 +786,10 @@
         </template>
 
         <div class="tagsDetailView">
-          <div class="tagDescView">{{personalTagDetail.tagDesc}}</div>
-          <br>
+          <div class="tagDescView">{{ personalTagDetail.tagDesc }}</div>
+          <br />
           <h4>Reference Link</h4>
-          <h4 class="tagLink">{{personalTagDetail.tagLink}}</h4>
+          <h4 class="tagLink">{{ personalTagDetail.tagLink }}</h4>
         </div>
       </el-dialog>
     </el-container>
@@ -808,8 +823,8 @@ let multiVcCreationUrl =
   Domain.domainUrl + "/api/did-document-credential/credential-parse/";
 let personalTagsUrl = Domain.domainUrl + "/api/did-holder-tag/list/";
 
-// import { ElMessage } from 'element-plus'
-// import { Delete, Edit, Search, Share, Upload } from '@element-plus/icons-vue'
+import { ElMessage } from "element-plus";
+
 import { NButton, NIcon, NPopover } from "naive-ui";
 import {
   DotsVertical,
@@ -1020,7 +1035,7 @@ export default {
                 NIcon,
                 {
                   size: 33,
-                  color: "#FFA9AEB8",
+                  color: "#A9AEB8",
                 },
                 { default: () => h(CircleCheck) }
               );
@@ -1139,8 +1154,8 @@ export default {
       } else {
         ElMessage({
           message: res.data.msg,
-          type: 'error',
-        })
+          type: "error",
+        });
       }
     },
     async getVcTableInfo() {
@@ -1166,8 +1181,8 @@ export default {
       } else {
         ElMessage({
           message: res.data.msg,
-          type: 'error',
-        })
+          type: "error",
+        });
       }
     },
     backAction() {
@@ -1198,8 +1213,8 @@ export default {
       } else {
         ElMessage({
           message: res.data.msg,
-          type: 'error',
-        })
+          type: "error",
+        });
       }
     },
     async toCreateVcAction() {
@@ -1217,8 +1232,8 @@ export default {
       } else {
         ElMessage({
           message: res.data.msg,
-          type: 'error',
-        })
+          type: "error",
+        });
       }
     },
     selectedOne() {
@@ -1278,8 +1293,8 @@ export default {
       } else {
         ElMessage({
           message: res.data.msg,
-          type: 'error',
-        })
+          type: "error",
+        });
       }
     },
     async addManualAction() {
@@ -1319,23 +1334,23 @@ export default {
 
       let needClaims = [];
       this.recipientCheckedRowKeys.forEach((checkKey) => {
-          let element = this.recipientTableData[checkKey-1];
+        let element = this.recipientTableData[checkKey - 1];
 
-          let obj = {
-            issueDate: element.issueDate,
-            expireDate: element.expireDate,
-            expireFlag: 0,
-          };
+        let obj = {
+          issueDate: element.issueDate,
+          expireDate: element.expireDate,
+          expireFlag: 0,
+        };
 
-          let obj2 = {
-            "holder": element.holder,
-            "holder_name": element.holder_name,
-            "credential_title": element.credential_title,
-            "level": element.level,
-          }
+        let obj2 = {
+          holder: element.holder,
+          holder_name: element.holder_name,
+          credential_title: element.credential_title,
+          level: element.level,
+        };
 
-          obj["claimsStr"] = JSON.stringify(obj2);
-          needClaims.push(obj);
+        obj["claimsStr"] = JSON.stringify(obj2);
+        needClaims.push(obj);
       });
 
       if (needClaims.length == 0) {
@@ -1362,7 +1377,7 @@ export default {
         if (this.percentageCount > 100) {
           this.percentageCount = 100;
         }
-        
+
         this.newVcId = res.data.data;
         this.newVcNum =
           "Issued " + this.newVcId.length + " Verifiable Credential";
@@ -1372,8 +1387,8 @@ export default {
       } else {
         ElMessage({
           message: res.data.msg,
-          type: 'error',
-        })
+          type: "error",
+        });
       }
     },
     toDownloadAction() {
@@ -1518,8 +1533,8 @@ export default {
       } else {
         ElMessage({
           message: res.data.msg,
-          type: 'error',
-        })
+          type: "error",
+        });
       }
     },
 
@@ -1541,7 +1556,7 @@ export default {
       if (res.data.code == 0) {
         res.data.data.claims.forEach((element) => {
           let claimObj = JSON.parse(element.claimsStr);
-          
+
           claimObj["issueDate"] = element.issueDate;
           claimObj["expireDate"] = element.expireDate;
           claimObj["idx"] = this.recipientIdx;
@@ -1558,8 +1573,8 @@ export default {
       } else {
         ElMessage({
           message: res.data.msg,
-          type: 'error',
-        })
+          type: "error",
+        });
       }
     },
     multiVcCancelAction() {
@@ -1581,14 +1596,14 @@ export default {
       } else {
         ElMessage({
           message: res.data.msg,
-          type: 'error',
-        })
+          type: "error",
+        });
       }
     },
     clickTagAction(idx) {
       this.personalTagDetail = this.personalTags[idx];
       this.personalTagsDetailVisiable = true;
-    }
+    },
   },
   unmounted() {
     this.timer = {};
@@ -1644,8 +1659,8 @@ export default {
 
 .dialog-header-title-recipient {
   float: left;
-    width: 90%;
-    font-size: 28px;
+  width: 90%;
+  font-size: 28px;
   font-weight: bold;
   color: #1d2129;
   line-height: 42px;
@@ -1661,26 +1676,26 @@ export default {
 }
 
 .dialog-header-view h3 {
-height: 17px;
-font-size: 12px;
-font-weight: 400;
-color: #A9AEB8;
-line-height: 18px;
+  height: 17px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #a9aeb8;
+  line-height: 18px;
 }
 
 .tagDescView {
-height: 54px;
-background: #F2F3F5;
-border-radius: 8px;
-line-height: 54px;
+  height: 54px;
+  background: #f2f3f5;
+  border-radius: 8px;
+  line-height: 54px;
 }
 
 .tagLink {
-height: 17px;
-font-size: 12px;
-font-weight: 600;
-color: #1D2129;
-line-height: 18px;
+  height: 17px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1d2129;
+  line-height: 18px;
 }
 
 .dialog-close {
@@ -1754,7 +1769,7 @@ line-height: 18px;
   border-radius: 80px;
   margin-top: 100px;
   padding-top: 60px;
-  padding-bottom: 20px;
+  padding-bottom: 60px;
 }
 
 .info-icon {
@@ -1924,9 +1939,6 @@ line-height: 18px;
 
 .vctableHeaderView {
   padding: 10px;
-  /* border-top: 1px solid #A9AEB8;
-  border-left: 1px solid #A9AEB8;
-  border-right: 1px solid #A9AEB8; */
 }
 </style>
 
@@ -2120,7 +2132,6 @@ line-height: 18px;
 .add-recipient-info-btn {
   width: 400px;
   height: 44px;
-  background: #c9cdd4;
   border-radius: 24px;
 }
 </style>
