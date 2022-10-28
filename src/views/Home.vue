@@ -15,7 +15,7 @@
             <n-popover trigger="click" placement="bottom-start">
               <template #trigger>
                 <div class="profileView">
-                  <span style="margin-right: 13px"></span>{{ profileName }}
+                {{ profileName }}
                 </div>
               </template>
 
@@ -128,6 +128,7 @@
                   <el-button
                     class="batch-download-btn"
                     type="plain"
+                    :disabled="ableToDownload"
                     @click="tiggerBatchDownloadAction"
                     round
                     >Download</el-button
@@ -143,7 +144,7 @@
               :max-height="600"
               :scroll-x="1000"
               :row-key="vcRowKey"
-              v-model:checked-row-keys="vcTableCheckRowKey"
+              @update:checked-row-keys="handleCheck"
             />
           </div>
 
@@ -721,7 +722,46 @@
         :width="540"
       >
         <template #header="{ close }">
-          <h4 class="dialog-header-title">Issue multiple credentials</h4>
+          <div>
+            <div class="dialog-header-view">
+              <h4 class="dialog-header-title">{{personalTagTitle}}</h4>
+              <h3>{{personalTagDis}}</h3>
+            </div>
+            <img
+            class="dialog-close"
+            src="../assets/img/close_black@2x.png"
+            @click="close"
+            alt=""
+          />
+          </div>
+        </template>
+
+        <div class="tagsView">
+          <el-tag
+            v-for="(item, index) in personalTags"
+            :key="item.label"
+            :type="item.type"
+            size="large"
+            class="mx-1"
+            effect="dark"
+            @click="clickTagAction(index)"
+            round
+          >
+            # {{ item.tagName }}
+          </el-tag>
+        </div>
+      </el-dialog>
+
+      <!-- view personal tags detail -->
+
+      <el-dialog
+        v-model="personalTagsDetailVisiable"
+        :show-close="false"
+        :direction="direction"
+        :width="540"
+      >
+        <template #header="{ close }">
+          <h4 class="dialog-header-title-detail">{{personalTagDetail.tagTitle}}</h4>
           <img
             class="dialog-close"
             src="../assets/img/close_black@2x.png"
@@ -730,17 +770,11 @@
           />
         </template>
 
-        <div class="tagsView">
-          <el-tag
-            v-for="item in personalTags"
-            :key="item.label"
-            :type="item.type"
-            class="mx-1"
-            effect="dark"
-            round
-          >
-            {{ item.label }}
-          </el-tag>
+        <div class="tagsDetailView">
+          <div class="tagDescView">{{personalTagDetail.tagDesc}}</div>
+          <br>
+          <h4>Reference Link</h4>
+          <h4 class="tagLink">{{personalTagDetail.tagLink}}</h4>
         </div>
       </el-dialog>
     </el-container>
@@ -791,6 +825,7 @@ export default {
   data() {
     return {
       autoWidth: "",
+      ableToDownload: true,
 
       profileName: "",
       activeIndex: ref("1"),
@@ -857,9 +892,15 @@ export default {
       //personalTagsVisiable
       personalTagsVisiable: false,
       personalTags: [],
+      personalTagTitle: "",
+      personalTagDis: "",
+
+      personalTagsDetailVisiable: false,
+      personalTagDetail: {},
     };
   },
   created() {},
+  watch: {},
   mounted() {
     this.autoWidth = window.outerWidth * 0.6;
 
@@ -892,6 +933,7 @@ export default {
         that.singleTrashAction(row.credentialId);
       },
       personalInfoRow(row) {
+        that.personalTagTitle = row.holderName;
         that.personalTagsAction(row.holderDid);
       },
     });
@@ -900,6 +942,15 @@ export default {
     this.getVcTableInfo();
   },
   methods: {
+    handleCheck(rows) {
+      this.vcTableCheckRowKey = rows;
+
+      if (this.vcTableCheckRowKey.length == 0) {
+        this.ableToDownload = true;
+      } else {
+        this.ableToDownload = false;
+      }
+    },
     logoutAction() {
       window.localStorage.removeItem("token");
       window.localStorage.removeItem("username");
@@ -1086,6 +1137,10 @@ export default {
       } else if (res.data.code == 100002) {
         this.$router.push({ name: "personInfo" });
       } else {
+        ElMessage({
+          message: res.data.msg,
+          type: 'error',
+        })
       }
     },
     async getVcTableInfo() {
@@ -1108,6 +1163,11 @@ export default {
         if (this.data.length == 0) {
           this.hasVc = false;
         }
+      } else {
+        ElMessage({
+          message: res.data.msg,
+          type: 'error',
+        })
       }
     },
     backAction() {
@@ -1135,6 +1195,11 @@ export default {
       if (res.data.code == 0 && res.data.data.verify) {
         this.verifyResultShow = true;
         this.vcVerifyRet = res.data.data;
+      } else {
+        ElMessage({
+          message: res.data.msg,
+          type: 'error',
+        })
       }
     },
     async toCreateVcAction() {
@@ -1149,6 +1214,11 @@ export default {
         this.schemaList = res.data.data;
         this.schemaVisible = true;
         this.vcStep = 1;
+      } else {
+        ElMessage({
+          message: res.data.msg,
+          type: 'error',
+        })
       }
     },
     selectedOne() {
@@ -1206,6 +1276,10 @@ export default {
         this.inputRecipientsData = res.data.data;
         this.createRecipientColumns(this.inputRecipientsData);
       } else {
+        ElMessage({
+          message: res.data.msg,
+          type: 'error',
+        })
       }
     },
     async addManualAction() {
@@ -1235,36 +1309,33 @@ export default {
     async toIssueCredentials() {
       this.processing = true;
 
-      // let timer = setInterval(() => {
-      //   this.percentageCount += 1;
+      let timer = setInterval(() => {
+        this.percentageCount += 1;
 
-      //   if (this.percentageCount > 100) {
-      //     this.percentageCount = 100;
-      //   }
-      // }, 30);
+        if (this.percentageCount > 100) {
+          this.percentageCount = 100;
+        }
+      }, 30);
 
       let needClaims = [];
-      this.recipientCheckedRowKeys.forEach((checkKeys) => {
-        for (let i = 0; i < this.recipientTableData.length; i++) {
-          const element = this.recipientTableData[i];
-          if (checkKeys == element.idx) {
-            let obj = {
-              issueDate: element.issueDate,
-              expireDate: element.expireDate,
-              expireFlag: 0,
-            };
+      this.recipientCheckedRowKeys.forEach((checkKey) => {
+          let element = this.recipientTableData[checkKey-1];
 
-            let objCopy = element;
-            delete objCopy.issueDate;
-            delete objCopy.expireDate;
-            delete objCopy.idx;
+          let obj = {
+            issueDate: element.issueDate,
+            expireDate: element.expireDate,
+            expireFlag: 0,
+          };
 
-            obj["claimsStr"] = JSON.stringify(objCopy);
-
-            needClaims.push(obj);
-            break;
+          let obj2 = {
+            "holder": element.holder,
+            "holder_name": element.holder_name,
+            "credential_title": element.credential_title,
+            "level": element.level,
           }
-        }
+
+          obj["claimsStr"] = JSON.stringify(obj2);
+          needClaims.push(obj);
       });
 
       if (needClaims.length == 0) {
@@ -1279,9 +1350,6 @@ export default {
           templateId: this.schemaId,
         },
         {
-          onDownloadProgress: ({ progress }) => {
-            console.log((progress * 100).toFixed(2));
-          },
           headers: {
             Authorization: localStorage.getItem("token"),
           },
@@ -1289,7 +1357,12 @@ export default {
       );
 
       if (res.data.code == 0) {
-        // clearInterval(timer);
+        clearInterval(timer);
+        this.percentageCount += 100;
+        if (this.percentageCount > 100) {
+          this.percentageCount = 100;
+        }
+        
         this.newVcId = res.data.data;
         this.newVcNum =
           "Issued " + this.newVcId.length + " Verifiable Credential";
@@ -1297,6 +1370,10 @@ export default {
         this.vcStep = 3;
         this.createOk = true;
       } else {
+        ElMessage({
+          message: res.data.msg,
+          type: 'error',
+        })
       }
     },
     toDownloadAction() {
@@ -1438,6 +1515,11 @@ export default {
 
         // reload total count
         this.getUserInfo();
+      } else {
+        ElMessage({
+          message: res.data.msg,
+          type: 'error',
+        })
       }
     },
 
@@ -1473,11 +1555,17 @@ export default {
 
         this.isEmptyRecipient = false;
         this.issuleMultiVCVisiable = false;
+      } else {
+        ElMessage({
+          message: res.data.msg,
+          type: 'error',
+        })
       }
     },
     multiVcCancelAction() {
       this.excelTempelUrl = "";
       this.issuleMultiVCVisiable = false;
+      this.multoVcFileList = [];
     },
     async personalTagsAction(holderDid) {
       const res = await axios.get(personalTagsUrl + holderDid, {
@@ -1486,12 +1574,21 @@ export default {
         },
       });
 
-      console.log(res.data);
-
       if (res.data.code == 0) {
+        this.personalTagsVisiable = true;
+        this.personalTags = res.data.data.list;
+        this.personalTagDis = res.data.data.holderDid;
       } else {
+        ElMessage({
+          message: res.data.msg,
+          type: 'error',
+        })
       }
     },
+    clickTagAction(idx) {
+      this.personalTagDetail = this.personalTags[idx];
+      this.personalTagsDetailVisiable = true;
+    }
   },
   unmounted() {
     this.timer = {};
@@ -1534,15 +1631,50 @@ export default {
   line-height: 42px;
 }
 
-.dialog-header-title {
+.dialog-header-view {
   float: left;
   width: 90%;
   height: 39px;
+}
+
+.dialog-header-title {
   font-size: 28px;
   font-family: Poppins-Bold, Poppins;
   font-weight: bold;
   color: #1d2129;
   line-height: 42px;
+}
+
+.dialog-header-title-detail {
+  font-size: 28px;
+  font-weight: bold;
+  color: #1d2129;
+  line-height: 42px;
+  float: left;
+  width: 90%;
+}
+
+.dialog-header-view h3 {
+height: 17px;
+font-size: 12px;
+font-weight: 400;
+color: #A9AEB8;
+line-height: 18px;
+}
+
+.tagDescView {
+height: 54px;
+background: #F2F3F5;
+border-radius: 8px;
+line-height: 54px;
+}
+
+.tagLink {
+height: 17px;
+font-size: 12px;
+font-weight: 600;
+color: #1D2129;
+line-height: 18px;
 }
 
 .dialog-close {
@@ -1579,6 +1711,7 @@ export default {
   background-repeat: no-repeat;
   background-position: -1, -1;
   background-size: contain;
+  text-align: center;
 }
 
 .avatarbg {
@@ -1648,7 +1781,6 @@ export default {
   width: 568px;
   height: 25px;
   font-size: 18px;
-  font-family: Poppins-Regular, Poppins;
   font-weight: 400;
   color: #8998ba;
   line-height: 27px;
@@ -1656,13 +1788,13 @@ export default {
 
 .org {
   margin-top: 5px;
-  height: 25px;
+  height: auto;
   width: auto;
-  background-color: #f5f7fd;
+  background-color: #c9d5f4;
   border-radius: 16px;
   inline-size: fit-content;
-  padding-right: 5px;
-  padding-left: 5px;
+  padding-right: 10px;
+  padding-left: 10px;
 }
 
 .org img {
@@ -1674,7 +1806,6 @@ export default {
 .org span {
   color: #272e3b;
   font-size: 18px;
-  font-family: Poppins-Regular, Poppins;
   font-weight: 400;
   line-height: 27px;
 }
@@ -1693,7 +1824,7 @@ export default {
   border: 2px solid #272e3b;
   background-image: url(../assets/img/credential@2x.png);
   background-repeat: no-repeat;
-  background-position: 0;
+  background-position: right;
 }
 
 .dis-title {
@@ -1840,7 +1971,6 @@ export default {
   padding-left: 10px;
   height: 23px;
   font-size: 16px;
-  font-family: Poppins-Regular, Poppins;
   font-weight: 400;
   color: #86909c;
   line-height: 25px;
@@ -1975,7 +2105,6 @@ export default {
 .dialog-subtitle {
   height: 17px;
   font-size: 12px;
-  font-family: Poppins-Regular, Poppins;
   font-weight: 400;
   color: #86909c;
   line-height: 18px;
@@ -2040,7 +2169,6 @@ export default {
 .addFileView h3 {
   height: 31px;
   font-size: 22px;
-  font-family: Poppins-Medium, Poppins;
   font-weight: 500;
   color: #1d2129;
   line-height: 33px;
@@ -2049,7 +2177,6 @@ export default {
 .filenamesView {
   height: 20px;
   font-size: 14px;
-  font-family: Poppins-Regular, Poppins;
   font-weight: 400;
   color: #1d2129;
 }
@@ -2072,7 +2199,6 @@ export default {
 
 .resTopView h2 {
   font-size: 18px;
-  font-family: Poppins-Bold, Poppins;
   font-weight: bold;
   color: #1d2129;
 }
@@ -2095,7 +2221,6 @@ export default {
 .resBotView h3 span {
   height: 20px;
   font-size: 20px;
-  font-family: Poppins-SemiBold, Poppins;
   font-weight: 600;
   color: #1d2129;
   line-height: 46px;
@@ -2106,7 +2231,6 @@ export default {
 .resBotView h4 {
   margin-top: 2px;
   font-size: 12px;
-  font-family: Poppins-Regular, Poppins;
   font-weight: 400;
   color: #4e5969;
   line-height: 18px;
@@ -2114,7 +2238,6 @@ export default {
 
 .verifyResultView h3 {
   font-size: 12px;
-  font-family: Poppins-Regular, Poppins;
   font-weight: 400;
   color: #1d2129;
   line-height: 18px;
@@ -2122,7 +2245,6 @@ export default {
 
 .verifyResultView h4 {
   font-size: 12px;
-  font-family: Poppins-Regular, Poppins;
   font-weight: 400;
   color: #1d2129;
   line-height: 18px;

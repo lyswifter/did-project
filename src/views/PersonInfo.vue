@@ -15,7 +15,7 @@
             <n-popover trigger="click" placement="bottom-start">
               <template #trigger>
                 <div class="profileView">
-                  <span style="margin-right: 13px"></span>{{ profileName }}
+                  {{ profileName }}
                 </div>
               </template>
 
@@ -23,7 +23,24 @@
                 <n-button text color="#ff69b4" @click="logoutAction">
                   <template #icon>
                     <n-icon>
-                      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-2"></path><path d="M7 12h14l-3-3m0 6l3-3"></path></g></svg>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                        viewBox="0 0 24 24"
+                      >
+                        <g
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path
+                            d="M14 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-2"
+                          ></path>
+                          <path d="M7 12h14l-3-3m0 6l3-3"></path>
+                        </g>
+                      </svg>
                     </n-icon>
                   </template>
                   Sign out
@@ -60,7 +77,7 @@
             <div class="name-left-v">
               <h3 class="f-color fill-title">* First name</h3>
               <el-input
-                class="first-name-input h-48"
+                class="first-name-input h-48 w-310"
                 v-model="firstnamecontent"
                 placeholder="Please input"
               />
@@ -68,7 +85,7 @@
             <div class="name-right-v">
               <h3 class="f-color fill-title">* Last name</h3>
               <el-input
-                class="last-name-input h-48"
+                class="last-name-input h-48 w-310"
                 v-model="lastnamecontent"
                 placeholder="Please input"
               />
@@ -79,24 +96,20 @@
 
           <div>
             <h3 class="f-color fill-title">Which industry do you operate in</h3>
-            <el-input
+
+            <el-select
               v-model="industryName"
-              placeholder="Please input"
-              class="input-with-select"
+              class="m-2 industrySelect"
+              placeholder="Select Industry"
+              size="large"
             >
-              <template #append>
-                <el-select
-                  class=""
-                  v-model="select"
-                  placeholder="Select"
-                  style="width: 115px"
-                >
-                  <el-option label="Blockchain" value="1" />
-                  <el-option label="Information Technology" value="2" />
-                  <el-option label="Software" value="3" />
-                </el-select>
-              </template>
-            </el-input>
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
           </div>
 
           <br />
@@ -118,9 +131,10 @@ import { ref } from "vue";
 import axios from "axios";
 
 import Domain from "../router/domain.js";
-let addInfoUrl = Domain.domainUrl + "/api/did-user/additional-information"
+let addInfoUrl = Domain.domainUrl + "/api/did-user/additional-information";
+let getUserInfoUrl = Domain.domainUrl + "/api/did-user/get-info";
 
-import { ElMessage } from 'element-plus'
+import { ElMessage } from "element-plus";
 
 export default {
   name: "PersonInfo",
@@ -131,35 +145,87 @@ export default {
       lastnamecontent: "",
       industryName: "",
 
+      profileName: "",
+
+      options: [
+        {
+          label: "Blockchain",
+          value: "Blockchain",
+        },
+        {
+          label: "Information Technology",
+          value: "Information Technology",
+        },
+        {
+          label: "Software",
+          value: "Software",
+        },
+      ],
+
       activeIndex: ref("1"),
     };
   },
   created() {},
-  mounted() {},
+  mounted() {
+    this.getUserInfo();
+  },
   methods: {
     async continueAction() {
-      const res = await axios.post(addInfoUrl, {
-        company: this.orgcontent,
-        firstName: this.firstnamecontent,
-        lastName: this.lastnamecontent,
-        industry: this.industryName,
-      },{
-        headers: {
-          Authorization: localStorage.getItem("token"),
+      const res = await axios.post(
+        addInfoUrl,
+        {
+          company: this.orgcontent,
+          firstName: this.firstnamecontent,
+          lastName: this.lastnamecontent,
+          industry: this.industryName,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
         }
-      });
+      );
 
       if (res.data.code == 0) {
-        localStorage.setItem("token", res.data.data.token)
+        localStorage.setItem("token", res.data.data.token);
 
         this.$router.push({ name: "home" });
 
         ElMessage({
-            message: 'Add addition information successed.',
-            type: 'success',
-          })
+          message: "Add addition information successed.",
+          type: "success",
+        });
       } else {
       }
+    },
+    async getUserInfo() {
+      const res = await axios.get(getUserInfoUrl, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+
+      if (res.data.code == 0) {
+        if (res.data.data.firstName == undefined) {
+          res.data.data.firstName = "";
+        }
+        if (res.data.data == undefined) {
+          res.data.data.lastName = "";
+        }
+        this.profileName = res.data.data.firstName
+          .substring(0, 1)
+          .toUpperCase();
+      } else {
+        ElMessage({
+          message: res.data.msg,
+          type: "error",
+        });
+      }
+    },
+    logoutAction() {
+      window.localStorage.removeItem("token");
+      window.localStorage.removeItem("username");
+      window.location.reload();
     },
   },
 };
@@ -172,6 +238,12 @@ export default {
 
 .h-48 {
   height: 48px;
+}
+
+.w-310 {
+  width: 310px;
+  background: #F2F3F5;
+border-radius: 4px;
 }
 </style>
 
@@ -199,17 +271,19 @@ export default {
   background: #f8f9fc;
 }
 
-.profile-view {
-  margin-top: 10px;
+.profileView {
   width: 40px;
   height: 40px;
   border-radius: 20px;
-  background-color: blue;
   color: white;
   font-size: 24px;
   font-weight: 600;
   line-height: 40px;
-  padding-left: 10px;
+  background-image: url(../assets/img/avatar48px@2x.png);
+  background-repeat: no-repeat;
+  background-position: -1, -1;
+  background-size: contain;
+  text-align: center;
 }
 </style>
 
@@ -231,6 +305,7 @@ export default {
   font-weight: 600;
   color: #1d2129;
   line-height: 21px;
+  margin-bottom: 5px;
 }
 
 .fill-t-view {
@@ -239,7 +314,6 @@ export default {
 
 .tell-title {
   font-size: 28px;
-  font-family: Poppins-Bold, Poppins;
   font-weight: bold;
   color: #1d2129;
   line-height: 42px;
@@ -249,7 +323,6 @@ export default {
   width: 292px;
   height: 17px;
   font-size: 12px;
-  font-family: Poppins-Regular, Poppins;
   font-weight: 400;
   color: #a9aeb8;
   line-height: 18px;
@@ -257,10 +330,11 @@ export default {
 
 .name-left-v {
   float: left;
+  width: 50%;
 }
 
 .name-right-v {
-  margin-left: 310px;
+  margin-left: 5px;
 }
 
 .continue-btn {
@@ -270,5 +344,12 @@ export default {
   background: #1e5cef;
   border-radius: 24px;
   color: white;
+}
+
+.industrySelect {
+  width: 640px;
+height: 48px;
+background: #F2F3F5;
+border-radius: 4px;
 }
 </style>
