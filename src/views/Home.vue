@@ -1266,6 +1266,7 @@ export default {
 
       this.vcStep = 2;
       this.isEmptyRecipient = true;
+      this.recipientTableData = [];
       this.recipientIdx = 1;
 
       if (this.schemaType == "Membership Card") {
