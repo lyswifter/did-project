@@ -177,6 +177,7 @@
         :show-close="false"
         size="90%"
         :direction="direction"
+        @close="createVcDrawerDismissAction"
       >
         <template #header="{ close }">
           <h4 class="drawer-title">Create Verifiable Credential</h4>
@@ -960,6 +961,10 @@ export default {
     this.getVcTableInfo();
   },
   methods: {
+    createVcDrawerDismissAction() {
+      this.getUserInfo();
+      this.getVcTableInfo();
+    },
     handleRecipientCheck(row) {
       this.recipientCheckedRowKeys = row;
       if (this.recipientCheckedRowKeys.length == 0) {
