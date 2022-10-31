@@ -222,7 +222,13 @@ export default {
         this.profileName = res.data.data.firstName
           .substring(0, 1)
           .toUpperCase();
-      } else {
+      } else if (res.data.code == 100002) {
+        ElMessage({
+          message: res.data.msg,
+          type: "warning",
+        });
+      }
+       else {
         ElMessage({
           message: res.data.msg,
           type: "error",
