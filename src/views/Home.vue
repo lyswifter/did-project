@@ -641,7 +641,7 @@
         :direction="direction"
         width="680"
       >
-        <div style="text-align: center; width: 600px">
+        <div style="text-align: center;">
           <img style="width: 600px; height: 842px" :src="vcViewLink" alt="" />
         </div>
       </el-dialog>
