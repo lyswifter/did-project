@@ -638,8 +638,7 @@
       <el-dialog
         v-model="vcViewVisiable"
         :show-close="true"
-        :direction="direction"
-        width="680"
+        align-center="true"
       >
         <div style="text-align: center;">
           <img style="width: 600px; height: 842px" :src="vcViewLink" alt="" />
@@ -651,7 +650,6 @@
       <el-dialog
         v-model="issuleMultiVCVisiable"
         :show-close="false"
-        :direction="direction"
         :width="540"
       >
         <template #header="{ close }">
