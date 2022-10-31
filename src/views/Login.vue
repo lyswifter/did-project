@@ -111,7 +111,7 @@ export default {
         }
       } else {
         ElMessage({
-          message: 'Login error',
+          message: res.data.msg,
           type: 'error',
         })
       }
