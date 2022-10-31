@@ -1823,7 +1823,6 @@ export default {
 }
 
 .name {
-  width: 243px;
   height: 51px;
   font-size: 36px;
   font-weight: bold;
