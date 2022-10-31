@@ -27,7 +27,10 @@
           v-model="emailvccontent"
           placeholder="Please input"
         />
-        <el-button class="email-vc-btn" @click="sendAction">Send</el-button>
+        <el-button 
+        class="email-vc-btn" 
+        :disabled=sendDisable
+        @click="sendAction">{{sendString}}</el-button>
       </div>
 
       <br />
@@ -62,10 +65,28 @@ export default {
     return {
       emailcontent: "",
       emailvccontent: "",
+
+      sendDisable: false,
+      sendString: "Send",
+      sendCount: 60,
+      countLimit: 60,
     };
   },
   async created() {},
-  mounted() {},
+  mounted() {
+    this.sendCount = this.countLimit;
+  },
+  watch: {
+    sendCount(newVal, oldVal) {
+      if (newVal <= 0 || newVal == this.countLimit) {
+        this.sendDisable = false;
+        this.sendString = "Send";
+      } else {
+        this.sendDisable = true;
+        this.sendString = newVal+"(s)";
+      }
+    }
+  },
   methods: {
     async loginAction() {
       const res = await axios.post(loginUrl, {
@@ -116,6 +137,14 @@ export default {
           message: 'Send auth code to your email successed.',
           type: 'success',
         })
+
+        let ttimer = setInterval(() => {
+          this.sendCount = this.sendCount - 1;
+          if (this.sendCount <= 0) {
+            this.sendCount = this.countLimit;
+            clearInterval(ttimer);
+          }
+        }, 1000);
       } else {
         ElMessage({
           message: 'Send auth code to your email error, please retry',
