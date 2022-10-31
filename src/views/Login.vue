@@ -83,7 +83,7 @@ export default {
         this.sendString = "Send";
       } else {
         this.sendDisable = true;
-        this.sendString = newVal+"(s)";
+        this.sendString = newVal+"(S)";
       }
     }
   },

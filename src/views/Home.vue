@@ -1192,6 +1192,8 @@ export default {
 
         if (this.data.length == 0) {
           this.hasVc = false;
+        } else {
+          this.hasVc = true;
         }
       } else {
         ElMessage({
