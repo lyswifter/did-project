@@ -1312,6 +1312,8 @@ export default {
       this.inputRecipientsData.forEach((element) => {
         element.claimContent = null;
       });
+      this.issueDate = null;
+      this.expireDate = null;
       this.inputRecipientVisiable = true;
     },
     addRecipientAction() {

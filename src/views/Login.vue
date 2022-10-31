@@ -146,7 +146,6 @@ export default {
 #welcome-title {
   margin-left: 105px;
   margin-top: 65px;
-  width: 245px;
   height: 39px;
   font-size: 28px;
   font-weight: bold;
