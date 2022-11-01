@@ -202,7 +202,13 @@ export default {
           message: "Add addition information successed.",
           type: "success",
         });
+      } else if (res.data.code == "40001") {
+        this.logoutAction();
       } else {
+        ElMessage({
+          message: res.data.msg,
+          type: "error",
+        });
       }
     },
     async getUserInfo() {
@@ -222,6 +228,8 @@ export default {
         this.profileName = res.data.data.firstName
           .substring(0, 1)
           .toUpperCase();
+      } else if (res.data.code == "40001") {
+        this.logoutAction();
       } else {
         ElMessage({
           message: res.data.msg,
