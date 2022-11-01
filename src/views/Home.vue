@@ -1166,6 +1166,8 @@ export default {
           .toUpperCase();
       } else if (res.data.code == 100002) {
         this.$router.push({ name: "personInfo" });
+      } else if (res.data.code == 40001) {
+        this.logoutAction();
       } else {
         ElMessage({
           message: res.data.msg,
@@ -1195,6 +1197,8 @@ export default {
         } else {
           this.hasVc = true;
         }
+      } else if (res.data.code == 40001) {
+        this.logoutAction();
       } else {
         ElMessage({
           message: res.data.msg,
@@ -1222,11 +1226,11 @@ export default {
         },
       });
 
-      console.log(res.data);
-
       if (res.data.code == 0 && res.data.data.verify) {
         this.verifyResultShow = true;
         this.vcVerifyRet = res.data.data;
+      } else if (res.data.code == 40001) {
+        this.logoutAction();
       } else {
         ElMessage({
           message: res.data.msg,
@@ -1246,6 +1250,8 @@ export default {
         this.schemaList = res.data.data;
         this.schemaVisible = true;
         this.vcStep = 1;
+      } else if (res.data.code == 40001) {
+        this.logoutAction();
       } else {
         ElMessage({
           message: res.data.msg,
@@ -1308,6 +1314,8 @@ export default {
       if (res.data.code == 0) {
         this.inputRecipientsData = res.data.data;
         this.createRecipientColumns(this.inputRecipientsData);
+      } else if (res.data.code == 40001) {
+        this.logoutAction();
       } else {
         ElMessage({
           message: res.data.msg,
@@ -1370,18 +1378,9 @@ export default {
           }
         });
 
-        // let obj2 = {
-        //   holder: element.holder,
-        //   holder_name: element.holder_name,
-        //   credential_title: element.credential_title,
-        //   level: element.level,
-        // };
-
         obj["claimsStr"] = JSON.stringify(obj2);
         needClaims.push(obj);
       });
-
-      console.log(needClaims)
 
       if (needClaims.length == 0) {
         alert("need claim must not be empty");
@@ -1414,6 +1413,8 @@ export default {
         this.processing = false;
         this.vcStep = 3;
         this.createOk = true;
+      } else if (res.data.code == 40001) {
+        this.logoutAction();
       } else {
         clearInterval(timer);
         this.processing = false;
@@ -1442,6 +1443,13 @@ export default {
       if (res.data.code == 0) {
         this.vcViewVisiable = true;
         this.vcViewLink = res.data.data;
+      } else if (res.data.code == 40001) {
+        this.logoutAction();
+      } else {
+        ElMessage({
+          message: res.data.msg,
+          type: "error",
+        });
       }
     },
 
@@ -1509,7 +1517,6 @@ export default {
       );
 
       let zipfile = new Blob([res.data], { type: "application/zip" });
-
       let url = window.URL.createObjectURL(zipfile);
       let a = document.createElement("a");
       a.style.display = "none";
@@ -1564,6 +1571,8 @@ export default {
 
         // reload total count
         this.getUserInfo();
+      } else if (res.data.code == 40001) {
+        this.logoutAction();
       } else {
         ElMessage({
           message: res.data.msg,
@@ -1604,6 +1613,8 @@ export default {
 
         this.isEmptyRecipient = false;
         this.issuleMultiVCVisiable = false;
+      } else if (res.data.code == 40001) {
+        this.logoutAction();
       } else {
         ElMessage({
           message: res.data.msg,
@@ -1627,6 +1638,8 @@ export default {
         this.personalTagsVisiable = true;
         this.personalTags = res.data.data.list;
         this.personalTagDis = res.data.data.holderDid;
+      } else if (res.data.code == 40001) {
+        this.logoutAction();
       } else {
         ElMessage({
           message: res.data.msg,

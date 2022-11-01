@@ -202,7 +202,13 @@ export default {
           message: "Add addition information successed.",
           type: "success",
         });
+      } else if (res.data.code == 40001) {
+        this.logoutAction();
       } else {
+        ElMessage({
+          message: res.data.msg,
+          type: "error",
+        });
       }
     },
     async getUserInfo() {
@@ -227,8 +233,9 @@ export default {
           message: res.data.msg,
           type: "warning",
         });
-      }
-       else {
+      } else if (res.data.code == 40001) {
+        this.logoutAction();
+      } else {
         ElMessage({
           message: res.data.msg,
           type: "error",
