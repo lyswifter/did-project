@@ -75,8 +75,8 @@
 
         <div class="content-view">
           <div class="credential-display">
-            <el-row gutter="50" justify="center">
-              <el-col span="16">
+            <el-row gutter=50 justify="center">
+              <el-col span=16>
                 <div class="display-left" :style="{ width: autoWidth + 'px' }">
                   <h2 class="dis-title f-color">Credentials</h2>
                   <h1 class="dis-count f-color">
@@ -84,7 +84,7 @@
                   </h1>
                 </div>
               </el-col>
-              <el-col span="8">
+              <el-col span=8>
                 <div class="display-right">
                   <h2 class="w-color">Credential Verifier</h2>
                   <br />
@@ -102,8 +102,8 @@
           </div>
 
           <div class="verify-entrance-view">
-            <el-row gutter="20" justify="space-between">
-              <el-col span="20">
+            <el-row gutter=20 justify="space-between">
+              <el-col span=20>
                 <div class="verify-left">
                   <h2 class="f-color">Verifiable Credentials</h2>
                   <h4 class="l-color">
@@ -111,7 +111,7 @@
                   </h4>
                 </div>
               </el-col>
-              <el-col span="4">
+              <el-col span=4>
                 <div class="verify-right">
                   <el-button
                     color="#1E5CEF"
@@ -129,7 +129,7 @@
           <div v-if="hasVc" class="vctable-view">
             <div class="vctableHeaderView">
               <el-row justify="end">
-                <el-col span="24">
+                <el-col span=24>
                   <el-button
                     class="batch-download-btn"
                     type="plain"
@@ -191,7 +191,7 @@
 
         <div class="select-schema-step">
           <el-row>
-            <el-col span="2">
+            <el-col span=2>
               <el-button
                 v-if="vcStep == 1"
                 type="primary"
@@ -215,7 +215,7 @@
               >
             </el-col>
 
-            <el-col span="18">
+            <el-col span=18>
               <div v-if="vcStep == 1">
                 <h3 class="step-title">Select Schema</h3>
                 <h4 class="step-subtitle">
@@ -249,7 +249,7 @@
               </div>
             </el-col>
 
-            <el-col span="4" :offset="13">
+            <el-col span=4 :offset="13">
               <div v-if="vcStep == 1">
                 <el-button
                   type="primary"
@@ -287,8 +287,8 @@
         </div>
 
         <div v-if="vcStep == 1" class="select-schema-content">
-          <el-row gutter="20">
-            <el-col span="6">
+          <el-row gutter=20>
+            <el-col span=6>
               <div class="card" @click="selectedOne">
                 <div
                   class="card-top cardtopnormal"
@@ -309,7 +309,7 @@
               </div>
             </el-col>
 
-            <el-col span="6">
+            <el-col span=6>
               <div class="card" @click="selectedTwo">
                 <div
                   class="card-top cardtopnormal"
@@ -330,7 +330,7 @@
               </div>
             </el-col>
 
-            <el-col :span="6">
+            <el-col span=6>
               <div class="card">
                 <div class="card-top cardtopnormal">
                   <img
@@ -375,8 +375,8 @@
 
           <div v-else class="recipientTableView">
             <div class="recipientTopView">
-              <el-row gutter="5">
-                <el-col span="4">
+              <el-row gutter=5>
+                <el-col span=4>
                   <el-button
                     type="primary"
                     class="manually-add-btn"
@@ -387,7 +387,7 @@
                   >
                 </el-col>
 
-                <el-col span="4">
+                <el-col span=4>
                   <el-button
                     type="plain"
                     class="import-btn"
@@ -397,7 +397,7 @@
                   >
                 </el-col>
 
-                <el-col span="4" :offset="15">
+                <el-col span=4 :offset="15">
                   <el-button
                     type="primary"
                     class="issue-btn"
@@ -438,7 +438,7 @@
         <div v-else-if="vcStep == 3">
           <div v-if="createOk" class="okCreatedVc">
             <el-row>
-              <el-col span="2" :offset="17">
+              <el-col span=2 :offset="17">
                 <el-button
                   type="plain"
                   class="manually-add-btn"
@@ -448,7 +448,7 @@
                 >
               </el-col>
 
-              <el-col span="2" style="margin-left: 10px">
+              <el-col span=2 style="margin-left: 10px">
                 <el-button
                   type="primary"
                   class="manually-add-btn"
@@ -506,10 +506,10 @@
 
           <div class="fileShowView">
             <el-row>
-              <el-col span="18" :offset="1">
+              <el-col span=18 :offset="1">
                 <!-- <h3 class="filenamesView">xxxxx.json</h3> -->
               </el-col>
-              <el-col span="6" :offset="20">
+              <el-col span=6 :offset="20">
                 <el-button
                   size="large"
                   type="primary"
@@ -597,8 +597,8 @@
           </div>
 
           <div style="margin-top: 5px">
-            <el-row gutter="5">
-              <el-col span="11">
+            <el-row gutter=5>
+              <el-col span=11>
                 <h3 class="dialog-title">* Issue Date</h3>
                 <el-date-picker
                   v-model="issueDate"
@@ -608,7 +608,7 @@
                   value-format="YYYY-MM-DD"
                 />
               </el-col>
-              <el-col span="11" :offset="1">
+              <el-col span=11 :offset="1">
                 <h3 class="dialog-title">Expiration Date</h3>
                 <el-date-picker
                   v-model="expireDate"
@@ -695,8 +695,8 @@
 
         <template #footer>
           <div class="multiFooterView">
-            <el-row gutter="10" justify="center">
-              <el-col span="12">
+            <el-row gutter=10 justify="center">
+              <el-col span=12>
                 <el-button
                   class="multi-vc-btn"
                   type="plain"
@@ -705,7 +705,7 @@
                   >Cancel</el-button
                 >
               </el-col>
-              <el-col span="12">
+              <el-col span=12>
                 <el-button
                   class="multi-vc-btn"
                   type="plain"
@@ -833,6 +833,8 @@ import {
   Trash,
 } from "@vicons/tabler";
 
+import ethr from "../crypto/eth.js";
+
 export default {
   name: "Home",
   components: {},
@@ -921,6 +923,8 @@ export default {
   created() {},
   watch: {},
   mounted() {
+    this.queryBlockchain();
+
     this.autoWidth = window.outerWidth * 0.6;
 
     this.pagination = reactive({
@@ -961,6 +965,11 @@ export default {
     this.getVcTableInfo();
   },
   methods: {
+    queryBlockchain() {
+      ethr.queryBlockchain(ethr.providerEndpoint);
+
+      ethr.genWalletFromMnemonic();
+    },
     createVcDrawerDismissAction() {
       this.getUserInfo();
       this.getVcTableInfo();
