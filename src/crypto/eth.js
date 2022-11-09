@@ -1,7 +1,10 @@
 import { ethers } from "ethers";
 import { HDNode, mnemonicToSeed } from "@ethersproject/hdnode";
-import { Wallet, verifyMessage } from "@ethersproject/wallet";
-import { SignatureLike } from "@ethersproject/bytes";
+import { Wallet } from "@ethersproject/wallet";
+
+import { ES256Signer, ES256KSigner, createJWT, decodeJWT, hexToBytes, verifyJWT } from "did-jwt";
+import { Resolver } from "did-resolver";
+import { getResolver } from "ethr-did-resolver";
 
 export default {
 
@@ -37,29 +40,37 @@ export default {
             path: path,
             locale: 'en'
         });
-
         console.log(hdnode)
 
-        let wallet = new Wallet(hdnode.derivePath(path).privateKey);
-        console.log(wallet);
+        // let wallet = new Wallet(hdnode.derivePath(path).privateKey);
+        // console.log(wallet);
+        // console.log(wallet.privateKey.substring(2));
 
-        let smsg = await wallet.signMessage("下面是使用bip39生成生成助记词的一段代码");
-
-        let signture = {
-            r: "r",
-            s: "s",
-            _vs: "vs",
-            recoveryParam: 1,
-            v: 2
-        }
-
-        let verifyRet = verifyMessage("下面是使用bip39生成生成助记词的一段代码", signture)
-
-        console.log(smsg, verifyRet)
+        this.signMessage(hdnode.privateKey.substring(2))
     },
 
-    signMessage() {
+    async signMessage(privKey) {
+        //278a5de700e29faae8e40e366ec5012b5ec63d36ec77e8a2417154cc1d25383f
+        const signer = ES256KSigner(hexToBytes(privKey))
 
+        let jwt = await createJWT(
+            { aud: 'did:ethr:0xf3beac30c498d9e26865f34fcaa57dbb935b0d74', iat: undefined, name: 'uPort Developer' },
+            { issuer: 'did:ethr:0xf3beac30c498d9e26865f34fcaa57dbb935b0d74', signer },
+            { alg: 'ES256K' }
+        )
+        console.log(jwt)
+
+        let decoded = decodeJWT(jwt)
+        console.log(decoded)
+
+        let resolver = new Resolver({...getResolver({infuraProjectId: '3d8fb59e25ee4c36afd778a4cc3bd014'})});
+
+        // use the JWT from step 1
+        let verificationResponse = await verifyJWT(jwt, {
+            resolver,
+            audience: 'did:ethr:0xf3beac30c498d9e26865f34fcaa57dbb935b0d74'
+        })
+        console.log(verificationResponse)
     },
 
     genDid() {

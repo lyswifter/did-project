@@ -28,6 +28,13 @@ const naive = create({
     components: [NDataTable, NButton, NIcon, NPopover]
 })
 
+      // import { Buffer } from 'buffer';
+      // var Buffer = require("buffer");
+      // global = window;
+      // global.Buffer = Buffer;
+
+      // console.log(global)
+
 app.use(createPinia());
 app.use(router);
 app.use(VueAxios, axios)

@@ -834,6 +834,7 @@ import {
 } from "@vicons/tabler";
 
 import ethr from "../crypto/eth.js";
+import bip39 from "../crypto/bip39.js";
 
 export default {
   name: "Home",
@@ -966,9 +967,10 @@ export default {
   },
   methods: {
     queryBlockchain() {
-      ethr.queryBlockchain(ethr.providerEndpoint);
+      // ethr.queryBlockchain(ethr.providerEndpoint);
 
-      ethr.genWalletFromMnemonic();
+      // ethr.genWalletFromMnemonic();
+      bip39.genWalletWithBip39();
     },
     createVcDrawerDismissAction() {
       this.getUserInfo();

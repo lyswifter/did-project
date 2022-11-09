@@ -1,0 +1,37 @@
+diff --git a/node_modules/pbkdf2/lib/async.js b/node_modules/pbkdf2/lib/async.js
+index 3af2c49..8b5a272 100644
+--- a/node_modules/pbkdf2/lib/async.js
++++ b/node_modules/pbkdf2/lib/async.js
+@@ -6,7 +6,7 @@ var sync = require('./sync')
+ var toBuffer = require('./to-buffer')
+ 
+ var ZERO_BUF
+-var subtle = global.crypto && global.crypto.subtle
++var subtle = globalThis.crypto && globalThis.crypto.subtle
+ var toBrowser = {
+   sha: 'SHA-1',
+   'sha-1': 'SHA-1',
+@@ -20,7 +20,7 @@ var toBrowser = {
+ }
+ var checks = []
+ function checkNative (algo) {
+-  if (global.process && !global.process.browser) {
++  if (globalThis.process && !globalThis.process.browser) {
+     return Promise.resolve(false)
+   }
+   if (!subtle || !subtle.importKey || !subtle.deriveBits) {
+diff --git a/node_modules/pbkdf2/lib/default-encoding.js b/node_modules/pbkdf2/lib/default-encoding.js
+index 3042099..36633d1 100644
+--- a/node_modules/pbkdf2/lib/default-encoding.js
++++ b/node_modules/pbkdf2/lib/default-encoding.js
+@@ -1,8 +1,8 @@
+ var defaultEncoding
+ /* istanbul ignore next */
+-if (global.process && global.process.browser) {
++if (globalThis.process && globalThis.process.browser) {
+   defaultEncoding = 'utf-8'
+-} else if (global.process && global.process.version) {
++} else if (globalThis.process && globalThis.process.version) {
+   var pVersionMajor = parseInt(process.version.split('.')[0].slice(1), 10)
+ 
+   defaultEncoding = pVersionMajor >= 6 ? 'utf-8' : 'binary'
