@@ -1,0 +1,102 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/did/v1",
+  ],
+  "id": "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE",
+  "verificationMethod": [ //验证方法集合
+    {
+      "type": "Ed25519VerificationKey2018",
+      "id": "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE#key-1",
+      "controller": "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE",
+      "publicKeyBase58": "2HHAKDS8EZK5ZfgZTT7jJFjE5bqkZuFoUgHYAZLjFMbY"
+    },
+    {
+      "type": "X25519KeyAgreementKey2019",
+      "id": "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE#key-agreement-1",
+      "controller": "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE",
+      "publicKeyBase58": "GCCnH6DbTcKBfx7ifNK2wHnnGgEq9RdfP9P7yriCMKmE"
+    }
+  ],
+  "authentication": [  //可直接引用verificationMethod,也可以自己定义verificationMethod方法, 进行登录,可查看下载VC列表权限
+    "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE#key-1",
+    {
+      "type": "Ed25519VerificationKey2018",
+      "id": "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE#key-agreement-1",
+      "controller": "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE",
+      "publicKeyBase58": "GCCnH6DbTcKBfx7ifNK2wHnnGgEq9RdfP9P7yriCMKmE"
+    }
+  ],
+  "assertionMethod": [ //可直接引用verificationMethod,也可以自己定义verificationMethod方法，在这里的controller被允许发行VC
+    "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE#key-1",
+    {
+      "type": "Ed25519VerificationKey2018",
+      "id": "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE#key-agreement-1",
+      "controller": "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE",
+      "publicKeyBase58": "GCCnH6DbTcKBfx7ifNK2wHnnGgEq9RdfP9P7yriCMKmE"
+    }
+  ],
+  "keyAgreement": [ //可直接引用verificationMethod,也可以自己定义verificationMethod方法，用户加密传输的key,保障通讯安全 
+    "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE#key-agreement-1",
+    {
+      "type": "Ed25519VerificationKey2018",
+      "id": "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE#key-agreement-1",
+      "controller": "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE",
+      "publicKeyBase58": "GCCnH6DbTcKBfx7ifNK2wHnnGgEq9RdfP9P7yriCMKmE"
+    }
+  ],
+  "capabilityInvocation": [ //可直接引用verificationMethod,也可以自己定义verificationMethod方法，更新did文档权限
+    "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE#key-agreement-1",
+    {
+      "type": "Ed25519VerificationKey2018",
+      "id": "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE#key-agreement-1",
+      "controller": "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE",
+      "publicKeyBase58": "GCCnH6DbTcKBfx7ifNK2wHnnGgEq9RdfP9P7yriCMKmE"
+    }
+  ],
+  "capabilityDelegation": [ //可直接引用verificationMethod,也可以自己定义verificationMethod方法，did controller 权力下放, 把当前did权限交给其他的did
+    "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE#key-agreement-1",
+    {
+      "type": "Ed25519VerificationKey2018",
+      "id": "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE#key-agreement-1",
+      "controller": "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE",
+      "publicKeyBase58": "GCCnH6DbTcKBfx7ifNK2wHnnGgEq9RdfP9P7yriCMKmE"
+    }
+  ]
+}
+
+
+
+
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/2018/credentials/examples/v1",
+    "https://w3id.org/security/suites/ed25519-2020/v1"
+  ],
+  "id": "ebfeb1f712ebc6f1c276e12ec21",  //vc编号，必须字段
+  "type": [  //VC type  必须字段
+    "VerifiableCredential",
+    "UniversityDegreeCredential"
+  ],
+  "issuer": "https://example.edu/issuers/565049",  //发行issuer did 必须字段
+  "issuanceDate": "2010-01-01T00:00:00Z",  //发行时间 必须字段
+  "expirationDate": "2020-01-01T19:23:24Z",   //失效时间
+  "credentialSubject": {
+    "id": "did:example:ebfeb1f712eb2c6f1c276e12ec21",  //holder did 必须字段
+    "degree": {  //证书内容  必须
+      "type": "BachelorDegree",
+      "name": "Bachelor of Science and Arts"
+    }
+  },
+    "credentialSchema": {//零知识证明 验证格式
+    "id": "https://example.org/examples/degree.zkp",
+    "type": "ZkpExampleSchema2018"
+  },
+  "proof": {
+    "type": "Ed25519Signature2020", //签名方式
+    "created": "2022-02-25T14:58:42Z", //签名时间
+    "verificationMethod": "https://example.edu/issuers/565049#key-1",   //签名key 
+    "proofPurpose": "assertionMethod",  
+    "proofValue": "z3FXQjecWufY46yg5abdVZsXqLhxhueuSoZgNSARiKBk9czhSePTFehP8c3PGfb6a22gkfUKods5D2UAUL5n2Brbx"   //proof
+  }
+}

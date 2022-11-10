@@ -833,8 +833,9 @@ import {
   Trash,
 } from "@vicons/tabler";
 
-import ethr from "../crypto/eth.js";
 import bip39 from "../crypto/bip39.js";
+import vc from "../crypto/vc.js";
+import did from "../crypto/did.js";
 
 export default {
   name: "Home",
@@ -919,6 +920,9 @@ export default {
 
       personalTagsDetailVisiable: false,
       personalTagDetail: {},
+
+      // did-wallet
+      didWallet: {},
     };
   },
   created() {},
@@ -966,11 +970,15 @@ export default {
     this.getVcTableInfo();
   },
   methods: {
-    queryBlockchain() {
+    async queryBlockchain() {
       // ethr.queryBlockchain(ethr.providerEndpoint);
-
       // ethr.genWalletFromMnemonic();
-      bip39.genWalletWithBip39();
+
+      this.didWallet = await bip39.genWalletWithBip39();
+
+      await did.createDidJwt(this.didWallet);
+
+      await vc.createVcJwt(this.didWallet);
     },
     createVcDrawerDismissAction() {
       this.getUserInfo();
