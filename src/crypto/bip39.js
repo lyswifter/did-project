@@ -1,5 +1,6 @@
 import * as bip39 from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
+
 import { hexlify } from 'ethers/lib/utils';
 import { HDKey } from 'ethereum-cryptography/hdkey'
 import { Wallet } from "@ethersproject/wallet";

@@ -558,6 +558,8 @@ import domtoimage from "dom-to-image";
 import bip39 from "../crypto/bip39.js";
 import vc from "../crypto/vc.js";
 import did from "../crypto/did.js";
+import tmpl from "../db/tmpl.js";
+import claim from "../db/claim.js";
 
 export default {
   name: "Home",
@@ -655,10 +657,12 @@ export default {
   created() { },
   watch: {},
   mounted() {
+    // tmpl.createVcTemplate()
+    // claim.createClaims()
+
     this.queryBlockchain();
 
     this.autoWidth = window.outerWidth * 0.6;
-
     this.pagination = reactive({
       page: 1,
       pageSize: 5,
@@ -707,10 +711,7 @@ export default {
       // ethr.genWalletFromMnemonic();
 
       this.didWallet = await bip39.genWalletWithBip39();
-
       await did.createDidJwt(this.didWallet);
-
-      await vc.createVcJwt(this.didWallet);
     },
     createVcDrawerDismissAction() {
       this.getUserInfo();
@@ -726,7 +727,6 @@ export default {
     },
     handleCheck(rows) {
       this.vcTableCheckRowKey = rows;
-
       if (this.vcTableCheckRowKey.length == 0) {
         this.ableToDownload = true;
       } else {
@@ -991,24 +991,28 @@ export default {
     },
     async toCreateVcAction() {
       // 1.get template list
-      const res = await axios.get(getTemplListUrl, {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      });
+      // const res = await axios.get(getTemplListUrl, {
+      //   headers: {
+      //     Authorization: localStorage.getItem("token"),
+      //   },
+      // });
 
-      if (res.data.code == 0) {
-        this.schemaList = res.data.data;
-        this.schemaVisible = true;
-        this.vcStep = 1;
-      } else if (res.data.code == 40001) {
-        this.logoutAction();
-      } else {
-        ElMessage({
-          message: res.data.msg,
-          type: "error",
-        });
-      }
+      // if (res.data.code == 0) {
+      //   this.schemaList = res.data.data;
+      //   this.schemaVisible = true;
+      //   this.vcStep = 1;
+      // } else if (res.data.code == 40001) {
+      //   this.logoutAction();
+      // } else {
+      //   ElMessage({
+      //     message: res.data.msg,
+      //     type: "error",
+      //   });
+      // }
+
+      this.schemaList = tmpl.queryVcTemplate();
+      this.schemaVisible = true;
+      this.vcStep = 1;
     },
     selectedOne() {
       this.hasSelectedTwo = false;
@@ -1049,30 +1053,38 @@ export default {
         this.schemaId = 2;
       }
 
-      // get template claim infornation
-      const res = await axios.post(
-        templateClaimUrl,
-        {
-          templateId: this.schemaId,
-        },
-        {
-          headers: {
-            Authorization: localStorage.getItem("token"),
-          },
+      claim.queryCliamsWith(this.schemaId).then(
+        (val) => {
+          console.log(val);
+          this.inputRecipientsData = val;
+          this.createRecipientColumns(this.inputRecipientsData);
         }
-      );
+      )
 
-      if (res.data.code == 0) {
-        this.inputRecipientsData = res.data.data;
-        this.createRecipientColumns(this.inputRecipientsData);
-      } else if (res.data.code == 40001) {
-        this.logoutAction();
-      } else {
-        ElMessage({
-          message: res.data.msg,
-          type: "error",
-        });
-      }
+      // // get template claim information
+      // const res = await axios.post(
+      //   templateClaimUrl,
+      //   {
+      //     templateId: this.schemaId,
+      //   },
+      //   {
+      //     headers: {
+      //       Authorization: localStorage.getItem("token"),
+      //     },
+      //   }
+      // );
+
+      // if (res.data.code == 0) {
+      //   this.inputRecipientsData = res.data.data;
+      //   this.createRecipientColumns(this.inputRecipientsData);
+      // } else if (res.data.code == 40001) {
+      //   this.logoutAction();
+      // } else {
+      //   ElMessage({
+      //     message: res.data.msg,
+      //     type: "error",
+      //   });
+      // }
     },
     async addManualAction() {
       this.inputRecipientsData.forEach((element) => {
@@ -1138,44 +1150,69 @@ export default {
         return;
       }
 
-      const res = await axios.post(
-        issueVcUrl,
-        {
-          claims: needClaims,
-          templateId: this.schemaId,
+      console.log("needClaims")
+      console.log(needClaims)
+
+      vc.createVcJwt(this.didWallet, needClaims, this.schemaId).then(
+        (value) => {
+          // clearInterval(timer);
+          // this.percentageCount += 100;
+          // if (this.percentageCount > 100) {
+          //   this.percentageCount = 100;
+          // }
+
+          // this.newVcId = value;
+          // this.newVcNum =
+          //   "Issued " + this.newVcId.length + " Verifiable Credential";
+          // this.processing = false;
+          // this.vcStep = 3;
+          // this.createOk = true;
         },
-        {
-          headers: {
-            Authorization: localStorage.getItem("token"),
-          },
+        (reason) => {
+            // clearInterval(timer);
+            // this.processing = false;
+            // this.createOk = false;
         }
-      );
+      )
 
-      if (res.data.code == 0) {
-        clearInterval(timer);
-        this.percentageCount += 100;
-        if (this.percentageCount > 100) {
-          this.percentageCount = 100;
-        }
+      // const res = await axios.post(
+      //   issueVcUrl,
+      //   {
+      //     claims: needClaims,
+      //     templateId: this.schemaId,
+      //   },
+      //   {
+      //     headers: {
+      //       Authorization: localStorage.getItem("token"),
+      //     },
+      //   }
+      // );
 
-        this.newVcId = res.data.data;
-        this.newVcNum =
-          "Issued " + this.newVcId.length + " Verifiable Credential";
-        this.processing = false;
-        this.vcStep = 3;
-        this.createOk = true;
-      } else if (res.data.code == 40001) {
-        this.logoutAction();
-      } else {
-        clearInterval(timer);
-        this.processing = false;
-        this.createOk = false;
+      // if (res.data.code == 0) {
+      //   clearInterval(timer);
+      //   this.percentageCount += 100;
+      //   if (this.percentageCount > 100) {
+      //     this.percentageCount = 100;
+      //   }
 
-        ElMessage({
-          message: res.data.msg,
-          type: "error",
-        });
-      }
+      //   this.newVcId = res.data.data;
+      //   this.newVcNum =
+      //     "Issued " + this.newVcId.length + " Verifiable Credential";
+      //   this.processing = false;
+      //   this.vcStep = 3;
+      //   this.createOk = true;
+      // } else if (res.data.code == 40001) {
+      //   this.logoutAction();
+      // } else {
+      //   clearInterval(timer);
+      //   this.processing = false;
+      //   this.createOk = false;
+
+      //   ElMessage({
+      //     message: res.data.msg,
+      //     type: "error",
+      //   });
+      // }
     },
     toDownloadAction() {
       if (this.newVcId.length > 1) {
@@ -1203,7 +1240,6 @@ export default {
         });
       }
     },
-
     captureVcImage() {
       var node = document.getElementById("vc-image");
 
@@ -1228,7 +1264,6 @@ export default {
         link.click();
       });
     },
-
     createRecipientColumns(orign) {
       let cols = [];
       let first = {
@@ -1356,7 +1391,6 @@ export default {
         });
       }
     },
-
     async multiVcImportAction() {
       let formData = new FormData();
       formData.append("multipartFile", this.multoVcFileList[0].raw);

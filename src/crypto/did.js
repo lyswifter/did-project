@@ -22,6 +22,7 @@ export default {
             resolver,
             audience: 'did:ethr:'+hdWallet.address
         })
+        
         console.log(verificationResponse)
     }
 }
