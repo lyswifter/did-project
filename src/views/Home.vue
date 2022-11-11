@@ -1,12 +1,11 @@
 <template>
   <div class="common-layout">
     <el-container>
+
+      <!-- Header -->
+
       <el-header class="headerview">
-        <el-menu
-          class="el-menu-demo did-menu"
-          mode="horizontal"
-          :ellipsis="false"
-        >
+        <el-menu class="el-menu-demo did-menu" mode="horizontal" :ellipsis="false">
           <el-menu-item index="0">
             <img class="logoview" src="../assets/img/LOGO@2x.png" alt="" />
           </el-menu-item>
@@ -23,21 +22,11 @@
                 <n-button text color="#ff69b4" @click="logoutAction">
                   <template #icon>
                     <n-icon>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        xmlns:xlink="http://www.w3.org/1999/xlink"
-                        viewBox="0 0 24 24"
-                      >
-                        <g
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <path
-                            d="M14 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-2"
-                          ></path>
+                      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                        viewBox="0 0 24 24">
+                        <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                          stroke-linejoin="round">
+                          <path d="M14 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-2"></path>
                           <path d="M7 12h14l-3-3m0 6l3-3"></path>
                         </g>
                       </svg>
@@ -51,13 +40,11 @@
         </el-menu>
       </el-header>
 
+      <!-- Main -->
+
       <el-main class="did-main">
         <div class="info-left">
-          <img
-            class="info-icon"
-            src="../assets/img/avatardefault_128px@2x.png"
-            alt=""
-          />
+          <img class="info-icon" src="../assets/img/avatardefault_128px@2x.png" alt="" />
         </div>
 
         <div class="info-right">
@@ -89,12 +76,7 @@
                   <h2 class="w-color">Credential Verifier</h2>
                   <br />
                   <h3 @click="toVerifyAction">
-                    <a
-                      class="w-color"
-                      href="javascript:void();"
-                      style="text-decoration: none"
-                      >Easy Verify</a
-                    >
+                    <a class="w-color" href="javascript:void();" style="text-decoration: none">Easy Verify</a>
                   </h3>
                 </div>
               </el-col>
@@ -107,20 +89,15 @@
                 <div class="verify-left">
                   <h2 class="f-color">Verifiable Credentials</h2>
                   <h4 class="l-color">
-                    Here are all the verifiable credentials you have issued. You can view, download or delete persistent credentials in D-pass.
+                    Here are all the verifiable credentials you have issued. You can view, download or delete persistent
+                    credentials in D-pass.
                   </h4>
                 </div>
               </el-col>
               <el-col span=4>
                 <div class="verify-right">
-                  <el-button
-                    color="#1E5CEF"
-                    class="verify-btn"
-                    type="primary"
-                    @click="toCreateVcAction"
-                    round
-                    >Create Verifiable Credential</el-button
-                  >
+                  <el-button color="#1E5CEF" class="verify-btn" type="primary" @click="toCreateVcAction" round>Create
+                    Verifiable Credential</el-button>
                 </div>
               </el-col>
             </el-row>
@@ -130,38 +107,19 @@
             <div class="vctableHeaderView">
               <el-row justify="end">
                 <el-col span=24>
-                  <el-button
-                    class="batch-download-btn"
-                    type="plain"
-                    :disabled="ableToDownload"
-                    @click="tiggerBatchDownloadAction"
-                    round
-                    >Download</el-button
-                  >
+                  <el-button class="batch-download-btn" type="plain" :disabled="ableToDownload"
+                    @click="tiggerBatchDownloadAction" round>Download</el-button>
                 </el-col>
               </el-row>
             </div>
 
-            <n-data-table
-              :columns="columns"
-              :data="data"
-              :pagination="pagination"
-              :max-height="600"
-              :scroll-x="1000"
-              :row-key="vcRowKey"
-              @update:checked-row-keys="handleCheck"
-            />
+            <n-data-table :columns="columns" :data="data" :pagination="pagination" :max-height="600" :scroll-x="1000"
+              :row-key="vcRowKey" @update:checked-row-keys="handleCheck" />
           </div>
 
           <div v-else class="emptyView">
-            <el-button
-              color="#1E5CEF"
-              class="verify-btn create-vc-btn"
-              type="primary"
-              @click="toCreateVcAction"
-              round
-              >Create Verifiable Credential</el-button
-            >
+            <el-button color="#1E5CEF" class="verify-btn create-vc-btn" type="primary" @click="toCreateVcAction" round>
+              Create Verifiable Credential</el-button>
           </div>
         </div>
 
@@ -170,49 +128,21 @@
         </div>
       </el-main>
 
-      <!-- DRAWER -->
+      <!-- DRAWER Create Verify Credential -->
 
-      <el-drawer
-        v-model="schemaVisible"
-        :show-close="false"
-        size="90%"
-        :direction="direction"
-        @close="createVcDrawerDismissAction"
-      >
+      <el-drawer v-model="schemaVisible" :show-close="false" size="90%" :direction="direction"
+        @close="createVcDrawerDismissAction">
         <template #header="{ close }">
           <h4 class="drawer-title">Create Verifiable Credential</h4>
-          <img
-            class="drawer-close"
-            src="../assets/img/close_black@2x.png"
-            @click="close"
-            alt=""
-          />
+          <img class="drawer-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
         </template>
 
         <div class="select-schema-step">
           <el-row>
             <el-col span=2>
-              <el-button
-                v-if="vcStep == 1"
-                type="primary"
-                class="step-btn"
-                circle
-                >{{ vcStep }}</el-button
-              >
-              <el-button
-                v-else-if="vcStep == 2"
-                type="primary"
-                class="step-btn"
-                circle
-                >{{ vcStep }}</el-button
-              >
-              <el-button
-                v-else-if="vcStep == 3"
-                type="primary"
-                class="step-btn"
-                circle
-                >{{ vcStep }}</el-button
-              >
+              <el-button v-if="vcStep == 1" type="primary" class="step-btn" circle>{{ vcStep }}</el-button>
+              <el-button v-else-if="vcStep == 2" type="primary" class="step-btn" circle>{{ vcStep }}</el-button>
+              <el-button v-else-if="vcStep == 3" type="primary" class="step-btn" circle>{{ vcStep }}</el-button>
             </el-col>
 
             <el-col span=18>
@@ -251,35 +181,19 @@
 
             <el-col span=4 :offset="13">
               <div v-if="vcStep == 1">
-                <el-button
-                  type="primary"
-                  class="continue-btn"
-                  @click="toAddRecipient"
-                  >Continue
+                <el-button type="primary" class="continue-btn" @click="toAddRecipient">Continue
                 </el-button>
               </div>
 
               <div v-else-if="vcStep == 2">
                 <div v-if="!processing">
-                  <el-button
-                    type="plain"
-                    class="back-btn"
-                    @click="backAction"
-                    round
-                    >Back</el-button
-                  >
+                  <el-button type="plain" class="back-btn" @click="backAction" round>Back</el-button>
                 </div>
               </div>
 
               <div v-else-if="vcStep == 3">
                 <div v-if="!createOk">
-                  <el-button
-                    type="plain"
-                    class="back-btn"
-                    @click="backAction"
-                    round
-                    >Back</el-button
-                  >
+                  <el-button type="plain" class="back-btn" @click="backAction" round>Back</el-button>
                 </div>
               </div>
             </el-col>
@@ -290,20 +204,10 @@
           <el-row gutter=20>
             <el-col span=6>
               <div class="card" @click="selectedOne">
-                <div
-                  class="card-top cardtopnormal"
-                  :class="{ cardtopselected: hasSelectedOne }"
-                >
-                  <img
-                    style="width: 285px; height: 250px"
-                    src="../assets/img/schema_membership@2x.png"
-                    alt=""
-                  />
+                <div class="card-top cardtopnormal" :class="{ cardtopselected: hasSelectedOne }">
+                  <img style="width: 285px; height: 250px" src="../assets/img/schema_membership@2x.png" alt="" />
                 </div>
-                <div
-                  class="card-bot cardbotnormal"
-                  :class="{ cardbotselected: hasSelectedOne }"
-                >
+                <div class="card-bot cardbotnormal" :class="{ cardbotselected: hasSelectedOne }">
                   Membership Card
                 </div>
               </div>
@@ -311,20 +215,10 @@
 
             <el-col span=6>
               <div class="card" @click="selectedTwo">
-                <div
-                  class="card-top cardtopnormal"
-                  :class="{ cardtopselected: hasSelectedTwo }"
-                >
-                  <img
-                    style="width: 285px; height: 250px"
-                    src="../assets/img/schema_acticit_1y@2x.png"
-                    alt=""
-                  />
+                <div class="card-top cardtopnormal" :class="{ cardtopselected: hasSelectedTwo }">
+                  <img style="width: 285px; height: 250px" src="../assets/img/schema_acticit_1y@2x.png" alt="" />
                 </div>
-                <div
-                  class="card-bot cardbotnormal"
-                  :class="{ cardbotselected: hasSelectedTwo }"
-                >
+                <div class="card-bot cardbotnormal" :class="{ cardbotselected: hasSelectedTwo }">
                   Activity Certificate
                 </div>
               </div>
@@ -333,11 +227,7 @@
             <el-col span=6>
               <div class="card">
                 <div class="card-top cardtopnormal">
-                  <img
-                    style="width: 285px; height: 250px"
-                    src="../assets/img/schema_coming@2x.png"
-                    alt=""
-                  />
+                  <img style="width: 285px; height: 250px" src="../assets/img/schema_coming@2x.png" alt="" />
                 </div>
                 <div class="card-bot cardbotnormal">
                   More schema coming soon…
@@ -349,27 +239,11 @@
 
         <div v-else-if="vcStep == 2">
           <div v-if="isEmptyRecipient" class="emptyRecipient">
-            <img
-              style="width: 144px; height: 144px"
-              src="../assets/img/add_recipients@2x.png"
-              alt=""
-            />
+            <img style="width: 144px; height: 144px" src="../assets/img/add_recipients@2x.png" alt="" />
             <div class="mamualView">
-              <el-button
-                type="primary"
-                class="manually-add-btn"
-                color="#1D2129"
-                @click="addManualAction"
-                round
-                >Add Manually</el-button
-              >
-              <el-button
-                type="plain"
-                class="import-btn"
-                @click="importSheetAction"
-                round
-                >Import Spreadsheet</el-button
-              >
+              <el-button type="primary" class="manually-add-btn" color="#1D2129" @click="addManualAction" round>Add
+                Manually</el-button>
+              <el-button type="plain" class="import-btn" @click="importSheetAction" round>Import Spreadsheet</el-button>
             </div>
           </div>
 
@@ -377,60 +251,29 @@
             <div class="recipientTopView">
               <el-row gutter=5>
                 <el-col span=4>
-                  <el-button
-                    type="primary"
-                    class="manually-add-btn"
-                    color="#1D2129"
-                    @click="addManualAction"
-                    round
-                    >Add Manually</el-button
-                  >
+                  <el-button type="primary" class="manually-add-btn" color="#1D2129" @click="addManualAction" round>Add
+                    Manually</el-button>
                 </el-col>
 
                 <el-col span=4>
-                  <el-button
-                    type="plain"
-                    class="import-btn"
-                    @click="importSheetAction"
-                    round
-                    >Import Spreadsheet</el-button
-                  >
+                  <el-button type="plain" class="import-btn" @click="importSheetAction" round>Import Spreadsheet
+                  </el-button>
                 </el-col>
 
                 <el-col span=4 :offset="15">
-                  <el-button
-                    type="primary"
-                    class="issue-btn"
-                    :disabled="disableIssueVc"
-                    @click="toIssueCredentials"
-                    >Issue Credentials
+                  <el-button type="primary" class="issue-btn" :disabled="disableIssueVc" @click="toIssueCredentials">
+                    Issue Credentials
                   </el-button>
                 </el-col>
               </el-row>
             </div>
 
             <!-- table -->
-            <n-data-table
-              :columns="recipientTableColumns"
-              :data="recipientTableData"
-              :pagination="pagination"
-              :max-height="600"
-              :scroll-x="1000"
-              :row-key="rowKey"
-              @update:checked-row-keys="handleRecipientCheck"
-            />
+            <n-data-table :columns="recipientTableColumns" :data="recipientTableData" :pagination="pagination"
+              :max-height="600" :scroll-x="1000" :row-key="rowKey" @update:checked-row-keys="handleRecipientCheck" />
 
-            <div
-              v-if="processing"
-              class="maskview"
-              color="#FF427AFF"
-              stroke-width="12"
-            >
-              <el-progress
-                class="progressView"
-                type="circle"
-                :percentage="percentageCount"
-              />
+            <div v-if="processing" class="maskview" color="#FF427AFF" stroke-width="12">
+              <el-progress class="progressView" type="circle" :percentage="percentageCount" />
             </div>
           </div>
         </div>
@@ -439,61 +282,30 @@
           <div v-if="createOk" class="okCreatedVc">
             <el-row>
               <el-col span=2 :offset="17">
-                <el-button
-                  type="plain"
-                  class="manually-add-btn"
-                  @click="toDownloadAction"
-                  round
-                  >Download Credential</el-button
-                >
+                <el-button type="plain" class="manually-add-btn" @click="toDownloadAction" round>Download Credential
+                </el-button>
               </el-col>
 
               <el-col span=2 style="margin-left: 10px">
-                <el-button
-                  type="primary"
-                  class="manually-add-btn"
-                  color="#1E5CEF"
-                  @click="toViewVcsAction(newVcId[0])"
-                  round
-                  >View Credential</el-button
-                >
+                <el-button type="primary" class="manually-add-btn" color="#1E5CEF" @click="toViewVcsAction(newVcId[0])"
+                  round>View Credential</el-button>
               </el-col>
             </el-row>
           </div>
         </div>
       </el-drawer>
 
-      <!-- Verify Credential -->
+      <!-- DRAWER Verify Credential -->
 
-      <el-drawer
-        v-model="veriferVisible"
-        :show-close="false"
-        size="90%"
-        :direction="direction"
-      >
+      <el-drawer v-model="veriferVisible" :show-close="false" size="90%" :direction="direction">
         <template #header="{ close }">
           <h4 class="drawer-title">Credential Verifier</h4>
-          <img
-            class="drawer-close"
-            src="../assets/img/close_black@2x.png"
-            @click="close"
-            alt=""
-          />
+          <img class="drawer-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
         </template>
 
         <div class="verifyContentView">
-          <el-upload
-            class="verifyFile"
-            drag
-            :limit="1"
-            :auto-upload="false"
-            v-model:file-list="fileList"
-          >
-            <img
-              style="width: 64px; height: 64px"
-              src="../assets/img/file@2x.png"
-              alt=""
-            />
+          <el-upload class="verifyFile" drag :limit="1" :auto-upload="false" v-model:file-list="fileList">
+            <img style="width: 64px; height: 64px" src="../assets/img/file@2x.png" alt="" />
             <div class="el-upload__text">
               Drop json file here or <em>click to upload</em>
             </div>
@@ -510,24 +322,14 @@
                 <!-- <h3 class="filenamesView">xxxxx.json</h3> -->
               </el-col>
               <el-col span=6 :offset="20">
-                <el-button
-                  size="large"
-                  type="primary"
-                  @click="verifyFileAction"
-                  round
-                  >Verify</el-button
-                >
+                <el-button size="large" type="primary" @click="verifyFileAction" round>Verify</el-button>
               </el-col>
             </el-row>
           </div>
 
           <div class="verifyResultView" v-if="verifyResultShow">
             <div class="resTopView">
-              <img
-                style="width: 32px; height: 32px"
-                src="../assets/img/success@2x.png"
-                alt=""
-              />
+              <img style="width: 32px; height: 32px" src="../assets/img/success@2x.png" alt="" />
               <h2>Verified</h2>
             </div>
 
@@ -554,43 +356,25 @@
         </div>
       </el-drawer>
 
-      <!-- dialog input recipient information -->
+      <!-- Dialog Input recipient information -->
 
-      <el-dialog
-        v-model="inputRecipientVisiable"
-        :show-close="false"
-        :direction="direction"
-        :width="680"
-      >
+      <el-dialog v-model="inputRecipientVisiable" :show-close="false" :direction="direction" :width="680">
         <template #header="{ close }">
           <h4 class="dialog-header-title-recipient">Add Recipients</h4>
-          <img
-            class="dialog-close"
-            src="../assets/img/close_black@2x.png"
-            @click="close"
-            alt=""
-          />
+          <img class="dialog-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
         </template>
 
         <div class="addRecipientContent">
           <div v-for="item in inputRecipientsData" :key="item.claimSort">
             <h3 class="dialog-title">{{ item.claimName }}</h3>
-            <el-input
-              class="inputw"
-              v-model="item.claimContent"
-              placeholder="Please input"
-            />
+            <el-input class="inputw" v-model="item.claimContent" placeholder="Please input" />
             <h4 class="dialog-subtitle">
               {{ item.claimDesc }}
             </h4>
           </div>
 
           <div>
-            <el-checkbox
-              v-model="checked1"
-              label=" Expire this credential"
-              size="large"
-            />
+            <el-checkbox v-model="checked1" label=" Expire this credential" size="large" />
             <h4 class="dialog-subtitle">
               This option will expire the credential after the specified date.
             </h4>
@@ -600,67 +384,54 @@
             <el-row gutter=5>
               <el-col span=11>
                 <h3 class="dialog-title">* Issue Date</h3>
-                <el-date-picker
-                  v-model="issueDate"
-                  type="date"
-                  placeholder="Pick a day"
-                  format="YYYY/MM/DD"
-                  value-format="YYYY-MM-DD"
-                />
+                <el-date-picker v-model="issueDate" type="date" placeholder="Pick a day" format="YYYY/MM/DD"
+                  value-format="YYYY-MM-DD" />
               </el-col>
               <el-col span=11 :offset="1">
                 <h3 class="dialog-title">Expiration Date</h3>
-                <el-date-picker
-                  v-model="expireDate"
-                  type="date"
-                  placeholder="Pick a day"
-                  format="YYYY/MM/DD"
-                  value-format="YYYY-MM-DD"
-                />
+                <el-date-picker v-model="expireDate" type="date" placeholder="Pick a day" format="YYYY/MM/DD"
+                  value-format="YYYY-MM-DD" />
               </el-col>
             </el-row>
           </div>
         </div>
 
         <div class="addRecipientBotView">
-          <el-button
-            type="primary"
-            size="large"
-            class="add-recipient-info-btn"
-            color="#1E5CEF"
-            @click="addRecipientAction"
-            round
-            >Add Recipient
+          <el-button type="primary" size="large" class="add-recipient-info-btn" color="#1E5CEF"
+            @click="addRecipientAction" round>Add Recipient
           </el-button>
         </div>
       </el-dialog>
 
-      <!-- view vc image -->
-      <el-dialog
-        v-model="vcViewVisiable"
-        :show-close="true"
-        align-center="true"
-      >
+      <!-- Dialog View vc image -->
+      <el-dialog v-model="vcViewVisiable" :show-close="true" align-center="true" :width="680">
         <div style="text-align: center;">
-          <img style="width: 600px; height: 842px" :src="vcViewLink" alt="" />
+          <!-- <img style="width: 600px; height: 842px" :src="vcViewLink" alt="" /> -->
+          <div id="vc-image" class="vc-image-view">
+            <h3 class="sub-title g-color">{{ viewVcRow.credentialType }}</h3>
+            <h2 class="main-title b-color">{{ viewVcRow.credentialType }}</h2>
+            <h1 class="hoder-name b-color">{{ viewVcRow.holderName }}</h1>
+            <h3 class="holder-level g-color">Membership level <span class="b-color">{{ viewVcRow.credentialTitle }}</span></h3>
+            <h3 class="holder-email g-color">{{ viewVcRow.holderEmail }}</h3>
+            <h3 class="issuer-name g-color">Issue by <span class="b-color">{{ viewVcRow.holderName }}</span></h3>
+            <h3 class="issue-time g-color">Issue AT <span class="b-color">{{ viewVcRow.issueDate }}</span></h3>
+            <h3 class="expire-time g-color">Expires AT <span class="b-color">{{ viewVcRow.expireDate }}</span></h3>
+            <vue-qrcode class="qr-code" value="jwtVal" @change="onDataUrlChange"/>
+          </div>
+
+          <br>
+
+          <el-button type="primary" size="large" class="add-recipient-info-btn" color="#1E5CEF"
+            @click="captureVcImage" round>Download</el-button>
         </div>
       </el-dialog>
 
-      <!-- import with vc -->
+      <!-- Dialog Import with vc files -->
 
-      <el-dialog
-        v-model="issuleMultiVCVisiable"
-        :show-close="false"
-        :width="540"
-      >
+      <el-dialog v-model="issuleMultiVCVisiable" :show-close="false" :width="540">
         <template #header="{ close }">
           <h4 class="dialog-header-title-m-credential">Issue multiple credentials</h4>
-          <img
-            class="dialog-close"
-            src="../assets/img/close_black@2x.png"
-            @click="close"
-            alt=""
-          />
+          <img class="dialog-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
         </template>
 
         <div class="multiVcView">
@@ -675,13 +446,7 @@
             <br />
           </div>
 
-          <el-upload
-            class="multiVcUploadView"
-            drag
-            :limit="1"
-            :auto-upload="false"
-            v-model:file-list="multoVcFileList"
-          >
+          <el-upload class="multiVcUploadView" drag :limit="1" :auto-upload="false" v-model:file-list="multoVcFileList">
             <div class="el-upload__text">
               <em>Upload & drop your file</em>
             </div>
@@ -697,91 +462,46 @@
           <div class="multiFooterView">
             <el-row gutter=10 justify="center">
               <el-col span=12>
-                <el-button
-                  class="multi-vc-btn"
-                  type="plain"
-                  @click="multiVcCancelAction"
-                  round
-                  >Cancel</el-button
-                >
+                <el-button class="multi-vc-btn" type="plain" @click="multiVcCancelAction" round>Cancel</el-button>
               </el-col>
               <el-col span=12>
-                <el-button
-                  class="multi-vc-btn"
-                  type="plain"
-                  color="black"
-                  @click="multiVcImportAction"
-                  round
-                  >Import</el-button
-                >
+                <el-button class="multi-vc-btn" type="plain" color="black" @click="multiVcImportAction" round>Import
+                </el-button>
               </el-col>
             </el-row>
           </div>
         </template>
       </el-dialog>
 
-      <!-- view personal tags -->
+      <!-- Dialog View personal tags -->
 
-      <el-dialog
-        v-model="personalTagsVisiable"
-        :show-close="false"
-        :direction="direction"
-        :width="540"
-      >
+      <el-dialog v-model="personalTagsVisiable" :show-close="false" :direction="direction" :width="540">
         <template #header="{ close }">
           <div>
             <div class="dialog-header-view">
               <h4 class="dialog-header-title">{{ personalTagTitle }}</h4>
               <h3>{{ personalTagDis }}</h3>
             </div>
-            <img
-              class="dialog-close"
-              src="../assets/img/close_black@2x.png"
-              @click="close"
-              alt=""
-            />
+            <img class="dialog-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
           </div>
         </template>
 
         <div class="tagsView">
-          <el-tag
-            v-for="(item, index) in personalTags"
-            :key="item.label"
-            :type="item.type"
-            size="large"
-            class="mx-1"
-            effect="dark"
-            @click="clickTagAction(index)"
-            round
-          >
-            <a
-              class="w-color"
-              href="javascript:void();"
-              style="text-decoration: none"
-              ># {{ item.tagName }}</a
-            >
+          <el-tag v-for="(item, index) in personalTags" :key="item.label" :type="item.type" size="large" class="mx-1"
+            effect="dark" @click="clickTagAction(index)" round>
+            <a class="w-color" href="javascript:void();" style="text-decoration: none"># {{ item.tagName }}</a>
           </el-tag>
         </div>
       </el-dialog>
 
-      <!-- view personal tags detail -->
+      <!-- Dialog View personal tags detail -->
 
-      <el-dialog
-        v-model="personalTagsDetailVisiable"
-        :show-close="false"
-        :direction="direction"
-        :width="540"
-      >
+      <el-dialog v-model="personalTagsDetailVisiable" :show-close="false" :direction="direction" :width="540">
         <template #header="{ close }">
           <h4 class="dialog-header-title-detail">
             {{ personalTagDetail.tagName }}
           </h4>
-          <img
-            class="dialog-close"
-            src="../assets/img/close_black@2x.png"
-            @click="close"
-            alt=""
-          />
+          <img class="dialog-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
         </template>
 
         <div class="tagsDetailView">
@@ -823,7 +543,6 @@ let multiVcCreationUrl =
 let personalTagsUrl = Domain.domainUrl + "/api/did-holder-tag/list/";
 
 import { ElMessage } from "element-plus";
-
 import { NButton, NIcon, NPopover } from "naive-ui";
 import {
   DotsVertical,
@@ -832,6 +551,9 @@ import {
   Download,
   Trash,
 } from "@vicons/tabler";
+
+import VueQrcode from 'vue-qrcode'
+import domtoimage from "dom-to-image";
 
 import bip39 from "../crypto/bip39.js";
 import vc from "../crypto/vc.js";
@@ -899,13 +621,15 @@ export default {
 
       //verify crendentail
       veriferVisible: ref(false),
+      vcVerifyRet: {},
+      verifyResultShow: false,
 
       //view credential image
       vcViewVisiable: false,
       vcViewLink: "",
       fileList: [],
-      vcVerifyRet: {},
-      verifyResultShow: false,
+      viewVcRow: {},
+      jwtVal: "eyJhbGciOiJFUzI1NksiLCJ0eXAiOiJKV1QifQ.eyJ2cCI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVQcmVzZW50YXRpb24iXSwidmVyaWZpYWJsZUNyZWRlbnRpYWwiOlsiZXlKaGJHY2lPaUpGVXpJMU5rc2lMQ0owZVhBaU9pSktWMVFpZlEuZXlKMll5STZleUpBWTI5dWRHVjRkQ0k2V3lKb2RIUndjem92TDNkM2R5NTNNeTV2Y21jdk1qQXhPQzlqY21Wa1pXNTBhV0ZzY3k5Mk1TSmRMQ0owZVhCbElqcGJJbFpsY21sbWFXRmliR1ZEY21Wa1pXNTBhV0ZzSWwwc0ltTnlaV1JsYm5ScFlXeFRkV0pxWldOMElqcDdJbVJsWjNKbFpTSTZleUowZVhCbElqb2lRbUZqYUdWc2IzSkVaV2R5WldVaUxDSnVZVzFsSWpvaVFtRmpZMkZzWVhWeXc2bGhkQ0JsYmlCdGRYTnBjWFZsY3lCdWRXM0RxWEpwY1hWbGN5SjlmWDBzSW5OMVlpSTZJbVJwWkRwbGRHaHlPakI0WkRSRE4yRmtOR0V6TkRFME56YzNPREJqWVRZMlJETXdZVFV3WmpNd1EwTkdOVEptTkRrM1pTSXNJbTVpWmlJNk1UVTJNamsxTURJNE1pd2lhWE56SWpvaU1IaGtORU0zWVdRMFlUTTBNVFEzTnpjNE1HTmhOalpFTXpCaE5UQm1NekJEUTBZMU1tWTBPVGRsSW4wLkdsbUJnZ2pGRjhxUjgtMDlyMElzNjNlZnlObWgwQUhkOEc3ZWpOU1ZVQ0o4cTd5bGEyZzIzb19nMUM5MXRDTDFjbm9QT0VZVWVjU2V6anRqdjhXdXRRIl19LCJpc3MiOiIweGQ0QzdhZDRhMzQxNDc3NzgwY2E2NkQzMGE1MGYzMENDRjUyZjQ5N2UifQ.ADV4v1SSgNv9dL7mVxNlo23ri1OILaDBtCvA8_qh3n39RUjSdM5OesC-XFQ3ihY4yMo5sq5DV71Ms4nQboH5cQ",
 
       //issuleMultiVCVisiable
       issuleMultiVCVisiable: false,
@@ -925,7 +649,10 @@ export default {
       didWallet: {},
     };
   },
-  created() {},
+  components: {
+    VueQrcode,
+  },
+  created() { },
   watch: {},
   mounted() {
     this.queryBlockchain();
@@ -952,7 +679,12 @@ export default {
         that.popviewShow = !that.popviewShow;
       },
       viewOpRow(row) {
-        that.toViewVcsAction(row.credentialId);
+        console.log(row);
+        // that.toViewVcsAction(row.credentialId);
+        // view vc with row
+
+        that.viewVcRow = row;
+        that.vcViewVisiable = true;
       },
       downloadOpRow(row) {
         that.singleDownloadAction(row.credentialId);
@@ -1233,7 +965,7 @@ export default {
       this.fileList = [];
       this.verifyResultShow = false;
     },
-    handleExceed() {},
+    handleExceed() { },
     async verifyFileAction() {
       let formData = new FormData();
       formData.append("multipartFile", this.fileList[0].raw);
@@ -1472,6 +1204,31 @@ export default {
       }
     },
 
+    captureVcImage() {
+      var node = document.getElementById("vc-image");
+
+      // domtoimage
+      // .toPng(node)
+      // .then(function (dataUrl) {
+      //   console.log(dataUrl);
+      //   var img = new Image();
+      //   img.src = dataUrl;
+      //   document.body.appendChild(img);
+      // })
+      // .catch(function (error) {
+      //   console.error("oops, something went wrong!", error);
+      // });
+
+      domtoimage
+      .toJpeg(node, { quality: 0.95 })
+      .then(function (dataUrl) {
+        var link = document.createElement("a");
+        link.download = "vc.jpeg";
+        link.href = dataUrl;
+        link.click();
+      });
+    },
+
     createRecipientColumns(orign) {
       let cols = [];
       let first = {
@@ -1680,8 +1437,16 @@ export default {
 <!-- common -->
 
 <style scoped>
+.b-color {
+color: #1D2129;
+}
+
+.g-color {
+color: #4E5969;
+}
+
 .w-color {
-  color: white;
+  color: #FFFFFF;
 }
 
 .f-color {
@@ -2174,6 +1939,8 @@ export default {
 }
 </style>
 
+<!-- dialog -->
+
 <style scoped>
 .dialog-title {
   height: 20px;
@@ -2330,6 +2097,8 @@ export default {
 }
 </style>
 
+<!-- vc view image -->
+
 <style scoped>
 .multiVcView h3 {
   height: 17px;
@@ -2345,5 +2114,138 @@ export default {
   font-weight: 400;
   color: #1d2129;
   line-height: 18px;
+}
+
+.vc-image-view {
+  width: 600px;
+  height: 842px;
+  background-image: url(../assets/img/卡面2@2x.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.vc-image-view .sub-title {
+  position: absolute;
+  left: 30px;
+  top: 30px;
+  height: 28px;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 30px;
+}
+
+.vc-image-view .main-title {
+  position: absolute;
+  left: 40px;
+  top: 108px;
+  height: 56px;
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 60px;
+}
+
+.hoder-name {
+  position: absolute;
+  left: 50px;
+  top: 230px;
+  height: 67px;
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 72px;
+}
+
+.holder-level {
+  position: absolute;
+  left: 50px;
+  top: 307px;
+  height: 33px;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 35px;
+}
+
+.holder-level span {
+  position: absolute;
+  width: 150px;
+  height: 33px;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 35px;
+}
+
+.holder-email {
+  position: absolute;
+  left: 50px;
+  top: 400px;
+  height: 33px;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 35px;
+}
+
+.issuer-name {
+  position: absolute;
+  left: 40px;
+  top: 496px;
+  height: 33px;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 35px;
+}
+
+.issuer-name span {
+  position: absolute;
+  width: 150px;
+  height: 33px;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 35px;
+}
+
+.issue-time {
+  position: absolute;
+  left: 30px;
+  top: 736px;
+  height: 33px;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 35px;
+}
+
+.issue-time span {
+  position: absolute;
+  width: 150px;
+  height: 33px;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 35px;
+}
+
+.expire-time {
+  position: absolute;
+  left: 30px;
+  top: 779px;
+  height: 33px;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 35px;
+}
+
+.expire-time span {
+  position: absolute;
+  width: 150px;
+  height: 33px;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 35px;
+}
+
+.qr-code {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  right: 40px;
+  bottom: 40px;
 }
 </style>
