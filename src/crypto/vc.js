@@ -38,6 +38,9 @@ export default {
         const vcJwt = await createVerifiableCredentialJwt(vcPayload, issuer)
         console.log('vcJwt')
         console.log(vcJwt)
+        
+        // insert to vc table
+
         return vcJwt
     },
 
