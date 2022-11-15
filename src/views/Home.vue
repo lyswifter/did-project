@@ -560,6 +560,7 @@ import vc from "../crypto/vc.js";
 import did from "../crypto/did.js";
 import tmpl from "../db/tmpl.js";
 import claim from "../db/claim.js";
+import ecdh from "../crypto/ecdh.js";
 
 export default {
   name: "Home",
@@ -649,6 +650,8 @@ export default {
 
       // did-wallet
       didWallet: {},
+      pubKey: null,
+      privKey: null,
     };
   },
   components: {
@@ -711,7 +714,23 @@ export default {
       // ethr.genWalletFromMnemonic();
 
       this.didWallet = await bip39.genWalletWithBip39();
-      await did.createDidJwt(this.didWallet);
+      console.log("wallet " + this.didWallet)
+
+      // let didjwt = await did.createDidJwt(this.didWallet);
+
+      let theirPub = "041c81282e3243781dbe69d983c4f2329c3c4f56fad48d94e0bcfdee41024e140105bbdcaea8f0f07130c921b79358022b373053eab5d5dd4f8aca78eafe1b7efb";
+
+      let key = await ecdh.generateShareKey(this.didWallet, theirPub);
+      console.log("encrypto key " + key);
+
+      let msg = 'sdfsdfedfsdf';
+      console.log("original message " + msg);
+
+      let enret = await ecdh.encrypt(msg, key);
+      console.log("encrypto ret " + enret);
+
+      let origin = await ecdh.decrypt(enret, key);
+      console.log("decrypto message " + origin);
     },
     createVcDrawerDismissAction() {
       this.getUserInfo();

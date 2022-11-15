@@ -6,18 +6,22 @@ import { Resolver } from 'did-resolver'
 import { getResolver } from 'ethr-did-resolver'
 
 export default {
-    async createVcJwt(hdWallet, claimStr, tempId) {
-        const signer = ES256KSigner(hexToBytes(hdWallet.privateKey));
+    async createVcJwt(wallet, claimStr, tempId) {
+
+        console.log('claimStr ' + claimStr)
+        console.log('tempId ' + tempId)
+        
+        const signer = ES256KSigner(hexToBytes(wallet.privateKey));
 
         let issuer = {
-            did: hdWallet.address,
+            did: wallet.address,
             signer: signer,
             alg: "ES256K",
         };
 
         // Assembly verify credential payload information
         const vcPayload = {
-            sub: 'did:ethr:'+hdWallet.address,
+            sub: 'did:ethr:'+wallet.address,
             nbf: 1562950282,
             vc: {
                 '@context': ['https://www.w3.org/2018/credentials/v1'],
@@ -34,6 +38,7 @@ export default {
         const vcJwt = await createVerifiableCredentialJwt(vcPayload, issuer)
         console.log('vcJwt')
         console.log(vcJwt)
+        return vcJwt
     },
 
     async createVpJwt(vcJwt) {
