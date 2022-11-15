@@ -714,7 +714,7 @@ export default {
       // ethr.genWalletFromMnemonic();
 
       this.didWallet = await bip39.genWalletWithBip39();
-      console.log("wallet " + this.didWallet)
+      console.log("wallet " + this.didWallet.publicKey)
 
       // let didjwt = await did.createDidJwt(this.didWallet);
 

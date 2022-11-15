@@ -33,6 +33,8 @@ export default {
         let iv = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
         let mode = 'aes-256-ctr';
         let m = await decrypt(msgbuffer, key, this.iv, this.mode)
-        return m
+        const blob = new Blob([m], {type: 'text/plain; charset=utf-8'});
+        let ret = await blob.text();
+        return ret
     },
 }
