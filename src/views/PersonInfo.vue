@@ -74,7 +74,7 @@
           <br />
 
           <div>
-            <el-row gutter="20" justify="center">
+            <el-row gutter=20 justify="center">
               <el-col span=12>
                 <div class="name-left-v">
               <h3 class="f-color fill-title">* First name</h3>

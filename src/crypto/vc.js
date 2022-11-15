@@ -5,16 +5,37 @@ import { createVerifiablePresentationJwt, verifyPresentation } from 'did-jwt-vc'
 import { Resolver } from 'did-resolver'
 import { getResolver } from 'ethr-did-resolver'
 
-export default {
-    async createVcJwt(wallet, claimStr, tempId) {
+import vc from '../db/vc.js';
 
-        console.log('claimStr ' + claimStr)
+export default {
+    async createVcTemplate(wallet, claims, tempId) {
+        console.log('claimStr ' + claims)
         console.log('tempId ' + tempId)
-        
+
+        let didPrefix = "did:";
+        let didMethod = "dmaster";
+        let didAddr = wallet.address;
+        let issuerDid = didPrefix + didMethod + ":" + didAddr;
+
+        // generate vc object and insert to vc table
+        let vcid = vc.createVcModel(issuerDid, claims[0], tempId)
+        console.log('vcid ' + vcid);
+
+        return [vcid]
+    },
+
+    async createVcJwt(vcid) {
+        // query special vc template info
+        // generate vc jwt
+            // query my privatekey
+            // query vc-issuer-id
+            // query issuer public keys
+        // update vc info
+
         const signer = ES256KSigner(hexToBytes(wallet.privateKey));
 
         let issuer = {
-            did: wallet.address,
+            did: issuerDid,
             signer: signer,
             alg: "ES256K",
         };
@@ -36,12 +57,11 @@ export default {
         }
 
         const vcJwt = await createVerifiableCredentialJwt(vcPayload, issuer)
-        console.log('vcJwt')
-        console.log(vcJwt)
-        
-        // insert to vc table
+        console.log('vcJwt ' + vcJwt)
 
-        return vcJwt
+        // update vc info
+    
+        return vcid
     },
 
     async createVpJwt(vcJwt) {

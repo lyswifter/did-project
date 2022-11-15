@@ -30,6 +30,7 @@
     "ethr-did-resolver": "^8.0.0",
     "patch-package": "^6.5.0",
     "pinia": "^2.0.21",
+    "uuid": "^9.0.0",
     "vc-js": "^0.6.4",
     "vue": "^3.2.38",
     "vue-axios": "^3.5.0",

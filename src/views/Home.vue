@@ -49,7 +49,7 @@
 
         <div class="info-right">
           <h2 class="name">
-            {{ userInfo.firstName + " " + userInfo.lastName }}
+            {{ userInfo.firstElColName + " " + userInfo.lastName }}
           </h2>
           <h3 class="did">
             {{ userInfo.did }}
@@ -107,7 +107,7 @@
             <div class="vctableHeaderView">
               <el-row justify="end">
                 <el-col span=24>
-                  <el-button class="batch-download-btn" type="plain" :disabled="ableToDownload"
+                  <el-button class="batch-download-btn" type="text" :disabled="ableToDownload"
                     @click="tiggerBatchDownloadAction" round>Download</el-button>
                 </el-col>
               </el-row>
@@ -187,13 +187,13 @@
 
               <div v-else-if="vcStep == 2">
                 <div v-if="!processing">
-                  <el-button type="plain" class="back-btn" @click="backAction" round>Back</el-button>
+                  <el-button type="text" class="back-btn" @click="backAction" round>Back</el-button>
                 </div>
               </div>
 
               <div v-else-if="vcStep == 3">
                 <div v-if="!createOk">
-                  <el-button type="plain" class="back-btn" @click="backAction" round>Back</el-button>
+                  <el-button type="text" class="back-btn" @click="backAction" round>Back</el-button>
                 </div>
               </div>
             </el-col>
@@ -243,7 +243,7 @@
             <div class="mamualView">
               <el-button type="primary" class="manually-add-btn" color="#1D2129" @click="addManualAction" round>Add
                 Manually</el-button>
-              <el-button type="plain" class="import-btn" @click="importSheetAction" round>Import Spreadsheet</el-button>
+              <el-button type="text" class="import-btn" @click="importSheetAction" round>Import Spreadsheet</el-button>
             </div>
           </div>
 
@@ -256,7 +256,7 @@
                 </el-col>
 
                 <el-col span=4>
-                  <el-button type="plain" class="import-btn" @click="importSheetAction" round>Import Spreadsheet
+                  <el-button type="text" class="import-btn" @click="importSheetAction" round>Import Spreadsheet
                   </el-button>
                 </el-col>
 
@@ -282,7 +282,7 @@
           <div v-if="createOk" class="okCreatedVc">
             <el-row>
               <el-col span=2 :offset="17">
-                <el-button type="plain" class="manually-add-btn" @click="toDownloadAction" round>Download Credential
+                <el-button type="text" class="manually-add-btn" @click="toDownloadAction" round>Download Credential
                 </el-button>
               </el-col>
 
@@ -374,7 +374,8 @@
           </div>
 
           <div>
-            <el-checkbox v-model="checked1" label=" Expire this credential" size="large" />
+            <!-- v-model="checked1" -->
+            <el-checkbox label=" Expire this credential" size="large" />
             <h4 class="dialog-subtitle">
               This option will expire the credential after the specified date.
             </h4>
@@ -411,18 +412,19 @@
             <h3 class="sub-title g-color">{{ viewVcRow.credentialType }}</h3>
             <h2 class="main-title b-color">{{ viewVcRow.credentialType }}</h2>
             <h1 class="hoder-name b-color">{{ viewVcRow.holderName }}</h1>
-            <h3 class="holder-level g-color">Membership level <span class="b-color">{{ viewVcRow.credentialTitle }}</span></h3>
+            <h3 class="holder-level g-color">Membership level <span class="b-color">{{ viewVcRow.credentialTitle
+            }}</span></h3>
             <h3 class="holder-email g-color">{{ viewVcRow.holderEmail }}</h3>
             <h3 class="issuer-name g-color">Issue by <span class="b-color">{{ viewVcRow.holderName }}</span></h3>
             <h3 class="issue-time g-color">Issue AT <span class="b-color">{{ viewVcRow.issueDate }}</span></h3>
             <h3 class="expire-time g-color">Expires AT <span class="b-color">{{ viewVcRow.expireDate }}</span></h3>
-            <vue-qrcode class="qr-code" value="jwtVal" @change="onDataUrlChange"/>
+            <!-- <vue-qrcode class="qr-code" :value="viewVcRow.jwt" @change="onDataUrlChange" /> -->
           </div>
 
           <br>
 
-          <el-button type="primary" size="large" class="add-recipient-info-btn" color="#1E5CEF"
-            @click="captureVcImage" round>Download</el-button>
+          <el-button type="primary" size="large" class="add-recipient-info-btn" color="#1E5CEF" @click="captureVcImage"
+            round>Download</el-button>
         </div>
       </el-dialog>
 
@@ -462,10 +464,10 @@
           <div class="multiFooterView">
             <el-row gutter=10 justify="center">
               <el-col span=12>
-                <el-button class="multi-vc-btn" type="plain" @click="multiVcCancelAction" round>Cancel</el-button>
+                <el-button class="multi-vc-btn" type="text" @click="multiVcCancelAction" round>Cancel</el-button>
               </el-col>
               <el-col span=12>
-                <el-button class="multi-vc-btn" type="plain" color="black" @click="multiVcImportAction" round>Import
+                <el-button class="multi-vc-btn" type="text" color="black" @click="multiVcImportAction" round>Import
                 </el-button>
               </el-col>
             </el-row>
@@ -560,6 +562,7 @@ import vc from "../crypto/vc.js";
 import did from "../crypto/did.js";
 import tmpl from "../db/tmpl.js";
 import claim from "../db/claim.js";
+import dbvc from "../db/vc.js";
 import ecdh from "../crypto/ecdh.js";
 
 export default {
@@ -659,8 +662,12 @@ export default {
   created() { },
   watch: {},
   mounted() {
-    // tmpl.createVcTemplate()
-    // claim.createClaims()
+    let indexdb = localStorage.getItem("indexDB");
+    if (indexdb == null || indexdb == undefined) {
+      tmpl.createVcTemplate()
+      claim.createClaims()
+      localStorage.setItem("indexDB", "1")
+    }
 
     this.queryBlockchain();
 
@@ -705,7 +712,8 @@ export default {
     });
 
     this.getUserInfo();
-    this.getVcTableInfo();
+    // this.getVcTableInfo();
+    this.getVcTableInfoLocally();
   },
   methods: {
     async queryBlockchain() {
@@ -731,7 +739,8 @@ export default {
     },
     createVcDrawerDismissAction() {
       this.getUserInfo();
-      this.getVcTableInfo();
+      // this.getVcTableInfo();
+      this.getVcTableInfoLocally();
     },
     handleRecipientCheck(row) {
       this.recipientCheckedRowKeys = row;
@@ -942,6 +951,21 @@ export default {
         });
       }
     },
+    async getVcTableInfoLocally() {
+      let localVals = await dbvc.queryVcs();
+
+      if (localVals.length == 0) {
+        this.getVcTableInfo()
+      } else {
+        this.data = localVals
+      }
+
+      if (this.data.length == 0) {
+        this.hasVc = false;
+      } else {
+        this.hasVc = true;
+      }
+    },
     async getVcTableInfo() {
       const res = await axios.post(
         vcTableUrl,
@@ -1133,7 +1157,6 @@ export default {
 
       let timer = setInterval(() => {
         this.percentageCount += 1;
-
         if (this.percentageCount > 100) {
           this.percentageCount = 100;
         }
@@ -1166,37 +1189,38 @@ export default {
         return;
       }
 
-      console.log("needClaims")
-      console.log(needClaims)
-
-      vc.createVcJwt(this.didWallet, needClaims, this.schemaId).then(
+      vc.createVcTemplate(this.didWallet, needClaims, this.schemaId).then(
         (value) => {
+          // get vcid
+          console.log(value)
 
-          ecdh.encrypt(value, this.shareKey).then(val => {
-            console.log("encrypto ret " + val);
+          // vc content
 
-            ecdh.decrypt(val, this.shareKey).then(val => {
-            console.log("decrypto message " + origin);
-          });
-          });
+          // crypto vc
+          // ecdh.encrypt(value, this.shareKey).then(val => {
+          // console.log("encrypto ret " + val);
+          // ecdh.decrypt(val, this.shareKey).then(val => {
+          //   console.log("decrypto message " + origin);
+          // });
+          // });
 
-          // clearInterval(timer);
-          // this.percentageCount += 100;
-          // if (this.percentageCount > 100) {
-          //   this.percentageCount = 100;
-          // }
+          // addition actions
+          clearInterval(timer);
+          this.percentageCount += 100;
+          if (this.percentageCount > 100) {
+            this.percentageCount = 100;
+          }
 
-          // this.newVcId = value;
-          // this.newVcNum =
-          //   "Issued " + this.newVcId.length + " Verifiable Credential";
-          // this.processing = false;
-          // this.vcStep = 3;
-          // this.createOk = true;
+          this.newVcId = value;
+          this.newVcNum = "Issued " + this.newVcId.length + " Verifiable Credential";
+          this.processing = false;
+          this.vcStep = 3;
+          this.createOk = true;
         },
         (reason) => {
-            // clearInterval(timer);
-            // this.processing = false;
-            // this.createOk = false;
+          clearInterval(timer);
+          this.processing = false;
+          this.createOk = false;
         }
       )
 
@@ -1247,23 +1271,10 @@ export default {
       }
     },
     async toViewVcsAction(vcid) {
-      const res = await axios.get(viewVcPicUrl + vcid, {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      });
-
-      if (res.data.code == 0) {
+      dbvc.queryVc(vcid).then(val => {
+        this.viewVcRow = val[0];
         this.vcViewVisiable = true;
-        this.vcViewLink = res.data.data;
-      } else if (res.data.code == 40001) {
-        this.logoutAction();
-      } else {
-        ElMessage({
-          message: res.data.msg,
-          type: "error",
-        });
-      }
+      });
     },
     captureVcImage() {
       var node = document.getElementById("vc-image");
@@ -1281,13 +1292,13 @@ export default {
       // });
 
       domtoimage
-      .toJpeg(node, { quality: 0.95 })
-      .then(function (dataUrl) {
-        var link = document.createElement("a");
-        link.download = "vc.jpeg";
-        link.href = dataUrl;
-        link.click();
-      });
+        .toJpeg(node, { quality: 0.95 })
+        .then(function (dataUrl) {
+          var link = document.createElement("a");
+          link.download = "vc.jpeg";
+          link.href = dataUrl;
+          link.click();
+        });
     },
     createRecipientColumns(orign) {
       let cols = [];
@@ -1497,11 +1508,11 @@ export default {
 
 <style scoped>
 .b-color {
-color: #1D2129;
+  color: #1D2129;
 }
 
 .g-color {
-color: #4E5969;
+  color: #4E5969;
 }
 
 .w-color {

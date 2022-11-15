@@ -3,17 +3,18 @@ import Dexie, { Table } from 'dexie';
 
 export interface DidCredential {
   id?: number;
-  credential_type: string;
-  credential_id: number;
-  issuer_did: string;
-  holder_did: string;
-  holder_email: string;
-  holder_name: string;
-  credential_title: string;
-  expire_flag: number;
-  issue_date: Date;
-  expire_date: Date;
-  token: string;
+  credentialId: string;
+  templateId: string;
+  credentialType: string;
+  issuerDid: string;
+  holderDid?: string;
+  holderEmail: string;
+  holderName: string;
+  credentialTitle: string;
+  expireFlag: number;
+  issueDate: string;
+  expireDate: string;
+  jwt?: string;
 }
 
 export interface DidTemplate {
@@ -45,7 +46,7 @@ export class MySubClassedDexie extends Dexie {
   constructor() {
     super('myDatabase');
     this.version(1).stores({
-      vc: '++id, &credential_id, holder_did', // Primary key and indexed props
+      vc: '++id, &credentialId, holderDid', // Primary key and indexed props
       tmpl: '++id, &templateId',
       claim: '++id, templateId'
     });
