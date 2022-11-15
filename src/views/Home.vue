@@ -660,8 +660,8 @@ export default {
   created() { },
   watch: {},
   mounted() {
-    // tmpl.createVcTemplate()
-    // claim.createClaims()
+    tmpl.createVcTemplate()
+    claim.createClaims()
 
     this.queryBlockchain();
 
@@ -715,6 +715,7 @@ export default {
 
       this.didWallet = await bip39.genWalletWithBip39();
       console.log("wallet " + this.didWallet.publicKey)
+      console.log("wallet address " + this.didWallet.address)
 
       // let didjwt = await did.createDidJwt(this.didWallet);
 
@@ -723,7 +724,7 @@ export default {
       let key = await ecdh.generateShareKey(this.didWallet, theirPub);
       console.log("encrypto key " + key);
 
-      let msg = 'sdfsdfedfsdf';
+      let msg = 'eyJhbGciOiJFUzI1NksifQ.eyJhdWQiOiJkaWQ6ZXRocjpmMWI2ODk5ZjQ1OGEwNDY0ODY4YWNmNDUyZmIyYTk3YzNiNGYzNTFlIiwiaXNzIjoiZGlkOmV0aHI6ZjFiNjg5OWY0NThhMDQ2NDg2OGFjZjQ1MmZiMmE5N2MzYjRmMzUxZSIsIm5hbWUiOiJ1UG9ydCBEZXZlbG9wZXIifQ.HotP0w9xVmyB2XOPPWPpAyGJPXydvGcrvW_fgbS0SntTeSsL3MPvXPs9cMc7H6ZzbC2N7-Y5GjXGC3F6QKNWwQE';
       console.log("original message " + msg);
 
       let enret = await ecdh.encrypt(msg, key);
@@ -731,6 +732,10 @@ export default {
 
       let origin = await ecdh.decrypt(enret, key);
       console.log("decrypto message " + origin);
+
+      // let otherMsg = '';
+      // let otherRet = await ecdh.decryptWithString(otherMsg, key);
+      // console.log('otherRet ' + otherRet);
     },
     createVcDrawerDismissAction() {
       this.getUserInfo();

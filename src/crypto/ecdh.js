@@ -12,18 +12,26 @@ export default {
 
     // Encrypto
     async encrypt(msg, key) {
-        // encrypt(msg: Uint8Array, key: Uint8Array, iv: Uint8Array, mode?: string, pkcs7PaddingEnabled?: boolean): Promise<Uint8Array>;
-        // this.string2ArrayBuffer(msg, function (buf) {
-        //     var uInt8 = new Uint8Array(buf);
-        //     console.log('uInt8 ' + uInt8);
-        // })
-
         const blob = new Blob([msg], {type: 'text/plain; charset=utf-8'});
         let buf = await blob.arrayBuffer();
         let uint8arr = new Uint8Array(buf);
 
         let ret = await encrypt(uint8arr, key, this.iv, this.mode);
         return ret;
+    },
+
+    // Decrypto
+    async decryptWithString(msgStr, key) {
+        // decrypt(cypherText: Uint8Array, key: Uint8Array, iv: Uint8Array, mode?: string, pkcs7PaddingEnabled?: boolean): Promise<Uint8Array>;
+        const blob = new Blob([msgStr], {type: 'text/plain; charset=utf-8'});
+        let buf = await blob.arrayBuffer();
+        let uint8arr = new Uint8Array(buf);
+
+        let m = await decrypt(uint8arr, key, this.iv, this.mode)
+
+        const blobm = new Blob([m], {type: 'text/plain; charset=utf-8'});
+        let ret = await blobm.text();
+        return ret
     },
 
     // Decrypto
