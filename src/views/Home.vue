@@ -8,7 +8,7 @@
           :ellipsis="false"
         >
           <el-menu-item index="0">
-            <img class="logoview" src="../assets/img/LOGO@2x.png" alt="" />
+            <img class="logoview" src="../assets/img/logo_Dmaster.svg" alt="" />
           </el-menu-item>
           <div class="flex-grow" />
           <el-menu-item index="1">
@@ -166,7 +166,7 @@
         </div>
 
         <div class="bottomLogo">
-          <img src="../assets/img/LOGOblue@2x.png" alt="" />
+          <img src="../assets/img/logo_Dmaster.svg" alt="" />
         </div>
       </el-main>
 
