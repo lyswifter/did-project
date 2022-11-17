@@ -7,7 +7,7 @@
         alt=""
         srcset=""
       />
-      <h3 id="welcome-title">Welcome to DID+</h3>
+      <h3 id="welcome-title">Welcome to Dmaster</h3>
       <br />
 
       <h4 id="email-title">Email</h4>
