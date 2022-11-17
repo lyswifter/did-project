@@ -1,6 +1,6 @@
 <template>
   <div class="common-layout">
-    <el-container>
+    <el-container class="dm-container">
 
       <!-- Header -->
 
@@ -42,36 +42,40 @@
 
       <!-- Main -->
 
-      <el-main class="did-main">
-        <div class="info-left">
-          <img class="info-icon" src="../assets/img/avatardefault_128px@2x.png" alt="" />
-        </div>
+      <div class="did-main">
 
-        <div class="info-right">
-          <h2 class="name">
-            {{ userInfo.firstElColName + " " + userInfo.lastName }}
-          </h2>
-          <h3 class="did">
-            {{ userInfo.did }}
-          </h3>
-          <div class="org">
-            <img src="../assets/img/icon_company@2x.png" alt="" />
-            <span>{{ userInfo.company }}</span>
-          </div>
-        </div>
+        <el-row>
+          <el-col :span="5">
+            <img class="info-icon" src="../assets/img/avatardefault_128px@2x.png" alt="" />
+          </el-col>
+          <el-col :span="15">
+            <div class="info-right">
+              <h2 class="name">
+                {{ userInfo.firstElColName + " " + userInfo.lastName }}
+              </h2>
+              <h3 class="did">
+                {{ userInfo.did }}
+              </h3>
+              <div class="org">
+                <img src="../assets/img/icon_company@2x.png" alt="" />
+                <span>{{ userInfo.company }}</span>
+              </div>
+            </div>
+          </el-col>
+        </el-row>
 
         <div class="content-view">
           <div class="credential-display">
-            <el-row gutter=50 justify="center">
-              <el-col span=16>
-                <div class="display-left" :style="{ width: autoWidth + 'px' }">
+            <el-row :gutter="50" justify="center">
+              <el-col :span="12">
+                <div class="display-left">
                   <h2 class="dis-title f-color">Credentials</h2>
                   <h1 class="dis-count f-color">
                     {{ userInfo.credentialCount }}
                   </h1>
                 </div>
               </el-col>
-              <el-col span=8>
+              <el-col :span="6">
                 <div class="display-right">
                   <h2 class="w-color">Credential Verifier</h2>
                   <br />
@@ -84,8 +88,8 @@
           </div>
 
           <div class="verify-entrance-view">
-            <el-row gutter=20 justify="space-between">
-              <el-col span=20>
+            <el-row :gutter="20" justify="space-between">
+              <el-col :span="20">
                 <div class="verify-left">
                   <h2 class="f-color">Verifiable Credentials</h2>
                   <h4 class="l-color">
@@ -94,7 +98,7 @@
                   </h4>
                 </div>
               </el-col>
-              <el-col span=4>
+              <el-col :span="4">
                 <div class="verify-right">
                   <el-button color="#1E5CEF" class="verify-btn" type="primary" @click="toCreateVcAction" round>Create
                     Verifiable Credential</el-button>
@@ -106,7 +110,7 @@
           <div v-if="hasVc" class="vctable-view">
             <div class="vctableHeaderView">
               <el-row justify="end">
-                <el-col span=24>
+                <el-col :span="24">
                   <el-button class="batch-download-btn" type="text" :disabled="ableToDownload"
                     @click="tiggerBatchDownloadAction" round>Download</el-button>
                 </el-col>
@@ -122,11 +126,11 @@
               Create Verifiable Credential</el-button>
           </div>
         </div>
+      </div>
 
-        <div class="bottomLogo">
+      <div class="bottomLogo">
           <img src="../assets/img/logo_Dmaster.svg" alt="" />
-        </div>
-      </el-main>
+      </div>
 
       <!-- DRAWER Create Verify Credential -->
 
@@ -139,13 +143,13 @@
 
         <div class="select-schema-step">
           <el-row>
-            <el-col span=2>
+            <el-col :span="2">
               <el-button v-if="vcStep == 1" type="primary" class="step-btn" circle>{{ vcStep }}</el-button>
               <el-button v-else-if="vcStep == 2" type="primary" class="step-btn" circle>{{ vcStep }}</el-button>
               <el-button v-else-if="vcStep == 3" type="primary" class="step-btn" circle>{{ vcStep }}</el-button>
             </el-col>
 
-            <el-col span=18>
+            <el-col :span="18">
               <div v-if="vcStep == 1">
                 <h3 class="step-title">Select Schema</h3>
                 <h4 class="step-subtitle">
@@ -179,7 +183,7 @@
               </div>
             </el-col>
 
-            <el-col span=4 :offset="13">
+            <el-col :span="4" :offset="13">
               <div v-if="vcStep == 1">
                 <el-button type="primary" class="continue-btn" @click="toAddRecipient">Continue
                 </el-button>
@@ -201,8 +205,8 @@
         </div>
 
         <div v-if="vcStep == 1" class="select-schema-content">
-          <el-row gutter=20>
-            <el-col span=6>
+          <el-row :gutter="20">
+            <el-col :span="6">
               <div class="card" @click="selectedOne">
                 <div class="card-top cardtopnormal" :class="{ cardtopselected: hasSelectedOne }">
                   <img style="width: 285px; height: 250px" src="../assets/img/schema_membership@2x.png" alt="" />
@@ -213,7 +217,7 @@
               </div>
             </el-col>
 
-            <el-col span=6>
+            <el-col :span="6">
               <div class="card" @click="selectedTwo">
                 <div class="card-top cardtopnormal" :class="{ cardtopselected: hasSelectedTwo }">
                   <img style="width: 285px; height: 250px" src="../assets/img/schema_acticit_1y@2x.png" alt="" />
@@ -224,7 +228,7 @@
               </div>
             </el-col>
 
-            <el-col span=6>
+            <el-col :span="6">
               <div class="card">
                 <div class="card-top cardtopnormal">
                   <img style="width: 285px; height: 250px" src="../assets/img/schema_coming@2x.png" alt="" />
@@ -249,18 +253,18 @@
 
           <div v-else class="recipientTableView">
             <div class="recipientTopView">
-              <el-row gutter=5>
-                <el-col span=4>
+              <el-row :gutter="5">
+                <el-col :span="4">
                   <el-button type="primary" class="manually-add-btn" color="#1D2129" @click="addManualAction" round>Add
                     Manually</el-button>
                 </el-col>
 
-                <el-col span=4>
+                <el-col :span="4">
                   <el-button type="text" class="import-btn" @click="importSheetAction" round>Import Spreadsheet
                   </el-button>
                 </el-col>
 
-                <el-col span=4 :offset="15">
+                <el-col :span="4" :offset="15">
                   <el-button type="primary" class="issue-btn" :disabled="disableIssueVc" @click="toIssueCredentials">
                     Issue Credentials
                   </el-button>
@@ -281,12 +285,12 @@
         <div v-else-if="vcStep == 3">
           <div v-if="createOk" class="okCreatedVc">
             <el-row>
-              <el-col span=2 :offset="17">
+              <el-col :span="2" :offset="17">
                 <el-button type="text" class="manually-add-btn" @click="toDownloadAction" round>Download Credential
                 </el-button>
               </el-col>
 
-              <el-col span=2 style="margin-left: 10px">
+              <el-col :span="2" style="margin-left: 10px">
                 <el-button type="primary" class="manually-add-btn" color="#1E5CEF" @click="toViewVcsAction(newVcId[0])"
                   round>View Credential</el-button>
               </el-col>
@@ -318,10 +322,10 @@
 
           <div class="fileShowView">
             <el-row>
-              <el-col span=18 :offset="1">
+              <el-col :span="18" :offset="1">
                 <!-- <h3 class="filenamesView">xxxxx.json</h3> -->
               </el-col>
-              <el-col span=6 :offset="20">
+              <el-col :span="6" :offset="20">
                 <el-button size="large" type="primary" @click="verifyFileAction" round>Verify</el-button>
               </el-col>
             </el-row>
@@ -382,13 +386,13 @@
           </div>
 
           <div style="margin-top: 5px">
-            <el-row gutter=5>
-              <el-col span=11>
+            <el-row :gutter="5">
+              <el-col :span="11">
                 <h3 class="dialog-title">* Issue Date</h3>
                 <el-date-picker v-model="issueDate" type="date" placeholder="Pick a day" format="YYYY/MM/DD"
                   value-format="YYYY-MM-DD" />
               </el-col>
-              <el-col span=11 :offset="1">
+              <el-col :span="11" :offset="1">
                 <h3 class="dialog-title">Expiration Date</h3>
                 <el-date-picker v-model="expireDate" type="date" placeholder="Pick a day" format="YYYY/MM/DD"
                   value-format="YYYY-MM-DD" />
@@ -462,11 +466,11 @@
 
         <template #footer>
           <div class="multiFooterView">
-            <el-row gutter=10 justify="center">
-              <el-col span=12>
+            <el-row :gutter="10" justify="center">
+              <el-col :span="12">
                 <el-button class="multi-vc-btn" type="text" @click="multiVcCancelAction" round>Cancel</el-button>
               </el-col>
-              <el-col span=12>
+              <el-col :span="12">
                 <el-button class="multi-vc-btn" type="text" color="black" @click="multiVcImportAction" round>Import
                 </el-button>
               </el-col>
@@ -1660,10 +1664,15 @@ export default {
   background: #eef1f8;
 }
 
-.did-main {
+.dm-container {
   width: 100%;
   background: linear-gradient(360deg, #eef1f8 0%, #d1dbf4 60%, #eef1f8 100%);
-  overflow-y: hidden;
+  /* overflow-y: hidden; */
+}
+
+.did-main {
+  width: 1440px;
+  margin: 0 auto;
 }
 
 .did-footer {
@@ -1677,7 +1686,7 @@ export default {
 .content-view {
   background: #ffffff;
   border-radius: 80px;
-  margin-top: 100px;
+  margin-top: 40px;
   padding-top: 60px;
   padding-bottom: 60px;
 }
@@ -1695,7 +1704,7 @@ export default {
 
 .info-right {
   margin-top: 45px;
-  margin-left: 268px;
+  /* margin-left: 268px; */
 }
 
 .name {
