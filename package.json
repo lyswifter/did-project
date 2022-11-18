@@ -10,6 +10,7 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.0.10",
     "@ethersproject/base64": "^5.7.0",
     "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/hdnode": "^5.7.0",

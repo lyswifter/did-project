@@ -4,6 +4,8 @@ import PersonInfo from "../views/PersonInfo.vue";
 import HomeView from "../views/Home.vue";
 import EntryView from "../views/Entry.vue";
 import RecoveryView from "../views/Recovery.vue";
+import CreateView from "../views/Create.vue";
+import MnemonicView from "../views/mnemonic.vue";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -28,6 +30,16 @@ const router = createRouter({
       component: RecoveryView,
     },
     {
+      path: "/create",
+      name: "create",
+      component: CreateView,
+    },
+    {
+      path: "/mnemonic",
+      name: "mnemonic",
+      component: MnemonicView,
+    },
+    {
       path: "/login",
       name: "login",
       component: LoginView,
@@ -47,8 +59,12 @@ router.beforeEach((to, from, next) => {
     isAuthenticated = false;
   }
 
-  if (to.name !== 'login' && !isAuthenticated) next({ name: 'login' })
-  else next()
+  next()
+
+  // if (to.name == 'create') next()
+
+  // if (to.name !== 'entry' && !isAuthenticated) next({ name: 'entry' })
+  // else next()
 })
 
 export default router;
