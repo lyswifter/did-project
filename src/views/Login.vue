@@ -52,12 +52,13 @@
 import axios from "axios";
 
 import Domain from "../router/domain.js";
-
 let sendCodeUrl = Domain.domainUrl + "/api/did-user/send"
 let loginUrl = Domain.domainUrl + "/api/did-user/login"
 let getUserInfoUrl = Domain.domainUrl + "/api/did-user/get-info";
 
 import { ElMessage } from 'element-plus'
+
+import user from "../db/user.js";
 
 export default {
   name: "LoginView",
@@ -124,7 +125,19 @@ export default {
       });
 
       if (res.data.code == 0) {
-        localStorage.setItem("username", res.data.data.firstName)
+        let info = res.data.data;
+
+        localStorage.setItem("username", info.firstName)
+        localStorage.setItem("userdid", info.did)
+
+        user.createUser({
+          firstName: info.firstName,
+          lastName: info.lastName,
+          userdid: info.did,
+          usercompany: info.company,
+          credentialcount: info.credentialCount,
+          needAddInformation: info.needAddInformation,
+      })
       }
     },
     async sendAction() {

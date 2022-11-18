@@ -17,19 +17,24 @@ export default {
         let didAddr = wallet.address;
         let issuerDid = didPrefix + didMethod + ":" + didAddr;
 
-        // generate vc object and insert to vc table
-        let vcid = vc.createVcModel(issuerDid, claims[0], tempId)
-        console.log('vcid ' + vcid);
+        let vcids = []
+        claims.forEach(element => {
+            // generate vc object and insert to vc table
+            let vcid = vc.createVcModel(issuerDid, element, tempId)
+            vcids.push(vcid)
+        });
 
-        return [vcid]
+        console.log('vcids ' + vcids);
+
+        return vcids
     },
 
     async createVcJwt(vcid) {
         // query special vc template info
         // generate vc jwt
-            // query my privatekey
-            // query vc-issuer-id
-            // query issuer public keys
+        // query my privatekey
+        // query vc-issuer-id
+        // query issuer public keys
         // update vc info
 
         const signer = ES256KSigner(hexToBytes(wallet.privateKey));
@@ -42,7 +47,7 @@ export default {
 
         // Assembly verify credential payload information
         const vcPayload = {
-            sub: 'did:ethr:'+wallet.address,
+            sub: 'did:ethr:' + wallet.address,
             nbf: 1562950282,
             vc: {
                 '@context': ['https://www.w3.org/2018/credentials/v1'],
@@ -60,7 +65,7 @@ export default {
         console.log('vcJwt ' + vcJwt)
 
         // update vc info
-    
+
         return vcid
     },
 

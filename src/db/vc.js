@@ -1,4 +1,5 @@
 import db from "./db"
+import user from "./user.js"
 import { v4 as uuidv4 } from 'uuid';
 
 export default {
@@ -29,16 +30,14 @@ export default {
 
         db.vc.add(vcObj);
 
+        user.addUserCredentialCount(vcObj.issuerDid).then(val => {
+            console.log(val)
+        })
+
         return vcid
     },
 
     queryVcs() {
-        // let vcs = [];
-        // db.vc.each(ele => {
-        //     vcs.push(ele);
-        // })
-        // return vcs
-
         return db.vc.toArray();
     },
 

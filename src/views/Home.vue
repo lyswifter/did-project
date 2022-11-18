@@ -45,13 +45,13 @@
       <div class="did-main">
 
         <el-row>
-          <el-col :span="5">
+          <el-col :span="3" :offset="1">
             <img class="info-icon" src="../assets/img/avatardefault_128px@2x.png" alt="" />
           </el-col>
           <el-col :span="15">
             <div class="info-right">
               <h2 class="name">
-                {{ userInfo.firstElColName + " " + userInfo.lastName }}
+                {{ userInfo.firstName + " " + userInfo.lastName }}
               </h2>
               <h3 class="did">
                 {{ userInfo.did }}
@@ -67,15 +67,16 @@
         <div class="content-view">
           <div class="credential-display">
             <el-row :gutter="50" justify="center">
-              <el-col :span="12">
+              <el-col :span="15">
                 <div class="display-left">
                   <h2 class="dis-title f-color">Credentials</h2>
                   <h1 class="dis-count f-color">
-                    {{ userInfo.credentialCount }}
+                    {{ data.length }}
+                    <!-- userInfo.credentialCount -->
                   </h1>
                 </div>
               </el-col>
-              <el-col :span="6">
+              <el-col :span="7">
                 <div class="display-right">
                   <h2 class="w-color">Credential Verifier</h2>
                   <br />
@@ -110,8 +111,8 @@
           <div v-if="hasVc" class="vctable-view">
             <div class="vctableHeaderView">
               <el-row justify="end">
-                <el-col :span="24">
-                  <el-button class="batch-download-btn" type="text" :disabled="ableToDownload"
+                <el-col :span="2">
+                  <el-button class="batch-download-btn" type="default" :disabled="ableToDownload"
                     @click="tiggerBatchDownloadAction" round>Download</el-button>
                 </el-col>
               </el-row>
@@ -129,7 +130,7 @@
       </div>
 
       <div class="bottomLogo">
-          <img src="../assets/img/logo_Dmaster.svg" alt="" />
+        <img src="../assets/img/logo_Dmaster.svg" alt="" />
       </div>
 
       <!-- DRAWER Create Verify Credential -->
@@ -143,7 +144,7 @@
 
         <div class="select-schema-step">
           <el-row>
-            <el-col :span="2">
+            <el-col :span="1">
               <el-button v-if="vcStep == 1" type="primary" class="step-btn" circle>{{ vcStep }}</el-button>
               <el-button v-else-if="vcStep == 2" type="primary" class="step-btn" circle>{{ vcStep }}</el-button>
               <el-button v-else-if="vcStep == 3" type="primary" class="step-btn" circle>{{ vcStep }}</el-button>
@@ -183,7 +184,7 @@
               </div>
             </el-col>
 
-            <el-col :span="4" :offset="13">
+            <el-col :span="2">
               <div v-if="vcStep == 1">
                 <el-button type="primary" class="continue-btn" @click="toAddRecipient">Continue
                 </el-button>
@@ -191,13 +192,13 @@
 
               <div v-else-if="vcStep == 2">
                 <div v-if="!processing">
-                  <el-button type="text" class="back-btn" @click="backAction" round>Back</el-button>
+                  <el-button type="default" class="back-btn" @click="backAction" round>Back</el-button>
                 </div>
               </div>
 
               <div v-else-if="vcStep == 3">
                 <div v-if="!createOk">
-                  <el-button type="text" class="back-btn" @click="backAction" round>Back</el-button>
+                  <el-button type="default" class="back-btn" @click="backAction" round>Back</el-button>
                 </div>
               </div>
             </el-col>
@@ -205,8 +206,8 @@
         </div>
 
         <div v-if="vcStep == 1" class="select-schema-content">
-          <el-row :gutter="20">
-            <el-col :span="6">
+          <el-row :gutter="40">
+            <el-col :span="4">
               <div class="card" @click="selectedOne">
                 <div class="card-top cardtopnormal" :class="{ cardtopselected: hasSelectedOne }">
                   <img style="width: 285px; height: 250px" src="../assets/img/schema_membership@2x.png" alt="" />
@@ -217,7 +218,7 @@
               </div>
             </el-col>
 
-            <el-col :span="6">
+            <el-col :span="4">
               <div class="card" @click="selectedTwo">
                 <div class="card-top cardtopnormal" :class="{ cardtopselected: hasSelectedTwo }">
                   <img style="width: 285px; height: 250px" src="../assets/img/schema_acticit_1y@2x.png" alt="" />
@@ -228,7 +229,7 @@
               </div>
             </el-col>
 
-            <el-col :span="6">
+            <el-col :span="4">
               <div class="card">
                 <div class="card-top cardtopnormal">
                   <img style="width: 285px; height: 250px" src="../assets/img/schema_coming@2x.png" alt="" />
@@ -247,24 +248,25 @@
             <div class="mamualView">
               <el-button type="primary" class="manually-add-btn" color="#1D2129" @click="addManualAction" round>Add
                 Manually</el-button>
-              <el-button type="text" class="import-btn" @click="importSheetAction" round>Import Spreadsheet</el-button>
+              <el-button type="default" class="import-btn" @click="importSheetAction" round>Import Spreadsheet
+              </el-button>
             </div>
           </div>
 
           <div v-else class="recipientTableView">
             <div class="recipientTopView">
               <el-row :gutter="5">
-                <el-col :span="4">
+                <el-col :span="18">
                   <el-button type="primary" class="manually-add-btn" color="#1D2129" @click="addManualAction" round>Add
                     Manually</el-button>
                 </el-col>
 
-                <el-col :span="4">
-                  <el-button type="text" class="import-btn" @click="importSheetAction" round>Import Spreadsheet
+                <el-col :span="3">
+                  <el-button type="default" class="import-btn" @click="importSheetAction" round>Import Spreadsheet
                   </el-button>
                 </el-col>
 
-                <el-col :span="4" :offset="15">
+                <el-col :span="3">
                   <el-button type="primary" class="issue-btn" :disabled="disableIssueVc" @click="toIssueCredentials">
                     Issue Credentials
                   </el-button>
@@ -286,7 +288,7 @@
           <div v-if="createOk" class="okCreatedVc">
             <el-row>
               <el-col :span="2" :offset="17">
-                <el-button type="text" class="manually-add-btn" @click="toDownloadAction" round>Download Credential
+                <el-button type="default" class="manually-add-btn" @click="toDownloadAction" round>Download Credential
                 </el-button>
               </el-col>
 
@@ -468,10 +470,10 @@
           <div class="multiFooterView">
             <el-row :gutter="10" justify="center">
               <el-col :span="12">
-                <el-button class="multi-vc-btn" type="text" @click="multiVcCancelAction" round>Cancel</el-button>
+                <el-button class="multi-vc-btn" type="default" @click="multiVcCancelAction" round>Cancel</el-button>
               </el-col>
               <el-col :span="12">
-                <el-button class="multi-vc-btn" type="text" color="black" @click="multiVcImportAction" round>Import
+                <el-button class="multi-vc-btn" type="default" color="black" @click="multiVcImportAction" round>Import
                 </el-button>
               </el-col>
             </el-row>
@@ -564,10 +566,12 @@ import domtoimage from "dom-to-image";
 import bip39 from "../crypto/bip39.js";
 import vc from "../crypto/vc.js";
 import did from "../crypto/did.js";
+import ecdh from "../crypto/ecdh.js";
+
 import tmpl from "../db/tmpl.js";
 import claim from "../db/claim.js";
 import dbvc from "../db/vc.js";
-import ecdh from "../crypto/ecdh.js";
+import user from "../db/user.js";
 
 export default {
   name: "Home",
@@ -715,9 +719,9 @@ export default {
       },
     });
 
-    this.getUserInfo();
-    // this.getVcTableInfo();
-    this.getVcTableInfoLocally();
+    this.getUserInfoLocal();
+    this.getVcTableInfoLocal();
+    this.getVcTableInfo();
   },
   methods: {
     async queryBlockchain() {
@@ -742,9 +746,10 @@ export default {
       // console.log('otherRet ' + otherRet);
     },
     createVcDrawerDismissAction() {
-      this.getUserInfo();
-      // this.getVcTableInfo();
-      this.getVcTableInfoLocally();
+      this.data = []
+      this.getUserInfoLocal();
+      this.getVcTableInfoLocal();
+      this.getVcTableInfo();
     },
     handleRecipientCheck(row) {
       this.recipientCheckedRowKeys = row;
@@ -825,7 +830,9 @@ export default {
           key: "",
           width: 40,
           render(row, index) {
-            if (row.state == 0) {
+            let now = Date.now();
+            let expireTiming = Date.parse(row.expireDate);
+            if (expireTiming > now) {
               return h(
                 NIcon,
                 {
@@ -926,7 +933,33 @@ export default {
         },
       ];
     },
-    async getUserInfo() {
+    async getUserInfoLocal() {
+      let userinfo = null
+      let localdid = localStorage.getItem("userdid");
+      if (localdid == undefined) {
+        userinfo = await this.getUserInfoOnline();
+      } else {
+        let val = await user.queryUser(localdid);
+        if (val == undefined) {
+          userinfo = await this.getUserInfoOnline();
+        } else {
+          userinfo = val;
+        }
+      }
+
+      if (userinfo.firstName == undefined) {
+        userinfo.firstName = "";
+      }
+      if (userinfo.lastName == undefined) {
+        userinfo.lastName = "";
+      }
+
+      this.userInfo = userinfo;
+      this.profileName = this.userInfo.firstName
+        .substring(0, 1)
+        .toUpperCase();
+    },
+    async getUserInfoOnline() {
       const res = await axios.get(getUserInfoUrl, {
         headers: {
           Authorization: localStorage.getItem("token"),
@@ -934,16 +967,17 @@ export default {
       });
 
       if (res.data.code == 0) {
-        if (res.data.data.firstName == undefined) {
-          res.data.data.firstName = "";
-        }
-        if (res.data.data == undefined) {
-          res.data.data.lastName = "";
-        }
-        this.userInfo = res.data.data;
-        this.profileName = this.userInfo.firstName
-          .substring(0, 1)
-          .toUpperCase();
+        let info = res.data.data;
+        localStorage.setItem("userdid", info.did)
+        user.createUser({
+          firstName: info.firstName,
+          lastName: info.lastName,
+          userdid: info.did,
+          usercompany: info.company,
+          credentialcount: info.credentialCount,
+          needAddInformation: info.needAddInformation,
+        })
+        return info;
       } else if (res.data.code == 100002) {
         this.$router.push({ name: "personInfo" });
       } else if (res.data.code == 40001) {
@@ -955,14 +989,14 @@ export default {
         });
       }
     },
-    async getVcTableInfoLocally() {
+    async getVcTableInfoLocal() {
       let localVals = await dbvc.queryVcs();
+      this.data.push(...localVals)
 
-      if (localVals.length == 0) {
-        this.getVcTableInfo()
-      } else {
-        this.data = localVals
-      }
+      // if (localVals.length == 0) {
+        // this.getVcTableInfo()
+      // } else {
+      // }
 
       if (this.data.length == 0) {
         this.hasVc = false;
@@ -985,8 +1019,7 @@ export default {
       );
 
       if (res.data.code == 0) {
-        this.data = res.data.data.records;
-
+        this.data.push(...res.data.data.records);
         if (this.data.length == 0) {
           this.hasVc = false;
         } else {
@@ -1034,26 +1067,6 @@ export default {
       }
     },
     async toCreateVcAction() {
-      // 1.get template list
-      // const res = await axios.get(getTemplListUrl, {
-      //   headers: {
-      //     Authorization: localStorage.getItem("token"),
-      //   },
-      // });
-
-      // if (res.data.code == 0) {
-      //   this.schemaList = res.data.data;
-      //   this.schemaVisible = true;
-      //   this.vcStep = 1;
-      // } else if (res.data.code == 40001) {
-      //   this.logoutAction();
-      // } else {
-      //   ElMessage({
-      //     message: res.data.msg,
-      //     type: "error",
-      //   });
-      // }
-
       this.schemaList = tmpl.queryVcTemplate();
       this.schemaVisible = true;
       this.vcStep = 1;
@@ -1099,36 +1112,10 @@ export default {
 
       claim.queryCliamsWith(this.schemaId).then(
         (val) => {
-          console.log(val);
           this.inputRecipientsData = val;
           this.createRecipientColumns(this.inputRecipientsData);
         }
       )
-
-      // // get template claim information
-      // const res = await axios.post(
-      //   templateClaimUrl,
-      //   {
-      //     templateId: this.schemaId,
-      //   },
-      //   {
-      //     headers: {
-      //       Authorization: localStorage.getItem("token"),
-      //     },
-      //   }
-      // );
-
-      // if (res.data.code == 0) {
-      //   this.inputRecipientsData = res.data.data;
-      //   this.createRecipientColumns(this.inputRecipientsData);
-      // } else if (res.data.code == 40001) {
-      //   this.logoutAction();
-      // } else {
-      //   ElMessage({
-      //     message: res.data.msg,
-      //     type: "error",
-      //   });
-      // }
     },
     async addManualAction() {
       this.inputRecipientsData.forEach((element) => {
@@ -1170,10 +1157,13 @@ export default {
       this.recipientCheckedRowKeys.forEach((checkKey) => {
         let element = this.recipientTableData[checkKey - 1];
 
+        let now = Date.now();
+        let giving = Date.parse(element.expireDate);
+
         let obj = {
           issueDate: element.issueDate,
           expireDate: element.expireDate,
-          expireFlag: 0,
+          expireFlag: giving > now ? 1 : 0,
         };
 
         let obj2 = {}
@@ -1206,7 +1196,7 @@ export default {
           // ecdh.decrypt(val, this.shareKey).then(val => {
           //   console.log("decrypto message " + origin);
           // });
-          // });
+          // }); 
 
           // addition actions
           clearInterval(timer);
@@ -1227,45 +1217,6 @@ export default {
           this.createOk = false;
         }
       )
-
-      // const res = await axios.post(
-      //   issueVcUrl,
-      //   {
-      //     claims: needClaims,
-      //     templateId: this.schemaId,
-      //   },
-      //   {
-      //     headers: {
-      //       Authorization: localStorage.getItem("token"),
-      //     },
-      //   }
-      // );
-
-      // if (res.data.code == 0) {
-      //   clearInterval(timer);
-      //   this.percentageCount += 100;
-      //   if (this.percentageCount > 100) {
-      //     this.percentageCount = 100;
-      //   }
-
-      //   this.newVcId = res.data.data;
-      //   this.newVcNum =
-      //     "Issued " + this.newVcId.length + " Verifiable Credential";
-      //   this.processing = false;
-      //   this.vcStep = 3;
-      //   this.createOk = true;
-      // } else if (res.data.code == 40001) {
-      //   this.logoutAction();
-      // } else {
-      //   clearInterval(timer);
-      //   this.processing = false;
-      //   this.createOk = false;
-
-      //   ElMessage({
-      //     message: res.data.msg,
-      //     type: "error",
-      //   });
-      // }
     },
     toDownloadAction() {
       if (this.newVcId.length > 1) {
@@ -1282,19 +1233,6 @@ export default {
     },
     captureVcImage() {
       var node = document.getElementById("vc-image");
-
-      // domtoimage
-      // .toPng(node)
-      // .then(function (dataUrl) {
-      //   console.log(dataUrl);
-      //   var img = new Image();
-      //   img.src = dataUrl;
-      //   document.body.appendChild(img);
-      // })
-      // .catch(function (error) {
-      //   console.error("oops, something went wrong!", error);
-      // });
-
       domtoimage
         .toJpeg(node, { quality: 0.95 })
         .then(function (dataUrl) {
@@ -1374,7 +1312,7 @@ export default {
       a.href = url;
       a.setAttribute("download", "file.zip");
       document.body.appendChild(a);
-      a.click(); //执行下载
+      a.click();
       window.URL.revokeObjectURL(a.href);
       document.body.removeChild(a);
     },
@@ -1667,7 +1605,6 @@ export default {
 .dm-container {
   width: 100%;
   background: linear-gradient(360deg, #eef1f8 0%, #d1dbf4 60%, #eef1f8 100%);
-  /* overflow-y: hidden; */
 }
 
 .did-main {
@@ -1694,7 +1631,6 @@ export default {
 .info-icon {
   width: 128px;
   height: 128px;
-  margin-left: 120px;
   margin-top: 40px;
 }
 
@@ -1704,7 +1640,6 @@ export default {
 
 .info-right {
   margin-top: 45px;
-  /* margin-left: 268px; */
 }
 
 .name {
@@ -1844,6 +1779,7 @@ export default {
 .vctable-view {
   width: 95%;
   margin: 0 auto;
+  padding-bottom: 15px;
   border: 1px solid #a9aeb8;
   border-radius: 8px;
 }
