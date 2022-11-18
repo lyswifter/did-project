@@ -469,10 +469,10 @@
         <template #footer>
           <div class="multiFooterView">
             <el-row :gutter="10" justify="center">
-              <el-col :span="12">
+              <el-col :span="5" style="text-align: center;">
                 <el-button class="multi-vc-btn" type="default" @click="multiVcCancelAction" round>Cancel</el-button>
               </el-col>
-              <el-col :span="12">
+              <el-col :span="5" style="text-align: center;">
                 <el-button class="multi-vc-btn" type="default" color="black" @click="multiVcImportAction" round>Import
                 </el-button>
               </el-col>
@@ -562,6 +562,7 @@ import {
 
 import VueQrcode from 'vue-qrcode'
 import domtoimage from "dom-to-image";
+import { read, utils } from "xlsx";
 
 import bip39 from "../crypto/bip39.js";
 import vc from "../crypto/vc.js";
@@ -572,6 +573,7 @@ import tmpl from "../db/tmpl.js";
 import claim from "../db/claim.js";
 import dbvc from "../db/vc.js";
 import user from "../db/user.js";
+import { forEach } from "lodash";
 
 export default {
   name: "Home",
@@ -972,9 +974,9 @@ export default {
         user.createUser({
           firstName: info.firstName,
           lastName: info.lastName,
-          userdid: info.did,
-          usercompany: info.company,
-          credentialcount: info.credentialCount,
+          did: info.did,
+          company: info.company,
+          credentialCount: info.credentialCount,
           needAddInformation: info.needAddInformation,
         })
         return info;
@@ -994,7 +996,7 @@ export default {
       this.data.push(...localVals)
 
       // if (localVals.length == 0) {
-        // this.getVcTableInfo()
+      // this.getVcTableInfo()
       // } else {
       // }
 
@@ -1370,45 +1372,34 @@ export default {
       }
     },
     async multiVcImportAction() {
-      let formData = new FormData();
-      formData.append("multipartFile", this.multoVcFileList[0].raw);
+      let file = this.multoVcFileList[0].raw;
+      let data = await file.arrayBuffer()
+      let workbook = read(data);
+      let jsa = utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {rawNumbers: false, raw: false});
 
-      const res = await axios.post(
-        multiVcCreationUrl + this.schemaId,
-        formData,
-        {
-          headers: {
-            Authorization: localStorage.getItem("token"),
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      if (res.data.code == 0) {
-        res.data.data.claims.forEach((element) => {
-          let claimObj = JSON.parse(element.claimsStr);
-
-          claimObj["issueDate"] = element.issueDate;
-          claimObj["expireDate"] = element.expireDate;
-          claimObj["idx"] = this.recipientIdx;
-          claimObj["claimsStr"] = element.claimsStr;
-
-          this.recipientTableData.push(claimObj);
-
-          // // increase index !IMPORTANT
-          this.recipientIdx = this.recipientIdx + 1;
+      jsa.forEach((outer) => {
+        let claimObj = {}
+        // let outerObj = {}
+        this.inputRecipientsData.forEach(inner => {
+          let claimName = inner['claimName'].substring(2);
+          let claimCode = inner['claimCode'];
+          let claimContent = outer[claimName];
+          claimObj[claimCode] = claimContent;
+          // outerObj[claimCode] = claimContent;
         });
 
-        this.isEmptyRecipient = false;
-        this.issuleMultiVCVisiable = false;
-      } else if (res.data.code == 40001) {
-        this.logoutAction();
-      } else {
-        ElMessage({
-          message: res.data.msg,
-          type: "error",
-        });
-      }
+        // let claimStr = JSON.stringify(outerObj);
+        claimObj["issueDate"] = outer['Issue Date'];
+        claimObj["expireDate"] = outer['Expiration Date'];
+        claimObj["idx"] = this.recipientIdx;
+        // claimObj["claimsStr"] = claimStr;
+        this.recipientTableData.push(claimObj);
+        // // increase index !IMPORTANT
+        this.recipientIdx = this.recipientIdx + 1;
+      });
+
+      this.isEmptyRecipient = false;
+      this.issuleMultiVCVisiable = false;
     },
     multiVcCancelAction() {
       this.excelTempelUrl = "";

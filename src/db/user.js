@@ -11,7 +11,7 @@ export default {
 
     async addUserCredentialCount(did) {
         let info = await this.queryUser(did);
-        info.credentialcount += 1;
+        info.credentialCount += 1;
         await db.user.put(info)
     },
 

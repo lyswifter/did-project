@@ -133,9 +133,9 @@ export default {
         user.createUser({
           firstName: info.firstName,
           lastName: info.lastName,
-          userdid: info.did,
-          usercompany: info.company,
-          credentialcount: info.credentialCount,
+          did: info.did,
+          company: info.company,
+          credentialCount: info.credentialCount,
           needAddInformation: info.needAddInformation,
       })
       }
