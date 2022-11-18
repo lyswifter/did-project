@@ -1,45 +1,27 @@
 <template>
   <div>
     <div id="left">
-      <img
-        id="logo"
-        src="../assets/img/sign_decorate@2x.png"
-        alt=""
-        srcset=""
-      />
+      <img id="logo" src="../assets/img/sign_decorate@2x.png" alt="" srcset="" />
       <h3 id="welcome-title">Welcome to Dmaster</h3>
       <br />
 
       <h4 id="email-title">Email</h4>
-      <el-input
-        class="email-input"
-        v-model="emailcontent"
-        placeholder="Please input"
-      />
+      <el-input class="email-input" v-model="emailcontent" placeholder="Please input" />
 
       <br />
       <br />
 
       <h4 id="email-vc">Email verification code</h4>
       <div>
-        <el-input
-          class="email-vc-input"
-          v-model="emailvccontent"
-          placeholder="Please input"
-        />
-        <el-button 
-        class="email-vc-btn" 
-        :disabled=sendDisable
-        @click="sendAction">{{sendString}}</el-button>
+        <el-input class="email-vc-input" v-model="emailvccontent" placeholder="Please input" />
+        <el-button class="email-vc-btn" :disabled=sendDisable @click="sendAction">{{ sendString }}</el-button>
       </div>
 
       <br />
       <br />
       <br />
 
-      <el-button class="continue-btn" @click="loginAction"
-        >Continue</el-button
-      >
+      <el-button class="continue-btn" @click="loginAction">Continue</el-button>
     </div>
 
     <div id="right">
@@ -73,7 +55,7 @@ export default {
       countLimit: 60,
     };
   },
-  async created() {},
+  async created() { },
   mounted() {
     this.sendCount = this.countLimit;
   },
@@ -84,7 +66,7 @@ export default {
         this.sendString = "Send";
       } else {
         this.sendDisable = true;
-        this.sendString = newVal+"(S)";
+        this.sendString = newVal + "(S)";
       }
     }
   },
@@ -100,7 +82,7 @@ export default {
 
         if (res.data.data.needAddInformation) {
           //push to add information page
-          this.$router.push({name: 'personInfo'}); 
+          this.$router.push({ name: 'personInfo' });
         } else {
           // push to home page
           ElMessage({
@@ -137,7 +119,7 @@ export default {
           company: info.company,
           credentialCount: info.credentialCount,
           needAddInformation: info.needAddInformation,
-      })
+        })
       }
     },
     async sendAction() {
