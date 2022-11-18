@@ -41,7 +41,8 @@ export default {
         return db.vc.toArray();
     },
 
-    queryVc(vcid) {
-        return db.vc.where('credentialId').equals(vcid).toArray();
+    async queryVc(vcid) {
+        let vcs = await db.vc.where('credentialId').equals(vcid).toArray();
+        return vcs[0]
     }
 }

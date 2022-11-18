@@ -1,17 +1,14 @@
 import { createVerifiableCredentialJwt, verifyCredential } from 'did-jwt-vc';
-import { ES256KSigner, hexToBytes } from "did-jwt";
+import { ES256KSigner, hexToBytes, createJWT, verifyJWT } from "did-jwt";
 import { createVerifiablePresentationJwt, verifyPresentation } from 'did-jwt-vc'
 
 import { Resolver } from 'did-resolver'
 import { getResolver } from 'ethr-did-resolver'
 
-import vc from '../db/vc.js';
+import dbvc from '../db/vc.js';
 
 export default {
     async createVcTemplate(wallet, claims, tempId) {
-        console.log('claimStr ' + claims)
-        console.log('tempId ' + tempId)
-
         let didPrefix = "did:";
         let didMethod = "dmaster";
         let didAddr = wallet.address;
@@ -20,12 +17,10 @@ export default {
         let vcids = []
         claims.forEach(element => {
             // generate vc object and insert to vc table
-            let vcid = vc.createVcModel(issuerDid, element, tempId)
+            let vcid = dbvc.createVcModel(issuerDid, element, tempId)
             vcids.push(vcid)
         });
-
-        console.log('vcids ' + vcids);
-
+        
         return vcids
     },
 
@@ -37,31 +32,20 @@ export default {
         // query issuer public keys
         // update vc info
 
+        let specifyVc = await dbvc.queryVc(vcid)
+
         const signer = ES256KSigner(hexToBytes(wallet.privateKey));
 
         let issuer = {
-            did: issuerDid,
+            did: specifyVc.issuerDid,
             signer: signer,
-            alg: "ES256K",
         };
 
         // Assembly verify credential payload information
-        const vcPayload = {
-            sub: 'did:ethr:' + wallet.address,
-            nbf: 1562950282,
-            vc: {
-                '@context': ['https://www.w3.org/2018/credentials/v1'],
-                type: ['VerifiableCredential'],
-                credentialSubject: {
-                    degree: {
-                        type: 'BachelorDegree',
-                        name: 'Baccalauréat en musiques numériques'
-                    }
-                }
-            }
+        const vcJwtPayload = {
         }
 
-        const vcJwt = await createVerifiableCredentialJwt(vcPayload, issuer)
+        const vcJwt = await createJWT(vcJwtPayload, issuer, { alg: 'ES256K' })
         console.log('vcJwt ' + vcJwt)
 
         // update vc info
