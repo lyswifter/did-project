@@ -16,6 +16,7 @@ export default defineComponent({
         return {
             single: 3,
             mnemonicWords: [],
+            mnemonicStr: [],
         }
     },
     mounted() {
@@ -45,6 +46,19 @@ export default defineComponent({
         backAction() {
             this.$router.go(-1);
         },
+        newInput(newValue) {
+            let allWords = newValue.split(" ");
+            if (allWords.length > 0 && allWords.length == 12) {
+                for (let i = 0; i < allWords.length; i++) {
+                    const element = allWords[i];
+                    let row = Math.floor(i / this.single)
+                    let col = Math.round(i % this.single);
+
+                    this.mnemonicWords[row][col].word = element;
+                    this.mnemonicWords[row][col].state = 2;
+                }
+            }
+        }
     }
 })
 </script>
@@ -77,8 +91,8 @@ export default defineComponent({
                     <div class="mnemonic-view">
                         <el-row v-for="(outer, i) in mnemonicWords" :gutter="10" class="word-row-view">
                             <el-col v-for="(inner, j) in outer" :span="8" class="word-col-view">
-                                <el-input class="word-input" placeholder="Please enter" clearable="true"
-                                    v-model="inner.word"></el-input>
+                                <el-input class="word-input" placeholder="Please enter" :clearable="true"
+                                    v-model="inner.word" @input="newInput"></el-input>
                             </el-col>
                         </el-row>
                     </div>

@@ -15,22 +15,42 @@ export default defineComponent({
     data() {
         return {
             single: 3,
-            randoms: [4, 8],
             checkRandoms: [],
             originWords: "coral dignity clutch idle shell wedding meat ethics doctor salute quantum poet".split(" "),
             mnemonicWords: [],
             checkWords: [],
         }
     },
-    mounted() {
-        for (let i = 0; i < this.randoms.length; i++) {
-            let ibj = {
-                item: this.randoms[i],
-                filled: false
+    created() {
+        let prev = 0;
+        for (let i = 0; i < 10; i++) {
+            let rand = this.randomNum(1, 12);
+
+            if (rand == prev) {
+                continue 
             }
-            this.checkRandoms.push(ibj);
+
+            prev = rand;
+
+            this.checkRandoms.push({
+                item: rand,
+                filled: false
+            });
+
+            if (this.checkRandoms.length == 2) {
+                break
+            }
+
+            //
         }
 
+        this.checkRandoms.sort(function (a,b) {
+            return a.item-b.item
+        })
+
+        console.log(this.checkRandoms)
+    },
+    mounted() {
         for (let i = 0; i < this.originWords.length / this.single; i++) {
             let innerArr = []
             for (let j = this.single * i; j < this.single * (i + 1); j++) {
@@ -62,6 +82,19 @@ export default defineComponent({
     watch: {
     },
     methods: {
+        randomNum(minNum, maxNum) {
+            switch (arguments.length) {
+                case 1:
+                    // return parseInt(Math.random() * minNum + 1, 10);
+                    break;
+                case 2:
+                    return parseInt(Math.random() * (maxNum - minNum + 1) + minNum, 10);
+                    break;
+                default:
+                    return 0;
+                    break;
+            }
+        },
         reloadPage() {
             location.reload()
         },
@@ -137,8 +170,8 @@ export default defineComponent({
                 </div>
 
                 <div class="content-view">
-                    <h4 class="subtitle">Please select the <span>{{ randoms[0] }}th</span> and
-                        <span>{{ randoms[1] }}th</span> mnemonics.
+                    <h4 class="subtitle">Please select the <span>{{ checkRandoms[0].item }}th</span> and
+                        <span>{{ checkRandoms[1].item }}th</span> mnemonics.
                     </h4>
                     <h4 class="notice">Click the mnemonic phrase below to ensure that the order is consistent with the
                         mnemonic phrase you backed up.</h4>

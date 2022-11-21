@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>32px/warn</title>
+    <g id="v0.6" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="提示：是否已备份助记词" transform="translate(-475.000000, -260.000000)">
+            <g id="编组-19备份" transform="translate(455.000000, 240.000000)">
+                <g id="32px/warn" transform="translate(20.000000, 20.000000)">
+                    <circle id="椭圆形" fill="#EEA119" cx="16" cy="16" r="16"></circle>
+                    <polygon id="路径-2" fill="#FFFFFF" fill-rule="nonzero" points="17.5 8 17 21 15 21 14.5 8"></polygon>
+                    <polygon id="路径-2备份" fill="#FFFFFF" fill-rule="nonzero" points="17 23 17 25 15 25 15 23"></polygon>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

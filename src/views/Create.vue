@@ -66,7 +66,7 @@ export default defineComponent({
             }
         },
         async loginAction() {
-            this.$router.push({ name: "home" });
+            this.$router.push({ name: "mnemonic" });
             
             // const res = await axios.post(loginUrl, {
             //     email: this.emailcontent,
