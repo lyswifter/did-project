@@ -69,7 +69,7 @@ export default defineComponent({
             this.$router.push({ name: "home" });
         },
         backAction() {
-            alert("BACK")
+            this.$router.go(-1);
         },
         toggleTagAction(index) {
             let checked = this.checkWords[index].checked;

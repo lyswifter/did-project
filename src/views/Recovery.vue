@@ -43,7 +43,7 @@ export default defineComponent({
             this.$router.push({ name: "home" });
         },
         backAction() {
-            alert("BACK")
+            this.$router.go(-1);
         },
     }
 })

@@ -65,12 +65,14 @@ router.beforeEach((to, from, next) => {
     isAuthenticated = false;
   }
 
-  if (to.name == 'recovery') next()
+  next()
 
-  if (to.name == 'create') next()
+  // if (to.name == 'recovery') next()
 
-  if (to.name !== 'entry' && !isAuthenticated) next({ name: 'entry' })
-  else next()
+  // if (to.name == 'create') next()
+
+  // if (to.name !== 'entry' && !isAuthenticated) next({ name: 'entry' })
+  // else next()
 })
 
 export default router;

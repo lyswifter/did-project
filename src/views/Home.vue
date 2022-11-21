@@ -778,9 +778,11 @@ export default {
       }
     },
     logoutAction() {
-      window.localStorage.removeItem("token");
-      window.localStorage.removeItem("username");
-      window.location.reload();
+      // window.localStorage.removeItem("token");
+      // window.localStorage.removeItem("username");
+      // window.location.reload();
+
+      this.$router.push({ name: 'entry'});
     },
     createColumns({
       moreOpsRow,

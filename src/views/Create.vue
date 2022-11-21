@@ -96,7 +96,7 @@ export default defineComponent({
             // }
         },
         recoverFromDidAction() {
-
+            this.$router.push({ name: "recovery" });
         }
     }
 })
