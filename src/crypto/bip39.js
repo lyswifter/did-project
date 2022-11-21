@@ -5,16 +5,7 @@ import { HDKey } from 'ethereum-cryptography/hdkey'
 import { Wallet } from "@ethersproject/wallet";
 
 export default {
-    async genWalletWithBip39() {
-        let path = "m/44'/60'/0'/0/0";
-        let password = "123456";
-        let mnemonic = "coral dignity clutch idle shell wedding meat ethics doctor salute quantum poet";
-        // let mnemonic = "cabbage lunch security strategy park phrase fruit security pig cluster beef bind";
-
-        // Generate x random words. Uses Cryptographically-Secure Random Number Generator.
-        // const mnemonic = bip39.generateMnemonic(wordlist);
-        // console.log(mnemonic);
-
+    async genWalletWithMnemonic(mnemonic) {
         // Reversible: Converts mnemonic string to raw entropy in form of byte array.
         const ent = bip39.mnemonicToEntropy(mnemonic, wordlist)
         // Reversible: Converts raw entropy in form of byte array to mnemonic string.
@@ -27,5 +18,19 @@ export default {
         let hdkey = HDKey.fromMasterSeed(seed).derive(path);
 
         return new Wallet(hdkey.privateKey)
+    },
+
+    async genBip39Mnemonic() {
+        let path = "m/44'/60'/0'/0/0";
+        let password = "123456";
+
+        // let mnemonic = "coral dignity clutch idle shell wedding meat ethics doctor salute quantum poet";
+        // let mnemonic = "cabbage lunch security strategy park phrase fruit security pig cluster beef bind";
+
+        // Generate x random words. Uses Cryptographically-Secure Random Number Generator.
+        const mnemonic = bip39.generateMnemonic(wordlist);
+        console.log(mnemonic);
+
+        return mnemonic;
     }
 }

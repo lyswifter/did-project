@@ -2,6 +2,9 @@
 import { defineComponent } from "vue";
 import { ElMessage } from 'element-plus'
 
+import bip39 from '../crypto/bip39.js';
+import user from "../db/user.js";
+
 import axios from "axios";
 import Domain from "../router/domain.js";
 
@@ -65,35 +68,43 @@ export default defineComponent({
                 })
             }
         },
-        async loginAction() {
-            this.$router.push({ name: "mnemonic" });
-            
-            // const res = await axios.post(loginUrl, {
-            //     email: this.emailcontent,
-            //     code: this.emailvccontent,
-            // });
+        async createDidAction() {
+            const res = await axios.post(loginUrl, {
+                email: this.emailcontent,
+                code: this.emailvccontent,
+            });
 
-            // if (res.data.code == 0) {
-            //     window.localStorage.setItem("token", res.data.data.token);
+            if (res.data.code == 0) {
+                window.localStorage.setItem("token", res.data.data.token);
 
-            //     if (res.data.data.needAddInformation) {
-            //         //push to add information page
-            //         this.$router.push({ name: 'personInfo' });
-            //     } else {
-            //         // push to home page
-            //         ElMessage({
-            //             message: 'Login successed.',
-            //             type: 'success',
-            //         })
+                // Create did
 
-            //         this.$router.push({ name: "home" });
-            //     }
-            // } else {
-            //     ElMessage({
-            //         message: res.data.msg,
-            //         type: 'error',
-            //     })
-            // }
+                ElMessage({
+                    message: 'Login successed.',
+                    type: 'success',
+                })
+
+                this.$router.push({ name: "mnemonic" });
+            } else {
+                ElMessage({
+                    message: res.data.msg,
+                    type: 'error',
+                })
+            }
+        },
+        async createDid() {
+            let mnemonic = await bip39.genBip39Mnemonic();
+            let wallet = await bip39.genWalletWithMnemonic(mnemonic);
+
+            // save userinfo
+            user.createUser({
+                email: this.emailcontent,
+                did: "did:dmaster:"+wallet.address,
+                address: wallet.address,
+                company: this.companycontent,
+                privateKey: wallet.privateKey,
+                publicKey: wallet.publicKey,
+            })
         },
         recoverFromDidAction() {
             this.$router.push({ name: "recovery" });
@@ -146,7 +157,7 @@ export default defineComponent({
 
                 <div class="btn-view">
                     <a class="continue-btn" style="text-decoration: none;" href="javascript:void(0)"
-                        @click="loginAction">Continue</a>
+                        @click="createDidAction">Continue</a>
                 </div>
             </div>
         </el-main>

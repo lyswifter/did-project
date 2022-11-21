@@ -3,12 +3,9 @@ import Dexie, { Table } from 'dexie';
 
 export interface DidUser {
   id?: number;
-  firstName: string;
-  lastName: string;
+  email: string;
   did: string;
   company: string;
-  credentialCount: number;
-  needAddInformation: boolean;
   address: string;
   privateKey: string;
   publicKey: string;
@@ -60,7 +57,7 @@ export class MySubClassedDexie extends Dexie {
   constructor() {
     super('myDatabase');
     this.version(1).stores({
-      user: '++id, did, address',
+      user: '++id, did, publicKey, email',
       vc: '++id, &credentialId, holderDid', // Primary key and indexed props
       tmpl: '++id, &templateId',
       claim: '++id, templateId'

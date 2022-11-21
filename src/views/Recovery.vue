@@ -27,6 +27,7 @@ export default defineComponent({
                     row: i,
                     col: j,
                     word: "",
+                    place: i*3+j,
                     state: 1,
                 }
                 innerArr.push(ibj);
@@ -91,7 +92,7 @@ export default defineComponent({
                     <div class="mnemonic-view">
                         <el-row v-for="(outer, i) in mnemonicWords" :gutter="10" class="word-row-view">
                             <el-col v-for="(inner, j) in outer" :span="8" class="word-col-view">
-                                <el-input class="word-input" placeholder="Please enter" :clearable="true"
+                                <el-input class="word-input" :placeholder="inner.place" :clearable="true"
                                     v-model="inner.word" @input="newInput"></el-input>
                             </el-col>
                         </el-row>
@@ -243,7 +244,7 @@ export default defineComponent({
     width: 550px;
     background: #FFFFFF;
     border-radius: 8px;
-    border: 1px solid #E5E6EB;
+    /* border: 1px solid #E5E6EB; */
 }
 
 .word-input {

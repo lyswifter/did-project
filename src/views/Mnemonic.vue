@@ -281,7 +281,7 @@ export default defineComponent({
     height: 314px;
     background: #FFFFFF;
     border-radius: 8px;
-    border: 1px solid #E5E6EB;
+    /* border: 1px solid #E5E6EB; */
 }
 
 .word-row-view {

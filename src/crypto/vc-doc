@@ -26,7 +26,7 @@
       "publicKeyBase58": "GCCnH6DbTcKBfx7ifNK2wHnnGgEq9RdfP9P7yriCMKmE"
     }
   ],
-  "assertionMethod": [ //可直接引用verificationMethod,也可以自己定义verificationMethod方法，在这里的controller被允许发行VC
+  "assertionMethod": [ //可直接引用verificationMethod,也可以自己定义verificationMethod方法,在这里的controller被允许发行VC
     "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE#key-1",
     {
       "type": "Ed25519VerificationKey2018",
@@ -35,7 +35,7 @@
       "publicKeyBase58": "GCCnH6DbTcKBfx7ifNK2wHnnGgEq9RdfP9P7yriCMKmE"
     }
   ],
-  "keyAgreement": [ //可直接引用verificationMethod,也可以自己定义verificationMethod方法，用户加密传输的key,保障通讯安全 
+  "keyAgreement": [ //可直接引用verificationMethod,也可以自己定义verificationMethod方,用户加密传输的key,保障通讯安全 
     "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE#key-agreement-1",
     {
       "type": "Ed25519VerificationKey2018",
@@ -44,7 +44,7 @@
       "publicKeyBase58": "GCCnH6DbTcKBfx7ifNK2wHnnGgEq9RdfP9P7yriCMKmE"
     }
   ],
-  "capabilityInvocation": [ //可直接引用verificationMethod,也可以自己定义verificationMethod方法，更新did文档权限
+  "capabilityInvocation": [ //可直接引用verificationMethod,也可以自己定义verificationMethod方法,更新did文档权限
     "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE#key-agreement-1",
     {
       "type": "Ed25519VerificationKey2018",
@@ -53,7 +53,7 @@
       "publicKeyBase58": "GCCnH6DbTcKBfx7ifNK2wHnnGgEq9RdfP9P7yriCMKmE"
     }
   ],
-  "capabilityDelegation": [ //可直接引用verificationMethod,也可以自己定义verificationMethod方法，did controller 权力下放, 把当前did权限交给其他的did
+  "capabilityDelegation": [ //可直接引用verificationMethod,也可以自己定义verificationMethod方法,did controller 权力下放, 把当前did权限交给其他的did
     "did:dpass:BDrEcHc8Tb4Lb2VyQZWEDE#key-agreement-1",
     {
       "type": "Ed25519VerificationKey2018",
@@ -73,7 +73,7 @@
     "https://www.w3.org/2018/credentials/examples/v1",
     "https://w3id.org/security/suites/ed25519-2020/v1"
   ],
-  "id": "ebfeb1f712ebc6f1c276e12ec21",  //vc编号，必须字段
+  "id": "ebfeb1f712ebc6f1c276e12ec21",  //vc编号,必须字段
   "type": [  //VC type  必须字段
     "VerifiableCredential",
     "UniversityDegreeCredential"

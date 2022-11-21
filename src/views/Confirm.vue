@@ -27,7 +27,7 @@ export default defineComponent({
             let rand = this.randomNum(1, 12);
 
             if (rand == prev) {
-                continue 
+                continue
             }
 
             prev = rand;
@@ -44,8 +44,8 @@ export default defineComponent({
             //
         }
 
-        this.checkRandoms.sort(function (a,b) {
-            return a.item-b.item
+        this.checkRandoms.sort(function (a, b) {
+            return a.item - b.item
         })
 
         console.log(this.checkRandoms)
@@ -109,6 +109,11 @@ export default defineComponent({
             if (checked == true) {
                 for (let i = this.checkRandoms.length - 1; i >= 0; i--) {
                     const element = this.checkRandoms[i];
+
+                    if (index+1 != element.item) {
+                        continue
+                    }
+
                     if (element.filled == true) {
                         let idx = element.item - 1
 
@@ -137,12 +142,14 @@ export default defineComponent({
 
                         this.checkWords[index].checked = true;
                         element.filled = true;
-
                         break
                     }
                 }
 
             }
+        },
+        clearAction(i, j) {
+            this.toggleTagAction(i * this.single + j);
         }
     }
 })
@@ -182,7 +189,7 @@ export default defineComponent({
                                 <div v-if="inner.state == 0" class="default-state-view">****</div>
                                 <div v-else-if="inner.state == 1" class="select-state-view">Please select</div>
                                 <div v-else-if="inner.state == 2" class="word-state-view"> <span>{{ i * 3 + j + 1
-                                }}</span> {{ inner.word }} </div>
+                                }}</span> {{ inner.word }} <img src="../assets/img/24px_close_black.svg" alt="" @click="clearAction(i, j)"></div>
                             </el-col>
                         </el-row>
 
@@ -339,7 +346,7 @@ export default defineComponent({
     width: 550px;
     background: #FFFFFF;
     border-radius: 8px;
-    border: 1px solid #E5E6EB;
+    /* border: 1px solid #E5E6EB; */
 }
 
 .word-row-view {
@@ -379,9 +386,11 @@ export default defineComponent({
 }
 
 .word-state-view {
+    position: relative;
+    background: #FFFFFF;
+    border: 1px solid #1672F0;
     width: 170px;
     height: 48px;
-    background: #F0F5FF;
     border-radius: 4px;
     text-align: start;
     font-size: 14px;
@@ -394,12 +403,21 @@ export default defineComponent({
     display: inline-block;
     height: 48px;
     width: 20px;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 400;
-    color: #86909C;
+    color: #1672F0;
     line-height: 48px;
     margin-right: 5px;
     text-align: right;
+}
+
+.word-state-view img {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
 }
 
 .line {
