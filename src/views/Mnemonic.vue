@@ -16,7 +16,7 @@ export default defineComponent({
         return {
             isBackupVisiable: false,
             single: 3,
-            originWords: "coral dignity clutch idle shell wedding meat ethics doctor salute quantum poet".split(" "),
+            originWords: "coral dignity clutch idle shell wedding meat ethics doctor salute quantum poet",
             mnemonicWords: [],
         }
     },
@@ -26,12 +26,13 @@ export default defineComponent({
         //     // event.preventDefault();
         // })
 
-        let group = this.originWords.length / this.single;
+        let splitWords = this.originWords.split(" ");
+        let group = splitWords.length / this.single;
         for (let i = 0; i < group; i++) {
             let innerArr = []
             for (let j = this.single * i; j < this.single * (i + 1); j++) {
                 let oneWord = {
-                    word: this.originWords[j],
+                    word: splitWords[j],
                     state: 0,
                 }
                 innerArr.push(oneWord)
@@ -52,10 +53,12 @@ export default defineComponent({
             this.$router.go(-1);
         },
         copyMnemonicAction() {
-            ElMessage({
-                message: "Copied",
-                type: "success",
-            });
+            navigator.clipboard.writeText(this.originWords).then(() => {
+                ElMessage({
+                    message: "Copied",
+                    type: "success",
+                });
+            })
         },
         cancelAction() {
             this.isBackupVisiable = false;
