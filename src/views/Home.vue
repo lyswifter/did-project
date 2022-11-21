@@ -731,7 +731,7 @@ export default {
 
     this.getUserInfoLocal();
     this.getVcTableInfoLocal();
-    this.getVcTableInfo();
+    // this.getVcTableInfo();
   },
   methods: {
     async queryBlockchain() {
@@ -759,7 +759,7 @@ export default {
       this.data = []
       this.getUserInfoLocal();
       this.getVcTableInfoLocal();
-      this.getVcTableInfo();
+      // this.getVcTableInfo();
     },
     handleRecipientCheck(row) {
       this.recipientCheckedRowKeys = row;

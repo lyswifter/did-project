@@ -5,7 +5,8 @@ import HomeView from "../views/Home.vue";
 import EntryView from "../views/Entry.vue";
 import RecoveryView from "../views/Recovery.vue";
 import CreateView from "../views/Create.vue";
-import MnemonicView from "../views/mnemonic.vue";
+import MnemonicView from "../views/Mnemonic.vue";
+import ConfirmView from "../views/Confirm.vue";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -40,6 +41,11 @@ const router = createRouter({
       component: MnemonicView,
     },
     {
+      path: "/confirm",
+      name: "confirm",
+      component: ConfirmView,
+    },
+    {
       path: "/login",
       name: "login",
       component: LoginView,
@@ -59,12 +65,12 @@ router.beforeEach((to, from, next) => {
     isAuthenticated = false;
   }
 
-  next()
+  if (to.name == 'recovery') next()
 
-  // if (to.name == 'create') next()
+  if (to.name == 'create') next()
 
-  // if (to.name !== 'entry' && !isAuthenticated) next({ name: 'entry' })
-  // else next()
+  if (to.name !== 'entry' && !isAuthenticated) next({ name: 'entry' })
+  else next()
 })
 
 export default router;

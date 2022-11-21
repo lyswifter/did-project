@@ -14,17 +14,21 @@ export default defineComponent({
     },
     data() {
         return {
+            single: 3,
+            originWords: "coral dignity clutch idle shell wedding meat ethics doctor salute quantum poet".split(" "),
             mnemonicWords: [],
         }
     },
     mounted() {
-        let origin = "coral dignity clutch idle shell wedding meat ethics doctor salute quantum poet".split(" ");
-        let single = 3;
-        let group = origin.length / single;
-        for (let j = 0; j < group; j++) {
+        let group = this.originWords.length / this.single;
+        for (let i = 0; i < group; i++) {
             let innerArr = []
-            for (let i = j * single; i < single * (j + 1); i++) {
-                innerArr.push(origin[i])
+            for (let j = this.single * i; j < this.single * (i + 1); j++) {
+                let oneWord = {
+                    word: this.originWords[j],
+                    state: 0,
+                }
+                innerArr.push(oneWord)
             }
             this.mnemonicWords.push(innerArr);
         }
@@ -79,7 +83,7 @@ export default defineComponent({
                     <div class="mnemonic-view">
                         <el-row v-for="(outer, i) in mnemonicWords" :gutter="10" class="word-row-view">
                             <el-col v-for="(inner, j) in outer" :span="8" class="word-col-view">
-                                <div class="word-view"> <span>{{ i * 4 + j }}</span> {{ inner }} </div>
+                                <div class="word-view"> <span>{{ i * 3 + j + 1 }}</span> {{ inner.word }} </div>
                             </el-col>
                         </el-row>
 

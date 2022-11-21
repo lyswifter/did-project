@@ -18,7 +18,7 @@ export default defineComponent({
             this.$router.push({ name: "create" });
         },
         recoveryAction() {
-
+            this.$router.push({ name: "recovery" });
         }
     }
 })
