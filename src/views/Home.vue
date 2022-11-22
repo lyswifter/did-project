@@ -732,10 +732,6 @@ export default {
       pollingWhenHidden: true,
       onSuccess: data => {
         console.log(data)
-
-        data.forEach(ele => {
-          let email = ele.holderEmail;
-        });
       }
     });
 
@@ -763,18 +759,24 @@ export default {
       // console.log('otherRet ' + otherRet);
     },
     async queryVcNoProof() {
-      return dbvc.queryVcsWithLimit(20)
+      let noProofHolders = dbvc.queryVcsWithLimit(20);
+      noProofHolders.forEach(ele => {
+        this.queryHolderDidWithEmail(ele.holderEmail).then(val => {
+          console.log("query holder did " + val)
+          ele.holderDid = "xxxxx";
+        })
+      });
+
+      // filter all conditional holders and generate vcJwt
     },
-    async queryHolderDidWithEmail(email) {
-      const res = await axios.get(queryDidUrl, {
+    queryHolderDidWithEmail(email) {
+      return axios.get(queryDidUrl, {
         headers: {
           Authorization: localStorage.getItem("token"),
         },
+      }, {
+        email: email
       });
-
-      if (res.data.code == 0) {
-      } else {
-      }
     },
     createVcDrawerDismissAction() {
       this.data = []

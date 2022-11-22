@@ -15,11 +15,10 @@ export default {
             let vcid = dbvc.createVcModel(issueDid, element, tempId)
             vcids.push(vcid)
         });
-        
         return vcids
     },
 
-    async createVcJwt(vcid) {
+    async createVcJwt(vcid, privateKey) {
         // query special vc template info
         // generate vc jwt
         // query my privatekey
@@ -29,7 +28,7 @@ export default {
 
         let specifyVc = await dbvc.queryVc(vcid)
 
-        const signer = ES256KSigner(hexToBytes(wallet.privateKey));
+        const signer = ES256KSigner(hexToBytes(privateKey));
 
         let issuer = {
             did: specifyVc.issuerDid,
