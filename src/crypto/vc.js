@@ -8,16 +8,11 @@ import { getResolver } from 'ethr-did-resolver'
 import dbvc from '../db/vc.js';
 
 export default {
-    async createVcTemplate(wallet, claims, tempId) {
-        let didPrefix = "did:";
-        let didMethod = "dmaster";
-        let didAddr = wallet.address;
-        let issuerDid = didPrefix + didMethod + ":" + didAddr;
-
+    async createVcTemplate(issueDid, claims, tempId) {
         let vcids = []
         claims.forEach(element => {
             // generate vc object and insert to vc table
-            let vcid = dbvc.createVcModel(issuerDid, element, tempId)
+            let vcid = dbvc.createVcModel(issueDid, element, tempId)
             vcids.push(vcid)
         });
         

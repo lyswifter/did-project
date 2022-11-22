@@ -530,6 +530,7 @@
 <script>
 import { ref, h, reactive } from "vue";
 import axios from "axios";
+import { useRequest } from 'vue-request';
 
 import Domain from "../router/domain.js";
 let getUserInfoUrl = Domain.domainUrl + "/api/did-user/get-info";
@@ -553,6 +554,8 @@ let delVcUrl =
 let multiVcCreationUrl =
   Domain.domainUrl + "/api/did-document-credential/credential-parse/";
 let personalTagsUrl = Domain.domainUrl + "/api/did-holder-tag/list/";
+
+let queryDidUrl = Domain.domainUrl + "/api/did-user/did";
 
 import Header from "./Header.vue";
 
@@ -579,7 +582,6 @@ import tmpl from "../db/tmpl.js";
 import claim from "../db/claim.js";
 import dbvc from "../db/vc.js";
 import user from "../db/user.js";
-import { forEach } from "lodash";
 
 export default {
   name: "Home",
@@ -588,7 +590,6 @@ export default {
   },
   data() {
     return {
-      autoWidth: "",
       ableToDownload: true,
       disableIssueVc: true,
 
@@ -683,9 +684,6 @@ export default {
       localStorage.setItem("indexDB", "1")
     }
 
-    this.queryBlockchain();
-
-    this.autoWidth = window.outerWidth * 0.6;
     this.pagination = reactive({
       page: 1,
       pageSize: 5,
@@ -728,6 +726,19 @@ export default {
     this.getUserInfoLocal();
     this.getVcTableInfoLocal();
     // this.getVcTableInfo();
+
+    useRequest(this.queryVcNoProof, {
+      pollingInterval: 5000,
+      pollingWhenHidden: true,
+      onSuccess: data => {
+        console.log(data)
+
+        data.forEach(ele => {
+          let email = ele.holderEmail;
+        });
+      }
+    });
+
   },
   methods: {
     async queryBlockchain() {
@@ -750,6 +761,20 @@ export default {
       // let otherMsg = '';
       // let otherRet = await ecdh.decryptWithString(otherMsg, key);
       // console.log('otherRet ' + otherRet);
+    },
+    async queryVcNoProof() {
+      return dbvc.queryVcsWithLimit(20)
+    },
+    async queryHolderDidWithEmail(email) {
+      const res = await axios.get(queryDidUrl, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+
+      if (res.data.code == 0) {
+      } else {
+      }
     },
     createVcDrawerDismissAction() {
       this.data = []
@@ -774,11 +799,10 @@ export default {
       }
     },
     logoutAction() {
-      // window.localStorage.removeItem("token");
-      // window.localStorage.removeItem("username");
-      // window.location.reload();
-
-      this.$router.push({ name: 'entry'});
+      window.localStorage.removeItem("token");
+      window.localStorage.removeItem("userdid");
+      window.localStorage.removeItem("username");
+      window.location.reload();
     },
     createColumns({
       moreOpsRow,
@@ -969,15 +993,6 @@ export default {
 
       if (res.data.code == 0) {
         let info = res.data.data;
-        localStorage.setItem("userdid", info.did)
-        user.createUser({
-          firstName: info.firstName,
-          lastName: info.lastName,
-          did: info.did,
-          company: info.company,
-          credentialCount: info.credentialCount,
-          needAddInformation: info.needAddInformation,
-        })
         return info;
       } else if (res.data.code == 100002) {
         this.$router.push({ name: "personInfo" });
@@ -1184,7 +1199,7 @@ export default {
         return;
       }
 
-      vc.createVcTemplate(this.didWallet, needClaims, this.schemaId).then(
+      vc.createVcTemplate(this.userInfo.did, needClaims, this.schemaId).then(
         (value) => {
           // get vcid
           console.log(value)

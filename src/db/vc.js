@@ -26,6 +26,7 @@ export default {
             expireFlag: needClaim.expireFlag,
             issueDate: needClaim.issueDate,
             expireDate: needClaim.expireDate,
+            filled: 0,
         }
 
         db.vc.add(vcObj);
@@ -39,6 +40,14 @@ export default {
 
     queryVcs() {
         return db.vc.toArray();
+    },
+
+    queryVcsWithLimit(limit) {
+        if (limit == null) {
+            limit = 20
+        }
+
+        return db.vc.where("filled").equals(0).offset(0).limit(limit).toArray();
     },
 
     async queryVc(vcid) {

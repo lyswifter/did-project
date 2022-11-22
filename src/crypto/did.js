@@ -3,13 +3,13 @@ import { Resolver } from "did-resolver";
 import { getResolver } from "ethr-did-resolver";
 
 export default {
-    async createDidJwt(hdWallet, docunment) {
+    async createDidJwt(hdWallet, document) {
         const signer = ES256KSigner(hexToBytes(hdWallet.privateKey));
 
         let did = "did:dmaster:" + hdWallet.address;
 
         let jwt = await createJWT(
-            { iss: did, iat: undefined, docunmnet: docunment},
+            { iss: did, iat: undefined, document: document},
             { issuer: did, signer },
             { alg: 'ES256K' , kid: did + "#key-1" }
         )

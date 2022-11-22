@@ -71,7 +71,6 @@ export default defineComponent({
         },
         async createDidAction() {
             let ret = await this.createDid()
-
             localStorage.setItem("userdid", ret.didStr)
 
             this.$router.push({ name: "mnemonic" });
@@ -94,7 +93,7 @@ export default defineComponent({
             //         type: 'success',
             //     })
 
-            //     this.$router.push({ name: "mnemonic", params: { did: ret.didStr } });
+            //     this.$router.push({ name: "mnemonic" });
             // } else {
             //     ElMessage({
             //         message: res.data.msg,
@@ -119,7 +118,7 @@ export default defineComponent({
                 mnemonic: mnemonic,
             })
 
-            let docunment = {
+            let document = {
                 "@context": [
                     "https://www.w3.org/ns/did/v1",
                 ],
@@ -149,7 +148,7 @@ export default defineComponent({
                 ]
             }
 
-            let didJwt = await didc.createDidJwt(wallet, docunment);
+            let didJwt = await didc.createDidJwt(wallet, document);
 
             console.log(didJwt);
 
