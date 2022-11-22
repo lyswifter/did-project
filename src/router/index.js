@@ -39,6 +39,7 @@ const router = createRouter({
       path: "/mnemonic",
       name: "mnemonic",
       component: MnemonicView,
+      params: true,
     },
     {
       path: "/confirm",
@@ -65,11 +66,17 @@ router.beforeEach((to, from, next) => {
     isAuthenticated = false;
   }
 
+  let did = localStorage.getItem("userdid");
+  let isDid = true;
+  if (did == undefined || did == null) {
+    isDid = false;
+  }
+
   if (to.name == 'recovery') next()
 
   if (to.name == 'create') next()
 
-  if (to.name !== 'entry' && !isAuthenticated) {
+  if (to.name !== 'entry' && !isAuthenticated && !isDid) {
     next({ name: 'entry' })
   } else {
     next()

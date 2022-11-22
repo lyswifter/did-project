@@ -7,6 +7,8 @@ import { CopyDocument } from '@element-plus/icons-vue'
 import axios from "axios";
 import Domain from "../router/domain.js";
 
+import user from "../db/user.js";
+
 export default defineComponent({
     name: "Confirm",
     components: {
@@ -14,9 +16,10 @@ export default defineComponent({
     },
     data() {
         return {
+            did: localStorage.getItem("userdid"),
             single: 3,
             checkRandoms: [],
-            originWords: "coral dignity clutch idle shell wedding meat ethics doctor salute quantum poet".split(" "),
+            originWords: [],
             mnemonicWords: [],
             checkWords: [],
         }
@@ -51,32 +54,10 @@ export default defineComponent({
         console.log(this.checkRandoms)
     },
     mounted() {
-        for (let i = 0; i < this.originWords.length / this.single; i++) {
-            let innerArr = []
-            for (let j = this.single * i; j < this.single * (i + 1); j++) {
-                let state = 0;
-                for (let k = 0; k < this.checkRandoms.length; k++) {
-                    const ele = this.checkRandoms[k].item - 1;
-                    if (ele == j) {
-                        state = 1
-                        break
-                    }
-                }
-                let oneWord = {
-                    word: this.originWords[j],
-                    state: state,
-                }
-                innerArr.push(oneWord)
-            }
-            this.mnemonicWords.push(innerArr);
-        }
-
-        this.originWords.forEach(ele => {
-            let oneWord = {
-                word: ele,
-                checked: false,
-            }
-            this.checkWords.push(oneWord);
+        let that = this;
+        user.queryUser(this.did).then(val => {
+            that.originWords = val.mnemonic.split(" ");
+            that.constructMnemonic(that.originWords);
         });
     },
     watch: {
@@ -98,6 +79,35 @@ export default defineComponent({
         reloadPage() {
             location.reload()
         },
+        constructMnemonic() {
+            for (let i = 0; i < this.originWords.length / this.single; i++) {
+                let innerArr = []
+                for (let j = this.single * i; j < this.single * (i + 1); j++) {
+                    let state = 0;
+                    for (let k = 0; k < this.checkRandoms.length; k++) {
+                        const ele = this.checkRandoms[k].item - 1;
+                        if (ele == j) {
+                            state = 1
+                            break
+                        }
+                    }
+                    let oneWord = {
+                        word: this.originWords[j],
+                        state: state,
+                    }
+                    innerArr.push(oneWord)
+                }
+                this.mnemonicWords.push(innerArr);
+            }
+
+            this.originWords.forEach(ele => {
+                let oneWord = {
+                    word: ele,
+                    checked: false,
+                }
+                this.checkWords.push(oneWord);
+            });
+        },
         confirmedAction() {
             this.$router.push({ name: "home" });
         },
@@ -110,7 +120,7 @@ export default defineComponent({
                 for (let i = this.checkRandoms.length - 1; i >= 0; i--) {
                     const element = this.checkRandoms[i];
 
-                    if (index+1 != element.item) {
+                    if (index + 1 != element.item) {
                         continue
                     }
 
@@ -189,7 +199,8 @@ export default defineComponent({
                                 <div v-if="inner.state == 0" class="default-state-view">****</div>
                                 <div v-else-if="inner.state == 1" class="select-state-view">Please select</div>
                                 <div v-else-if="inner.state == 2" class="word-state-view"> <span>{{ i * 3 + j + 1
-                                }}</span> {{ inner.word }} <img src="../assets/img/24px_close_black.svg" alt="" @click="clearAction(i, j)"></div>
+                                }}</span> {{ inner.word }} <img src="../assets/img/24px_close_black.svg" alt=""
+                                        @click="clearAction(i, j)"></div>
                             </el-col>
                         </el-row>
 

@@ -9,11 +9,11 @@ export default {
         db.user.update(did, {[field]: info});
     },
 
-    async addUserCredentialCount(did) {
-        let info = await this.queryUser(did);
-        info.credentialCount += 1;
-        await db.user.put(info)
-    },
+    // async addUserCredentialCount(did) {
+    //     let info = await this.queryUser(did);
+    //     info.credentialCount += 1;
+    //     await db.user.put(info)
+    // },
 
     async queryUser(did) {
         let info = await db.user.where('did').equals(did).toArray();

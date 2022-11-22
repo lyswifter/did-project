@@ -1,11 +1,12 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import { ElMessage } from 'element-plus'
 
+import { ElMessage } from 'element-plus'
 import { CopyDocument } from '@element-plus/icons-vue'
 
 import axios from "axios";
 import Domain from "../router/domain.js";
+import user from "../db/user.js";
 
 export default defineComponent({
     name: "Mnemonic",
@@ -14,9 +15,10 @@ export default defineComponent({
     },
     data() {
         return {
+            did: localStorage.getItem("userdid"),
             isBackupVisiable: false,
             single: 3,
-            originWords: "coral dignity clutch idle shell wedding meat ethics doctor salute quantum poet",
+            originWords: "",
             mnemonicWords: [],
         }
     },
@@ -26,25 +28,32 @@ export default defineComponent({
         //     // event.preventDefault();
         // })
 
-        let splitWords = this.originWords.split(" ");
-        let group = splitWords.length / this.single;
-        for (let i = 0; i < group; i++) {
-            let innerArr = []
-            for (let j = this.single * i; j < this.single * (i + 1); j++) {
-                let oneWord = {
-                    word: splitWords[j],
-                    state: 0,
-                }
-                innerArr.push(oneWord)
-            }
-            this.mnemonicWords.push(innerArr);
-        }
+        let that = this;
+        user.queryUser(this.did).then(val => {
+            that.originWords = val.mnemonic;
+            that.constructMnemonic(that.originWords);
+        });
     },
     watch: {
     },
     methods: {
         reloadPage() {
             location.reload()
+        },
+        constructMnemonic(origin) {
+            let splitWords = origin.split(" ");
+            let group = splitWords.length / this.single;
+            for (let i = 0; i < group; i++) {
+                let innerArr = []
+                for (let j = this.single * i; j < this.single * (i + 1); j++) {
+                    let oneWord = {
+                        word: splitWords[j],
+                        state: 0,
+                    }
+                    innerArr.push(oneWord)
+                }
+                this.mnemonicWords.push(innerArr);
+            }
         },
         confirmAction() {
             this.isBackupVisiable = true;

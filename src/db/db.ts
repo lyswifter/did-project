@@ -9,6 +9,7 @@ export interface DidUser {
   address: string;
   privateKey: string;
   publicKey: string;
+  mnemonic: string;
 }
 
 export interface DidCredential {

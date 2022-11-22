@@ -4,6 +4,7 @@ import { ElMessage } from 'element-plus'
 
 import bip39 from '../crypto/bip39.js';
 import user from "../db/user.js";
+import didc from "../crypto/did.js";
 
 import axios from "axios";
 import Domain from "../router/domain.js";
@@ -20,9 +21,9 @@ export default defineComponent({
             sendString: "Send",
             sendCount: 60,
             countLimit: 60,
-            emailcontent: "",
-            vcodecontent: "",
-            companycontent: "",
+            emailcontent: "ly70835@163.com",
+            vcodecontent: "374833",
+            companycontent: "Tianru",
         }
     },
     mounted() {
@@ -69,42 +70,93 @@ export default defineComponent({
             }
         },
         async createDidAction() {
-            const res = await axios.post(loginUrl, {
-                email: this.emailcontent,
-                code: this.emailvccontent,
-            });
+            let ret = await this.createDid()
 
-            if (res.data.code == 0) {
-                window.localStorage.setItem("token", res.data.data.token);
+            localStorage.setItem("userdid", ret.didStr)
 
-                // Create did
+            this.$router.push({ name: "mnemonic" });
 
-                ElMessage({
-                    message: 'Login successed.',
-                    type: 'success',
-                })
+            // const res = await axios.post(loginUrl, {
+            //     email: this.emailcontent,
+            //     code: this.vcodecontent,
+            //     company: this.companycontent,
+            //     didAddress: ret.didStr,
+            //     singer: ret.didJwt,
+            // });
 
-                this.$router.push({ name: "mnemonic" });
-            } else {
-                ElMessage({
-                    message: res.data.msg,
-                    type: 'error',
-                })
-            }
+            // if (res.data.code == 0) {
+            //     window.localStorage.setItem("token", res.data.data.token);
+
+            //     // Create did
+
+            //     ElMessage({
+            //         message: 'Login successed.',
+            //         type: 'success',
+            //     })
+
+            //     this.$router.push({ name: "mnemonic", params: { did: ret.didStr } });
+            // } else {
+            //     ElMessage({
+            //         message: res.data.msg,
+            //         type: 'error',
+            //     })
+            // }
         },
         async createDid() {
             let mnemonic = await bip39.genBip39Mnemonic();
             let wallet = await bip39.genWalletWithMnemonic(mnemonic);
 
+            let did = "did:dmaster:" + wallet.address;
+
             // save userinfo
             user.createUser({
                 email: this.emailcontent,
-                did: "did:dmaster:"+wallet.address,
+                did: did,
                 address: wallet.address,
                 company: this.companycontent,
                 privateKey: wallet.privateKey,
                 publicKey: wallet.publicKey,
+                mnemonic: mnemonic,
             })
+
+            let docunment = {
+                "@context": [
+                    "https://www.w3.org/ns/did/v1",
+                ],
+                "id": did,
+                "verificationMethod": [
+                    {
+                        "type": "EcdsaSecp256k1VerificationKey2019",
+                        "id": did + "#key-1",
+                        "controller": did,
+                        "publicKeyBase58": wallet.publicKey,
+                    }
+                ],
+                "authentication": [
+                    did + "#key-1",
+                ],
+                "assertionMethod": [
+                    did  + "#key-1",
+                ],
+                "keyAgreement": [
+                    did  + "#key-1",
+                ],
+                "capabilityInvocation": [
+                    did  + "#key-1",
+                ],
+                "capabilityDelegation": [
+                    did  + "#key-1",
+                ]
+            }
+
+            let didJwt = await didc.createDidJwt(wallet, docunment);
+
+            console.log(didJwt);
+
+            return {
+                didStr: did,
+                didJwt: didJwt,
+            };
         },
         recoverFromDidAction() {
             this.$router.push({ name: "recovery" });

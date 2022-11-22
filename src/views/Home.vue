@@ -51,7 +51,7 @@
           <el-col :span="15">
             <div class="info-right">
               <h2 class="name">
-                {{ userInfo.firstName + " " + userInfo.lastName }}
+                {{ userInfo.email }}
               </h2>
               <h3 class="did">
                 {{ userInfo.did }}
@@ -596,11 +596,7 @@ export default {
       activeIndex: ref("1"),
 
       hasVc: true,
-      userInfo: {
-        firstName: "",
-        lastName: "",
-        did: "",
-      },
+      userInfo: {},
       data: [],
       columns: [],
       vcTableCheckRowKey: [],
@@ -738,18 +734,18 @@ export default {
       // ethr.queryBlockchain(ethr.providerEndpoint);
       // ethr.genWalletFromMnemonic();
 
-      this.didWallet = await bip39.genWalletWithBip39();
-      console.log("wallet " + this.didWallet.publicKey)
-      console.log("wallet " + this.didWallet.privateKey)
-      console.log("wallet address " + this.didWallet.address)
+      // this.didWallet = await bip39.genWalletWithBip39();
+      // console.log("wallet " + this.didWallet.publicKey)
+      // console.log("wallet " + this.didWallet.privateKey)
+      // console.log("wallet address " + this.didWallet.address)
 
-      // let didjwt = await did.createDidJwt(this.didWallet);
+      // // let didjwt = await did.createDidJwt(this.didWallet);
 
-      let theirPub = "041c81282e3243781dbe69d983c4f2329c3c4f56fad48d94e0bcfdee41024e140105bbdcaea8f0f07130c921b79358022b373053eab5d5dd4f8aca78eafe1b7efb";
+      // let theirPub = "041c81282e3243781dbe69d983c4f2329c3c4f56fad48d94e0bcfdee41024e140105bbdcaea8f0f07130c921b79358022b373053eab5d5dd4f8aca78eafe1b7efb";
 
-      let key = await ecdh.generateShareKey(this.didWallet, theirPub);
-      console.log("encrypto key " + key);
-      this.shareKey = key;
+      // let key = await ecdh.generateShareKey(this.didWallet, theirPub);
+      // console.log("encrypto key " + key);
+      // this.shareKey = key;
 
       // let otherMsg = '';
       // let otherRet = await ecdh.decryptWithString(otherMsg, key);
@@ -959,15 +955,8 @@ export default {
         }
       }
 
-      if (userinfo.firstName == undefined) {
-        userinfo.firstName = "";
-      }
-      if (userinfo.lastName == undefined) {
-        userinfo.lastName = "";
-      }
-
       this.userInfo = userinfo;
-      this.profileName = this.userInfo.firstName
+      this.profileName = this.userInfo.email
         .substring(0, 1)
         .toUpperCase();
     },

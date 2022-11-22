@@ -30,9 +30,9 @@ export default {
 
         db.vc.add(vcObj);
 
-        user.addUserCredentialCount(vcObj.issuerDid).then(val => {
-            console.log(val)
-        })
+        // user.addUserCredentialCount(vcObj.issuerDid).then(val => {
+        //     console.log(val)
+        // })
 
         return vcid
     },
