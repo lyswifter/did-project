@@ -43,6 +43,15 @@ export default {
         return db.vc.toArray();
     },
 
+    async queryVcsWithIds(ids) {
+        console.log(ids)
+        let ret = await db.vc.bulkGet(ids);
+
+        console.log(ret)
+
+        return ret;
+    },
+
     queryVcsWith(limit) {
         if (limit == null) {
             limit = 20

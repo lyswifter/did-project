@@ -30,6 +30,8 @@
     "ethr-did": "^2.3.6",
     "ethr-did-resolver": "^8.0.0",
     "excel": "^1.0.1",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
     "patch-package": "^6.5.0",
     "pinia": "^2.0.21",
     "uuid": "^9.0.0",

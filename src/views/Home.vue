@@ -421,7 +421,7 @@
           <h3 class="issuer-name g-color">Issue by <span class="b-color">{{ viewVcRow.holderName }}</span></h3>
           <h3 class="issue-time g-color">Issue AT <span class="b-color">{{ viewVcRow.issueDate }}</span></h3>
           <h3 class="expire-time g-color">Expires AT <span class="b-color">{{ viewVcRow.expireDate }}</span></h3>
-          <!-- <vue-qrcode class="qr-code" :value="viewVcRow.jwt" @change="onDataUrlChange" /> -->
+          <vue-qrcode class="qr-code" :value="viewVcRow.jwt" @change="onDataUrlChange" />
         </div>
 
         <br>
@@ -528,7 +528,7 @@
 </template>
   
 <script>
-import { ref, h, reactive } from "vue";
+import { ref, h, reactive, toRaw, isProxy } from "vue";
 import axios from "axios";
 import { useRequest } from 'vue-request';
 
@@ -576,11 +576,11 @@ import {
 import VueQrcode from 'vue-qrcode'
 import domtoimage from "dom-to-image";
 import { read, utils } from "xlsx";
+import * as JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 import * as secp from '@noble/secp256k1';
 
-import bip39 from "../crypto/bip39.js";
 import vc from "../crypto/vc.js";
-import did from "../crypto/did.js";
 import ecdh from "../crypto/ecdh.js";
 
 import tmpl from "../db/tmpl.js";
@@ -708,15 +708,11 @@ export default {
         that.popviewShow = !that.popviewShow;
       },
       viewOpRow(row) {
-        console.log(row);
-        // that.toViewVcsAction(row.credentialId);
-        // view vc with row
-
         that.viewVcRow = row;
         that.vcViewVisiable = true;
       },
       downloadOpRow(row) {
-        that.singleDownloadAction(row.credentialId);
+        that.singleDownloadAction(row);
       },
       trashOpRow(row) {
         that.singleTrashAction(row.credentialId);
@@ -731,18 +727,7 @@ export default {
     this.getVcTableInfoLocal();
     // this.getVcTableInfo();
 
-    // useRequest(this.queryVcNoProof, {
-    //   pollingInterval: 5000,
-    //   pollingWhenHidden: true,
-    // });
-
-    // useRequest(this.queryVcWithProof, {
-    //   pollingInterval: 10000,
-    //   pollingWhenHidden: true,
-    // });
-
     // queryNewRelationship
-
     useRequest(this.queryNewRelationship, {
       pollingInterval: 10000,
       pollingWhenHidden: true,
@@ -756,7 +741,6 @@ export default {
         }
       }
     });
-
   },
   methods: {
     async queryVcNoProof(releation) {
@@ -1304,9 +1288,6 @@ export default {
 
       vc.createVcTemplate(this.userInfo.did, needClaims, this.schemaId).then(
         (value) => {
-          // get vcid
-          console.log(value)
-
           // bindingVcUrl
           this.bindingEmailAndVCid(value)
 
@@ -1336,11 +1317,11 @@ export default {
       )
     },
     toDownloadAction() {
-      if (this.newVcId.length > 1) {
-        this.batchDownloadAction(this.newVcId);
-      } else {
-        this.singleDownloadAction(this.newVcId[0]);
-      }
+      // if (this.newVcId.length > 1) {
+      //   this.batchDownloadAction(this.newVcId);
+      // } else {
+      //   this.singleDownloadAction(this.newVcId[0]);
+      // }
     },
     async toViewVcsAction(vcid) {
       dbvc.queryVc(vcid).then(val => {
@@ -1407,52 +1388,34 @@ export default {
       this.batchDownloadAction(this.vcTableCheckRowKey);
     },
     rowKey: (row) => row.idx,
-    vcRowKey: (row) => row.credentialId,
-    async batchDownloadAction(ids) {
-      const res = await axios.post(
-        batchDownloadUrl,
-        {
-          credentialIds: ids,
-        },
-        {
-          responseType: "blob",
-          headers: {
-            Authorization: localStorage.getItem("token"),
-          },
-        }
-      );
+    vcRowKey: (row) => row.id,
+    async batchDownloadAction(rowIds) {
+      let rawDataIds = {};
+      if (isProxy(rowIds)) {
+        rawDataIds = toRaw(rowIds)
+      }
 
-      let zipfile = new Blob([res.data], { type: "application/zip" });
-      let url = window.URL.createObjectURL(zipfile);
-      let a = document.createElement("a");
-      a.style.display = "none";
-      a.href = url;
-      a.setAttribute("download", "file.zip");
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(a.href);
-      document.body.removeChild(a);
+      let rets = await dbvc.queryVcsWithIds(rawDataIds);
+      
+      var zip = new JSZip();
+      for (let i = 0; i < rets.length; i++) {
+        const element = rets[i];
+        let filename = "file_" + rawDataIds[i] + ".json";
+        zip.file(filename, element.jwt + "\n");
+      }
+
+      zip.generateAsync({ type: "blob" }).then(function (content) {
+        saveAs(content, "jwt.zip");
+      });
     },
-    async singleDownloadAction(id) {
-      const res = await axios.get(
-        singleDownloadUrl + id,
-        {
-          headers: {
-            Authorization: localStorage.getItem("token"),
-          },
-        },
-        {
-          responseType: "blob",
-        }
-      );
-
-      let url = window.URL.createObjectURL(new Blob([res.data]));
+    async singleDownloadAction(rowData) {
+      let url = window.URL.createObjectURL(new Blob([rowData.jwt]));
       let a = document.createElement("a");
       a.style.display = "none";
       a.href = url;
       a.setAttribute("download", "file.json");
       document.body.appendChild(a);
-      a.click(); //执行下载
+      a.click();
       window.URL.revokeObjectURL(a.href);
       document.body.removeChild(a);
     },
