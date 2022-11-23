@@ -22,7 +22,7 @@ export default defineComponent({
             sendCount: 60,
             countLimit: 60,
             emailcontent: "ly70835@163.com",
-            vcodecontent: "374833",
+            vcodecontent: "",
             companycontent: "Tianru",
         }
     },
@@ -71,35 +71,36 @@ export default defineComponent({
         },
         async createDidAction() {
             let ret = await this.createDid()
+
             localStorage.setItem("userdid", ret.didStr)
 
-            this.$router.push({ name: "mnemonic" });
+            // this.$router.push({ name: "mnemonic" });
 
-            // const res = await axios.post(loginUrl, {
-            //     email: this.emailcontent,
-            //     code: this.vcodecontent,
-            //     company: this.companycontent,
-            //     didAddress: ret.didStr,
-            //     singer: ret.didJwt,
-            // });
+            const res = await axios.post(loginUrl, {
+                email: this.emailcontent,
+                code: this.vcodecontent,
+                company: this.companycontent,
+                didAddress: ret.didStr,
+                singer: ret.didJwt,
+            });
 
-            // if (res.data.code == 0) {
-            //     window.localStorage.setItem("token", res.data.data.token);
+            if (res.data.code == 0) {
+                window.localStorage.setItem("token", res.data.data.token);
 
-            //     // Create did
+                // Create did
 
-            //     ElMessage({
-            //         message: 'Login successed.',
-            //         type: 'success',
-            //     })
+                ElMessage({
+                    message: 'Login successed.',
+                    type: 'success',
+                })
 
-            //     this.$router.push({ name: "mnemonic" });
-            // } else {
-            //     ElMessage({
-            //         message: res.data.msg,
-            //         type: 'error',
-            //     })
-            // }
+                this.$router.push({ name: "mnemonic" });
+            } else {
+                ElMessage({
+                    message: res.data.msg,
+                    type: 'error',
+                })
+            }
         },
         async createDid() {
             let mnemonic = await bip39.genBip39Mnemonic();
@@ -149,8 +150,6 @@ export default defineComponent({
             }
 
             let didJwt = await didc.createDidJwt(wallet, document);
-
-            console.log(didJwt);
 
             return {
                 didStr: did,

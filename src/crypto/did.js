@@ -1,6 +1,5 @@
 import { ES256KSigner, createJWT, decodeJWT, hexToBytes, verifyJWT } from "did-jwt";
-import { Resolver } from "did-resolver";
-import { getResolver } from "ethr-did-resolver";
+import * as secp from '@noble/secp256k1';
 
 export default {
     async createDidJwt(hdWallet, document) {
@@ -19,11 +18,8 @@ export default {
         return jwt
     },
 
-    async verifyDidJwt(jwt, ) {
+    async verifyDidJwt(jwt) {
         let decoded = decodeJWT(jwt)
-        console.log(decoded)
-
-        // let resolver = new Resolver({ ...getResolver({ infuraProjectId: '3d8fb59e25ee4c36afd778a4cc3bd014' }) });
 
         // use the JWT from step 1
         let verificationResponse = await verifyJWT(jwt, {

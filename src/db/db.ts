@@ -27,6 +27,7 @@ export interface DidCredential {
   expireDate: string;
   filled: number;
   jwt?: string;
+  backuped: number;
 }
 
 export interface DidTemplate {
@@ -60,7 +61,7 @@ export class MySubClassedDexie extends Dexie {
     super('myDatabase');
     this.version(1).stores({
       user: '++id, did, publicKey, email',
-      vc: '++id, &credentialId, holderDid, filled', // Primary key and indexed props
+      vc: '++id, &credentialId, holderDid, filled, backuped', // Primary key and indexed props
       tmpl: '++id, &templateId',
       claim: '++id, templateId'
     });

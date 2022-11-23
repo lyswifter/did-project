@@ -9,42 +9,61 @@ import dbvc from '../db/vc.js';
 
 export default {
     async createVcTemplate(issueDid, claims, tempId) {
-        let vcids = []
+        let bindingObj = {
+            list: []
+        };
+
         claims.forEach(element => {
             // generate vc object and insert to vc table
-            let vcid = dbvc.createVcModel(issueDid, element, tempId)
-            vcids.push(vcid)
+            let newVc = dbvc.createVcModel(issueDid, element, tempId)
+
+            bindingObj.list.push({
+                credentialId: newVc.vcid,
+                holderEmail: newVc.holderEmail,
+                templateId: tempId,
+            })
         });
-        return vcids
+
+        return bindingObj
     },
 
-    async createVcJwt(vcid, privateKey) {
-        // query special vc template info
-        // generate vc jwt
-        // query my privatekey
-        // query vc-issuer-id
-        // query issuer public keys
-        // update vc info
-
-        let specifyVc = await dbvc.queryVc(vcid)
+    async createVcJwt(specifyVc, privateKey) {
+        console.log("specifyVc " + JSON.stringify(specifyVc))
 
         const signer = ES256KSigner(hexToBytes(privateKey));
 
-        let issuer = {
-            did: specifyVc.issuerDid,
-            signer: signer,
-        };
-
         // Assembly verify credential payload information
-        const vcJwtPayload = {
+        const vcPayload = {
+            "@context": [
+                "https://www.w3.org/2018/credentials/v1",
+                "https://www.w3.org/2018/credentials/examples/v1",
+                "https://w3id.org/security/suites/ed25519-2020/v1"
+            ],
+            "id": specifyVc.credentialId,
+            "type": [
+                specifyVc.credentialType,
+            ],
+            "issuer": specifyVc.issuerDid,
+            "issuanceDate": specifyVc.issueDate,
+            "expirationDate": specifyVc.expireDate,
+            "credentialSubject": {
+                "id": specifyVc.holderDid,
+                "holderName": specifyVc.holderName,
+                "credentialTitle": specifyVc.credentialTitle,
+            }
         }
 
-        const vcJwt = await createJWT(vcJwtPayload, issuer, { alg: 'ES256K' })
-        console.log('vcJwt ' + vcJwt)
+        const vcJwt = await createJWT( 
+            { iss: specifyVc.issuerDid, iat: undefined, vc: vcPayload},
+            { issuer: specifyVc.issuerDid, signer },
+            { alg: 'ES256K' })
 
-        // update vc info
+        // console.log('vcJwt ' + vcJwt)
 
-        return vcid
+        // update vc info in database
+        await dbvc.updateVc(specifyVc.id, specifyVc.holderDid, vcJwt)
+
+        return specifyVc.credentialId
     },
 
     async createVpJwt(vcJwt) {

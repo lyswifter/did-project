@@ -556,6 +556,10 @@ let multiVcCreationUrl =
 let personalTagsUrl = Domain.domainUrl + "/api/did-holder-tag/list/";
 
 let queryDidUrl = Domain.domainUrl + "/api/did-user/did";
+let queryDidDocUrl = Domain.domainUrl + "/api/did-document/read/";
+let backupVcsUrl = Domain.domainUrl + "/api/did-document-credential/credential";
+let bindingVcUrl = Domain.domainUrl + "/api/did-document-credential/bind-credential";
+let newRelationUrl = Domain.domainUrl + "/api/did-document-credential/new-user-relation";
 
 import Header from "./Header.vue";
 
@@ -572,6 +576,7 @@ import {
 import VueQrcode from 'vue-qrcode'
 import domtoimage from "dom-to-image";
 import { read, utils } from "xlsx";
+import * as secp from '@noble/secp256k1';
 
 import bip39 from "../crypto/bip39.js";
 import vc from "../crypto/vc.js";
@@ -650,7 +655,6 @@ export default {
       vcViewLink: "",
       fileList: [],
       viewVcRow: {},
-      jwtVal: "eyJhbGciOiJFUzI1NksiLCJ0eXAiOiJKV1QifQ.eyJ2cCI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvMjAxOC9jcmVkZW50aWFscy92MSJdLCJ0eXBlIjpbIlZlcmlmaWFibGVQcmVzZW50YXRpb24iXSwidmVyaWZpYWJsZUNyZWRlbnRpYWwiOlsiZXlKaGJHY2lPaUpGVXpJMU5rc2lMQ0owZVhBaU9pSktWMVFpZlEuZXlKMll5STZleUpBWTI5dWRHVjRkQ0k2V3lKb2RIUndjem92TDNkM2R5NTNNeTV2Y21jdk1qQXhPQzlqY21Wa1pXNTBhV0ZzY3k5Mk1TSmRMQ0owZVhCbElqcGJJbFpsY21sbWFXRmliR1ZEY21Wa1pXNTBhV0ZzSWwwc0ltTnlaV1JsYm5ScFlXeFRkV0pxWldOMElqcDdJbVJsWjNKbFpTSTZleUowZVhCbElqb2lRbUZqYUdWc2IzSkVaV2R5WldVaUxDSnVZVzFsSWpvaVFtRmpZMkZzWVhWeXc2bGhkQ0JsYmlCdGRYTnBjWFZsY3lCdWRXM0RxWEpwY1hWbGN5SjlmWDBzSW5OMVlpSTZJbVJwWkRwbGRHaHlPakI0WkRSRE4yRmtOR0V6TkRFME56YzNPREJqWVRZMlJETXdZVFV3WmpNd1EwTkdOVEptTkRrM1pTSXNJbTVpWmlJNk1UVTJNamsxTURJNE1pd2lhWE56SWpvaU1IaGtORU0zWVdRMFlUTTBNVFEzTnpjNE1HTmhOalpFTXpCaE5UQm1NekJEUTBZMU1tWTBPVGRsSW4wLkdsbUJnZ2pGRjhxUjgtMDlyMElzNjNlZnlObWgwQUhkOEc3ZWpOU1ZVQ0o4cTd5bGEyZzIzb19nMUM5MXRDTDFjbm9QT0VZVWVjU2V6anRqdjhXdXRRIl19LCJpc3MiOiIweGQ0QzdhZDRhMzQxNDc3NzgwY2E2NkQzMGE1MGYzMENDRjUyZjQ5N2UifQ.ADV4v1SSgNv9dL7mVxNlo23ri1OILaDBtCvA8_qh3n39RUjSdM5OesC-XFQ3ihY4yMo5sq5DV71Ms4nQboH5cQ",
 
       //issuleMultiVCVisiable
       issuleMultiVCVisiable: false,
@@ -727,56 +731,158 @@ export default {
     this.getVcTableInfoLocal();
     // this.getVcTableInfo();
 
-    useRequest(this.queryVcNoProof, {
-      pollingInterval: 5000,
+    // useRequest(this.queryVcNoProof, {
+    //   pollingInterval: 5000,
+    //   pollingWhenHidden: true,
+    // });
+
+    // useRequest(this.queryVcWithProof, {
+    //   pollingInterval: 10000,
+    //   pollingWhenHidden: true,
+    // });
+
+    // queryNewRelationship
+
+    useRequest(this.queryNewRelationship, {
+      pollingInterval: 10000,
       pollingWhenHidden: true,
       onSuccess: data => {
-        console.log(data)
+        for (let i = 0; i < data.data.data.length; i++) {
+          const element = data.data.data[i];
+          this.queryVcNoProof(element).then(val => {
+            this.queryVcWithProof(element).then(val1 => {
+            })
+          })
+        }
       }
     });
 
   },
   methods: {
-    async queryBlockchain() {
-      // ethr.queryBlockchain(ethr.providerEndpoint);
-      // ethr.genWalletFromMnemonic();
+    async queryVcNoProof(releation) {
+      let noProofVcs = await dbvc.queryNoFilledVc(releation.credentialId);
 
-      // this.didWallet = await bip39.genWalletWithBip39();
-      // console.log("wallet " + this.didWallet.publicKey)
-      // console.log("wallet " + this.didWallet.privateKey)
-      // console.log("wallet address " + this.didWallet.address)
+      if (noProofVcs.length > 0) {
+        for (let i = 0; i < noProofVcs.length; i++) {
+          let ele = noProofVcs[i];
 
-      // // let didjwt = await did.createDidJwt(this.didWallet);
-
-      // let theirPub = "041c81282e3243781dbe69d983c4f2329c3c4f56fad48d94e0bcfdee41024e140105bbdcaea8f0f07130c921b79358022b373053eab5d5dd4f8aca78eafe1b7efb";
-
-      // let key = await ecdh.generateShareKey(this.didWallet, theirPub);
-      // console.log("encrypto key " + key);
-      // this.shareKey = key;
-
-      // let otherMsg = '';
-      // let otherRet = await ecdh.decryptWithString(otherMsg, key);
-      // console.log('otherRet ' + otherRet);
+          ele.holderDid = releation.holderDid;
+          await vc.createVcJwt(ele, this.userInfo.privateKey);
+        }
+      } else {
+        console.log("There is no unfilled vc to operate")
+      }
     },
-    async queryVcNoProof() {
-      let noProofHolders = dbvc.queryVcsWithLimit(20);
-      noProofHolders.forEach(ele => {
-        this.queryHolderDidWithEmail(ele.holderEmail).then(val => {
-          console.log("query holder did " + val)
-          ele.holderDid = "xxxxx";
-        })
-      });
+    async queryVcWithProof(releation) {
+      let proofVcs = await dbvc.queryNoBackupedVc(releation.credentialId);
 
-      // filter all conditional holders and generate vcJwt
+      if (proofVcs.length > 0) {
+        let backupObjs = {
+          list: []
+        }
+
+        for (let i = 0; i < proofVcs.length; i++) {
+          const element = proofVcs[i];
+
+          let myPublicKey = this.userInfo.publicKey;
+          let myShareSecret = ecdh.generateShareKey(this.userInfo.privateKey, myPublicKey);
+          let MyencryptJwt = await ecdh.encrypt(element.jwt, myShareSecret);
+
+          let holderDoc = await this.queryDidDocmentWith(element.holderDid);
+          let holderPublicKey = holderDoc.verificationMethod[0].publicKeyBase58;
+
+          // generate share secret
+          let shareSecret = ecdh.generateShareKey(this.userInfo.privateKey, holderPublicKey);
+          let encryptJwt = await ecdh.encrypt(element.jwt, shareSecret);
+          // let decrypt = await ecdh.decrypt(encryptJwt, shareSecret);
+
+          // console.log("holderPublicKey " + holderPublicKey);
+          // console.log("shareSecret " + secp.utils.bytesToHex(shareSecret));
+          // console.log("encryptJwt " + secp.utils.bytesToHex(encryptJwt));
+          // console.log("decrypt " + decrypt);
+
+          let obj = {
+            credentialId: element.credentialId,
+            holderDid: element.holderDid,
+            ownerList: [{
+              owner: element.issuerDid,
+              vc: secp.utils.bytesToHex(MyencryptJwt)
+            },
+            {
+              owner: element.holderDid,
+              vc: secp.utils.bytesToHex(encryptJwt)
+            }
+            ],
+            templateId: element.templateId
+          }
+
+          backupObjs.list.push(obj);
+        }
+
+        // backup encrypt message to remote service
+        if (backupObjs.list.length > 0) {
+          let isbackup = await this.uploadVcsToRemoteService(backupObjs)
+          if (isbackup == true) {
+            proofVcs.forEach(element => {
+              dbvc.updateVcBackup(element.id, 1)
+            });
+          }
+        }
+      } else {
+        console.log("There is no backup vc to operate")
+      }
     },
-    queryHolderDidWithEmail(email) {
-      return axios.get(queryDidUrl, {
+    async uploadVcsToRemoteService(backupObjs) {
+      const res = await axios.post(backupVcsUrl, backupObjs, {
         headers: {
           Authorization: localStorage.getItem("token"),
         },
-      }, {
-        email: email
       });
+
+      if (res.data.code == 0) {
+        return true
+      }
+    },
+    async queryDidDocmentWith(did) {
+      //queryDidDocUrl
+      const res = await axios.get(queryDidDocUrl + did, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+
+      console.log(res)
+
+      if (res.data.code == 0) {
+        return res.data.data
+      }
+    },
+    queryHolderDidWithEmail(email) {
+      return axios.post(queryDidUrl, {
+        email: email,
+      }, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+    },
+    async queryNewRelationship() {
+      return axios.post(newRelationUrl, {}, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+    },
+    async bindingEmailAndVCid(bindingObj) {
+      const res = await axios.post(bindingVcUrl, bindingObj, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+
+      if (res.data.code == 0) {
+        console.log("Binding ok for new vc template")
+      }
     },
     createVcDrawerDismissAction() {
       this.data = []
@@ -1011,11 +1117,6 @@ export default {
       let localVals = await dbvc.queryVcs();
       this.data.push(...localVals)
 
-      // if (localVals.length == 0) {
-      // this.getVcTableInfo()
-      // } else {
-      // }
-
       if (this.data.length == 0) {
         this.hasVc = false;
       } else {
@@ -1206,15 +1307,8 @@ export default {
           // get vcid
           console.log(value)
 
-          // vc content
-
-          // crypto vc
-          // ecdh.encrypt(value, this.shareKey).then(val => {
-          // console.log("encrypto ret " + val);
-          // ecdh.decrypt(val, this.shareKey).then(val => {
-          //   console.log("decrypto message " + origin);
-          // });
-          // }); 
+          // bindingVcUrl
+          this.bindingEmailAndVCid(value)
 
           // addition actions
           clearInterval(timer);
@@ -1223,7 +1317,12 @@ export default {
             this.percentageCount = 100;
           }
 
-          this.newVcId = value;
+          let newids = []
+          value.list.forEach(element => {
+            newids.push(element.credentialId)
+          });
+
+          this.newVcId = newids;
           this.newVcNum = "Issued " + this.newVcId.length + " Verifiable Credential";
           this.processing = false;
           this.vcStep = 3;

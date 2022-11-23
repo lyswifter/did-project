@@ -5,8 +5,10 @@ export default {
     iv: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]),
     mode: 'aes-256-ctr',
     // GenerateShareKey
-    generateShareKey(myWallet, theirPublicKey) {
-        let ssk = secp.getSharedSecret(myWallet.privateKey.substring(2), theirPublicKey, false);
+    generateShareKey(myPrivateKey, theirPublicKey) {
+        const myInput = myPrivateKey.startsWith('0x') ? myPrivateKey.substring(2) : myPrivateKey
+        const theirInput = theirPublicKey.startsWith('0x') ? theirPublicKey.substring(2) : theirPublicKey
+        let ssk = secp.getSharedSecret(myInput, theirInput, false);
         return ssk.slice(0, 32)
     },
 
