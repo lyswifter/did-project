@@ -43,8 +43,6 @@ export default defineComponent({
             if (this.checkRandoms.length == 2) {
                 break
             }
-
-            //
         }
 
         this.checkRandoms.sort(function (a, b) {
@@ -57,12 +55,49 @@ export default defineComponent({
         let that = this;
         user.queryUser(this.did).then(val => {
             that.originWords = val.mnemonic.split(" ");
+            // Random locate original words
+
+            // let newWords = that.randomLocate()
+
             that.constructMnemonic(that.originWords);
         });
     },
     watch: {
     },
     methods: {
+        randomLocate() {
+            // generate 12 random numbers with no repeats
+            //
+            let outer = []
+            for (let i = 0; i < 12; i++) {
+                let prev = 0;
+                for (let j = 0; j < 100; j++) {
+                    let rand = this.randomNum(1, 12);
+
+                    if (rand == prev) {
+                        continue
+                    }
+
+                    prev = rand;
+                }
+
+                outer.push(prev)
+
+                if (outer.length == 12) {
+                    break
+                }
+            }
+
+            let randomWords = []
+            for (let i = 0; i < this.originWords.length; i++) {
+                const index = outer[i]
+                const element = this.originWords[index];
+
+                randomWords.push(element)
+            }
+
+            return randomWords
+        },
         randomNum(minNum, maxNum) {
             switch (arguments.length) {
                 case 1:
@@ -79,8 +114,8 @@ export default defineComponent({
         reloadPage() {
             location.reload()
         },
-        constructMnemonic() {
-            for (let i = 0; i < this.originWords.length / this.single; i++) {
+        constructMnemonic(wordList) {
+            for (let i = 0; i < wordList.length / this.single; i++) {
                 let innerArr = []
                 for (let j = this.single * i; j < this.single * (i + 1); j++) {
                     let state = 0;
@@ -91,8 +126,9 @@ export default defineComponent({
                             break
                         }
                     }
+
                     let oneWord = {
-                        word: this.originWords[j],
+                        word: wordList[j],
                         state: state,
                     }
                     innerArr.push(oneWord)
@@ -100,7 +136,7 @@ export default defineComponent({
                 this.mnemonicWords.push(innerArr);
             }
 
-            this.originWords.forEach(ele => {
+            wordList.forEach(ele => {
                 let oneWord = {
                     word: ele,
                     checked: false,

@@ -1135,16 +1135,26 @@ export default {
 
       var reader = new FileReader();
 
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         var contents = e.target.result;
-
-        console.log("verify input " + contents)
 
         vc.verifyVcJwt(contents).then(val => {
           console.log("verify result " + val)
+
+          if (val == true) {
+            ElMessage({
+            message: "Verify result " + val,
+            type: "success",
+          }); 
+          } else {
+            ElMessage({
+            message: "Verify result " + val,
+            type: "err",
+          });
+          }
         })
       };
-      
+
       reader.readAsText(this.fileList[0].raw);
     },
     async toCreateVcAction() {
@@ -1374,7 +1384,7 @@ export default {
       }
 
       let rets = await dbvc.queryVcsWithIds(rawDataIds);
-      
+
       var zip = new JSZip();
       for (let i = 0; i < rets.length; i++) {
         const element = rets[i];

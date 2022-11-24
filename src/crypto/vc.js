@@ -62,26 +62,18 @@ export default {
             { issuer: specifyVc.issuerDid, signer },
             { alg: 'ES256K' })
 
+        let verify = await this.verifyVcJwt(vcJwt)
+        console.log("verify " + verify)
+        if (verify == false) {
+            return specifyVc.credentialId
+        }
+
         // console.log('vcJwt ' + vcJwt)
 
         // update vc info in database
         await dbvc.updateVc(specifyVc.id, specifyVc.holderDid, vcJwt)
 
         return specifyVc.credentialId
-    },
-
-    async createVpJwt(vcJwt) {
-        const vpPayload = {
-            vp: {
-                '@context': ['https://www.w3.org/2018/credentials/v1'],
-                type: ['VerifiablePresentation'],
-                verifiableCredential: [vcJwt]
-            }
-        }
-
-        const vpJwt = await createVerifiablePresentationJwt(vpPayload, issuer)
-        console.log('vpJwt')
-        console.log(vpJwt)
     },
 
     async verifyVcJwt(vcJwt) {
@@ -92,36 +84,24 @@ export default {
         // const { payload, header, signature, data } = decodeJWT(vcJwt)
         // console.log(payload)
         // console.log(header)
-        // console.log(signature)
+        // console.log(signature)   
 
-        let holderDid = decode.payload.vc.credentialSubject.id;
-        console.log(holderDid)
+        let issuerDid = decode.payload.vc.issuer;
+        console.log(issuerDid)
 
         // query did docment and find out publicKey
-        let publicKey = await this.queryDidDocmentWith(holderDid)
+        let publicKey = await this.queryDidDocmentWith(issuerDid)
         console.log(publicKey)
 
-        verifyJWS(vcJwt, { publicKeyHex: publicKey}).then(
-            ok => {
-                console.log(ok)
-            },
-            err => {
-                console.log(err)
-            }
-        )
+        let ret = verifyJWS(vcJwt, { publicKeyHex: publicKey })
 
-        return ret
-    },
+        console.log(JSON.stringify(ret))
 
-    async verifyVp(vpJwt) {
-        const providerConfig = {
-            rpcUrl: 'https://mainnet.infura.io/v3/3d8fb59e25ee4c36afd778a4cc3bd014',
-            registry: '0xdca7ef03e98e0dc2b855be647c39abe984fcf21b'
+        if (ret.publicKeyHex != undefined && ret.publicKeyHex === publicKey) {
+            return true
+        } else {
+            return false
         }
-        const resolver = new Resolver(getResolver(providerConfig))
-
-        const verifiedVP = await verifyPresentation(vpJwt, resolver)
-        console.log(verifiedVP)
     },
 
     async queryDidDocmentWith(did) {
