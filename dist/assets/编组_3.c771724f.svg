@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编组 3</title>
+    <defs>
+        <linearGradient x1="49.988188%" y1="50.0056319%" x2="49.988188%" y2="0%" id="linearGradient-1">
+            <stop stop-color="#1672F0" offset="0%"></stop>
+            <stop stop-color="#1672F0" stop-opacity="0" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="v0.6" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="sign-in" transform="translate(-688.000000, -654.000000)">
+            <g id="编组-3" transform="translate(688.000000, 654.000000)">
+                <circle id="椭圆形" fill="#FFFFFF" style="mix-blend-mode: multiply;" opacity="0.95" cx="32" cy="32" r="32"></circle>
+                <g id="logo_Dmaster" transform="translate(18.000000, 16.000000)" fill-rule="nonzero">
+                    <rect id="矩形" fill="#1672F0" x="0.0017109306" y="24.8758338" width="7.24236922" height="7.11576109"></rect>
+                    <rect id="矩形" fill="url(#linearGradient-1)" transform="translate(3.621185, 15.139361) rotate(180.000000) translate(-3.621185, -15.139361) " x="0" y="7.67730989" width="7.24236922" height="14.9241028"></rect>
+                    <path d="M26.2268551,4.67500672 C23.1789051,1.66927906 19.0341101,-0.0140102332 14.7157141,0 L14.7157141,0 L0.0017109306,0 L0.0017109306,7.94123016 L14.7157141,7.94123016 L14.7157141,7.94123016 C17.6740034,7.89924785 20.4260451,9.42584088 21.9176621,11.9362437 C23.4092792,14.4466464 23.4092792,17.5517604 21.9176621,20.0621632 C20.4260451,22.5725659 17.6740034,24.099159 14.7157141,24.0571767 L9.85153839,24.0571767 L9.85153839,32 L14.7140031,32 C21.3014589,32.0003507 27.2402935,28.1013107 29.7605738,22.1214321 C32.280854,16.1415534 30.8861063,9.25882109 26.2268551,4.68341183 L26.2268551,4.67500672 Z" id="路径" fill="#1672F0"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
