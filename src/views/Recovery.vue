@@ -60,8 +60,6 @@ export default defineComponent({
                 singer: out.sign
             });
 
-            console.log(res.data)
-
             if (res.data.code == 0) {
                 localStorage.setItem("userdid", out.did)
                 localStorage.setItem("token", res.data.data.token)

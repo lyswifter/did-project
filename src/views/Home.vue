@@ -932,19 +932,30 @@ export default {
           key: "",
           width: 40,
           render(row, index) {
-            let now = Date.now();
-            let expireTiming = Date.parse(row.expireDate);
-            if (expireTiming > now) {
+            if (row.filled == 1) {
               return h(
-                NIcon,
+                el-button, 
                 {
-                  size: 33,
-                  color: "#A9AEB8",
-                },
-                { default: () => h(CircleCheck) }
-              );
+                  type: "primary",
+                  loading: true,
+                }, 
+                ["Waiting"]
+              )
             } else {
-              return h("span", ["Expired"]);
+              let now = Date.now();
+              let expireTiming = Date.parse(row.expireDate);
+              if (expireTiming > now) {
+                return h(
+                  NIcon,
+                  {
+                    size: 33,
+                    color: "#A9AEB8",
+                  },
+                  { default: () => h(CircleCheck) }
+                );
+              } else {
+                return h("span", ["Expired"]);
+              }
             }
           },
         },
@@ -1142,12 +1153,12 @@ export default {
             ElMessage({
               message: "Verify result " + val,
               type: "success",
-          }); 
+            });
           } else {
             ElMessage({
               message: "Verify result " + val,
               type: "err",
-          });
+            });
           }
         })
       };

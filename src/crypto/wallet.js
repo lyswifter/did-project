@@ -1,7 +1,6 @@
 import * as bip39 from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
 import { HDKey } from 'ethereum-cryptography/hdkey'
-import * as secp from '@noble/secp256k1';
 import { Wallet } from "@ethersproject/wallet";
 
 import { ES256KSigner, createJWT, hexToBytes } from "did-jwt";
@@ -23,14 +22,9 @@ export default {
 
         let wallet = new Wallet(hdkey.privateKey);
 
-        let userinfo = user.queryWithPublicKey(wallet.publicKey);
+        let userinfo = await user.queryWithPublicKey(wallet.publicKey);
 
         let didMessage = userinfo.did;
-
-        // let messageU8 = this.stringToUint8Array(didMessage);
-
-        // let sha256ret = await secp.utils.sha256(messageU8);
-        // let sha256SignOut = hdkey.sign(sha256ret);
 
         const signer = ES256KSigner(hexToBytes(wallet.privateKey));
 
@@ -53,7 +47,6 @@ export default {
         for (var i = 0, j = str.length; i < j; ++i) {
             arr.push(str.charCodeAt(i));
         }
-
         var tmpUint8Array = new Uint8Array(arr);
         return tmpUint8Array
     },
