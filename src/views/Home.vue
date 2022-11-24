@@ -1130,9 +1130,6 @@ export default {
     },
     handleExceed() { },
     async verifyFileAction() {
-
-      console.log(toRaw(this.fileList))
-
       var reader = new FileReader();
 
       reader.onload = function (e) {
@@ -1141,15 +1138,20 @@ export default {
         vc.verifyVcJwt(contents).then(val => {
           console.log("verify result " + val)
 
+          this.fileList = []
+
           if (val == true) {
+            this.vcVerifyRet = {};
+            this.verifyResultShow = true;
+
             ElMessage({
-            message: "Verify result " + val,
-            type: "success",
+              message: "Verify result " + val,
+              type: "success",
           }); 
           } else {
             ElMessage({
-            message: "Verify result " + val,
-            type: "err",
+              message: "Verify result " + val,
+              type: "err",
           });
           }
         })

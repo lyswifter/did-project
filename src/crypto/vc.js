@@ -1,11 +1,5 @@
 import { ES256KSigner, hexToBytes, createJWT, verifyJWT, decodeJWT, verifyJWS } from "did-jwt";
-import { createVerifiablePresentationJwt, verifyPresentation } from 'did-jwt-vc'
-
-import { Resolver } from 'did-resolver'
-import { getResolver } from 'ethr-did-resolver'
-
 import dbvc from '../db/vc.js';
-
 import axios from "axios";
 import Domain from "../router/domain.js";
 
@@ -32,8 +26,6 @@ export default {
     },
 
     async createVcJwt(specifyVc, privateKey) {
-        console.log("specifyVc " + JSON.stringify(specifyVc))
-
         const signer = ES256KSigner(hexToBytes(privateKey));
 
         // Assembly verify credential payload information
@@ -57,18 +49,16 @@ export default {
             }
         }
 
-        const vcJwt = await createJWT( 
-            { iss: specifyVc.issuerDid, iat: undefined, vc: vcPayload},
+        const vcJwt = await createJWT(
+            { iss: specifyVc.issuerDid, iat: undefined, vc: vcPayload },
             { issuer: specifyVc.issuerDid, signer },
             { alg: 'ES256K' })
 
-        let verify = await this.verifyVcJwt(vcJwt)
-        console.log("verify " + verify)
-        if (verify == false) {
-            return specifyVc.credentialId
-        }
-
-        // console.log('vcJwt ' + vcJwt)
+        // let verify = await this.verifyVcJwt(vcJwt)
+        // console.log("self verify " + verify)
+        // if (verify == false) {
+        //     return specifyVc.credentialId
+        // }
 
         // update vc info in database
         await dbvc.updateVc(specifyVc.id, specifyVc.holderDid, vcJwt)
@@ -77,28 +67,26 @@ export default {
     },
 
     async verifyVcJwt(vcJwt) {
-
-        let decode = decodeJWT(vcJwt);
-        console.log(decode)
-
-        // const { payload, header, signature, data } = decodeJWT(vcJwt)
+        const { payload, header, signature, data } = decodeJWT(vcJwt)
         // console.log(payload)
         // console.log(header)
-        // console.log(signature)   
+        // console.log(signature)
+        // console.log(data)
 
-        let issuerDid = decode.payload.vc.issuer;
+        // let issuerDid = payload.vc.issuer;
         console.log(issuerDid)
 
         // query did docment and find out publicKey
         let publicKey = await this.queryDidDocmentWith(issuerDid)
-        console.log(publicKey)
+        // console.log(publicKey)
 
         let ret = verifyJWS(vcJwt, { publicKeyHex: publicKey })
 
-        console.log(JSON.stringify(ret))
-
         if (ret.publicKeyHex != undefined && ret.publicKeyHex === publicKey) {
-            return true
+            return {
+                verify: true,
+                payload: payload
+            }
         } else {
             return false
         }
@@ -106,13 +94,13 @@ export default {
 
     async queryDidDocmentWith(did) {
         const res = await axios.get(queryDidDocUrl + did, {
-          headers: {
-            Authorization: localStorage.getItem("token"),
-          },
+            headers: {
+                Authorization: localStorage.getItem("token"),
+            },
         });
-  
+
         if (res.data.code == 0) {
-          return res.data.data.verificationMethod[0].publicKeyBase58
+            return res.data.data.verificationMethod[0].publicKeyBase58
         }
     }
 }
