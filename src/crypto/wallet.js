@@ -6,6 +6,8 @@ import { Wallet } from "@ethersproject/wallet";
 
 import { ES256KSigner, createJWT, hexToBytes } from "did-jwt";
 
+import user from "../db/user.js";
+
 export default {
     async signWith(mnemonic) {
         // Reversible: Converts mnemonic string to raw entropy in form of byte array.
@@ -21,7 +23,9 @@ export default {
 
         let wallet = new Wallet(hdkey.privateKey);
 
-        let didMessage = "did:dmaster:" + wallet.address;
+        let userinfo = user.queryWithPublicKey(wallet.publicKey);
+
+        let didMessage = userinfo.did;
 
         // let messageU8 = this.stringToUint8Array(didMessage);
 
