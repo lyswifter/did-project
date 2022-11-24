@@ -16,6 +16,7 @@ export default defineComponent({
         },
         createAction() {
             this.$router.push({ name: "create" });
+            // nouse.testHdKey()
         },
         recoveryAction() {
             this.$router.push({ name: "recovery" });

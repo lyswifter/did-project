@@ -15,7 +15,7 @@ export default {
     mode: 'aes-256-ctr',
 
     async otherWallet() {
-        let mnemonic = "index budget snap motion spend pave wrap special candy unfold knee south";
+        let mnemonic = "winter woman already neck provide present armor actual year swallow congress runway";
 
         // Reversible: Converts mnemonic string to raw entropy in form of byte array.
         const ent = bip39.mnemonicToEntropy(mnemonic, wordlist)
@@ -42,7 +42,7 @@ export default {
     async testHdKey() {
         let otherWallet = this.otherWallet();
 
-        let mnemonic = "cabbage lunch security strategy park phrase fruit security pig cluster beef bind";
+        let mnemonic = "coil seminar worry nature labor inquiry hockey high test phone coral flip";
 
         // Reversible: Converts mnemonic string to raw entropy in form of byte array.
         const ent = bip39.mnemonicToEntropy(mnemonic, wordlist)
@@ -63,7 +63,7 @@ export default {
         console.log("publicKey " + publicKey)
         console.log("privateKey " + privateKey)
 
-        let message = "bosheng";
+        let message = "eyJhbGciOiJFUzI1NksiLCJraWQiOiJkaWQ6ZG1hc3RlcjoweEI0YkE3Qzc5NGFlMzE5RTU4NWU1RWU4NjZmMjZlNjQ4YzJhQkY1NzEja2V5LTEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJkaWQ6ZG1hc3RlcjoweEI0YkE3Qzc5NGFlMzE5RTU4NWU1RWU4NjZmMjZlNjQ4YzJhQkY1NzEiLCJkb2N1bWVudCI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvZGlkL3YxIl0sImlkIjoiZGlkOmRtYXN0ZXI6MHhCNGJBN0M3OTRhZTMxOUU1ODVlNUVlODY2ZjI2ZTY0OGMyYUJGNTcxIiwidmVyaWZpY2F0aW9uTWV0aG9kIjpbeyJ0eXBlIjoiRWNkc2FTZWNwMjU2azFWZXJpZmljYXRpb25LZXkyMDE5IiwiaWQiOiJkaWQ6ZG1hc3RlcjoweEI0YkE3Qzc5NGFlMzE5RTU4NWU1RWU4NjZmMjZlNjQ4YzJhQkY1NzEja2V5LTEiLCJjb250cm9sbGVyIjoiZGlkOmRtYXN0ZXI6MHhCNGJBN0M3OTRhZTMxOUU1ODVlNUVlODY2ZjI2ZTY0OGMyYUJGNTcxIiwicHVibGljS2V5QmFzZTU4IjoiMHgwNGE0OGMwNmU3OTNjNjg5NzdlODBmMTU2MGQxNDIxNTJmOTE3N2VlMzg4Y2IyYjEwMTMzODUxYzdhZDFiNGU5NDA4OWYwNTEzMWRjMDEzZGQ3MTQ4NWEwZDk0N2NkNGY4YTEzMjUwNzg1YWVmYTY3M2E2YjRmZDViZTQ4Nzk5M2QxIn1dLCJhdXRoZW50aWNhdGlvbiI6WyJkaWQ6ZG1hc3RlcjoweEI0YkE3Qzc5NGFlMzE5RTU4NWU1RWU4NjZmMjZlNjQ4YzJhQkY1NzEja2V5LTEiXSwiYXNzZXJ0aW9uTWV0aG9kIjpbImRpZDpkbWFzdGVyOjB4QjRiQTdDNzk0YWUzMTlFNTg1ZTVFZTg2NmYyNmU2NDhjMmFCRjU3MSNrZXktMSJdLCJrZXlBZ3JlZW1lbnQiOlsiZGlkOmRtYXN0ZXI6MHhCNGJBN0M3OTRhZTMxOUU1ODVlNUVlODY2ZjI2ZTY0OGMyYUJGNTcxI2tleS0xIl0sImNhcGFiaWxpdHlJbnZvY2F0aW9uIjpbImRpZDpkbWFzdGVyOjB4QjRiQTdDNzk0YWUzMTlFNTg1ZTVFZTg2NmYyNmU2NDhjMmFCRjU3MSNrZXktMSJdLCJjYXBhYmlsaXR5RGVsZWdhdGlvbiI6WyJkaWQ6ZG1hc3RlcjoweEI0YkE3Qzc5NGFlMzE5RTU4NWU1RWU4NjZmMjZlNjQ4YzJhQkY1NzEja2V5LTEiXX19.3zY-UpJzRRiKB5OL2ZBuOF9USk2rOsSv9Vb4d_-oEoOQWIUCTM1O2GmPC7d9-uOyZrr6CDEFs5KPZW1HOC3-wA";
         let messageU8 = this.stringToUint8Array(message);
         let messageRevert = this.Uint8ArrayToString(messageU8);
 
@@ -75,30 +75,32 @@ export default {
         let sha256SignOut = hdkey.sign(sha256ret);
         let sha256Verify = hdkey.verify(sha256ret, sha256SignOut)
 
-        console.log("message " + message)
-        console.log("messageU8 " + messageU8)
-        console.log("messageRevert " + messageRevert)
+        // console.log("message " + message)
+        // console.log("messageU8 " + messageU8)
+        // console.log("messageRevert " + messageRevert)
 
-        console.log("hashRet " + secp.utils.bytesToHex(hashRet))
-        console.log("hashSignOut " + secp.utils.bytesToHex(hashSignOut))
-        console.log("verify " + verify)
+        // console.log("hashRet " + secp.utils.bytesToHex(hashRet))
+        // console.log("hashSignOut " + secp.utils.bytesToHex(hashSignOut))
+        // console.log("verify " + verify)
 
-        console.log("sha256ret " + secp.utils.bytesToHex(sha256ret))
-        console.log("sha256SignOut " + secp.utils.bytesToHex(sha256SignOut))
-        console.log("sha256Verify " + sha256Verify)
+        // console.log("sha256ret " + secp.utils.bytesToHex(sha256ret))
+        // console.log("sha256SignOut " + secp.utils.bytesToHex(sha256SignOut))
+        // console.log("sha256Verify " + sha256Verify)
 
         let shareKey = this.generateShareKey(wallet, (await otherWallet).publicKey);
+        console.log("shareKey byte " + shareKey)
+        console.log("shareKey " + secp.utils.bytesToHex(shareKey))
+
         let encrypt = await this.encrypt(message, shareKey);
         let decrypt = await this.decrypt(encrypt, shareKey);
 
-        console.log("shareKey " + secp.utils.bytesToHex(shareKey))
-        console.log("encrypt " + encrypt)
+        console.log("encrypt " + secp.utils.bytesToHex(encrypt))
         console.log("decrypt " + decrypt)
     },
 
     generateShareKey(myWallet, theirPublicKey) {
         let ssk = secp.getSharedSecret(myWallet.privateKey.substring(2), theirPublicKey.substring(2), false);
-        return ssk.slice(0, 32)
+        return ssk.slice(1, 33)
     },
 
     async encrypt(msg, key) {

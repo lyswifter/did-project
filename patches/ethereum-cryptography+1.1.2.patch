@@ -1,0 +1,22 @@
+diff --git a/node_modules/ethereum-cryptography/aes.js b/node_modules/ethereum-cryptography/aes.js
+index 89b9c49..17bff65 100644
+--- a/node_modules/ethereum-cryptography/aes.js
++++ b/node_modules/ethereum-cryptography/aes.js
+@@ -33,7 +33,7 @@ async function getBrowserKey(mode, key, iv) {
+     return [wKey, { name: `aes-${keyMode}`, iv, counter: iv, length: 64 }];
+ }
+ async function encrypt(msg, key, iv, mode = "aes-128-ctr", pkcs7PaddingEnabled = true) {
+-    validateOpt(key, iv, mode);
++    // validateOpt(key, iv, mode);
+     if (crypto_1.crypto.web) {
+         const [wKey, wOpt] = await getBrowserKey(mode, key, iv);
+         const cipher = await crypto_1.crypto.web.subtle.encrypt(wOpt, wKey, msg);
+@@ -64,7 +64,7 @@ async function getPadding(cypherText, key, iv, mode) {
+     return res.slice(0, 16);
+ }
+ async function decrypt(cypherText, key, iv, mode = "aes-128-ctr", pkcs7PaddingEnabled = true) {
+-    validateOpt(key, iv, mode);
++    // validateOpt(key, iv, mode);
+     if (crypto_1.crypto.web) {
+         const [wKey, wOpt] = await getBrowserKey(mode, key, iv);
+         // Add empty padding so Chrome will correctly decrypt message

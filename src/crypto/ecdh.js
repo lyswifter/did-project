@@ -9,7 +9,7 @@ export default {
         const myInput = myPrivateKey.startsWith('0x') ? myPrivateKey.substring(2) : myPrivateKey
         const theirInput = theirPublicKey.startsWith('0x') ? theirPublicKey.substring(2) : theirPublicKey
         let ssk = secp.getSharedSecret(myInput, theirInput, false);
-        return ssk.slice(0, 32)
+        return ssk.slice(1, 33)
     },
 
     // Encrypto

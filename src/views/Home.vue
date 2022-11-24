@@ -763,11 +763,6 @@ export default {
           let encryptJwt = await ecdh.encrypt(element.jwt, shareSecret);
           // let decrypt = await ecdh.decrypt(encryptJwt, shareSecret);
 
-          // console.log("holderPublicKey " + holderPublicKey);
-          // console.log("shareSecret " + secp.utils.bytesToHex(shareSecret));
-          // console.log("encryptJwt " + secp.utils.bytesToHex(encryptJwt));
-          // console.log("decrypt " + decrypt);
-
           let obj = {
             credentialId: element.credentialId,
             holderDid: element.holderDid,
