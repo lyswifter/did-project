@@ -7,6 +7,8 @@ import { CopyDocument } from '@element-plus/icons-vue'
 import axios from "axios";
 import Domain from "../router/domain.js";
 
+import bip39 from "../crypto/bip39.js";
+
 export default defineComponent({
     name: "Recovery",
     components: {
@@ -16,7 +18,7 @@ export default defineComponent({
         return {
             single: 3,
             mnemonicWords: [],
-            mnemonicStr: [],
+            mnemonicStr: "",
         }
     },
     mounted() {
@@ -42,7 +44,18 @@ export default defineComponent({
             location.reload()
         },
         confirmedAction() {
-            this.$router.push({ name: "home" });
+            for (let i = 0; i < this.mnemonicWords.length; i++) {
+                const outer = this.mnemonicWords[i];
+                for (let j = 0; j < outer.length; j++) {
+                    const inner = outer[j];
+                    this.mnemonicStr = this.mnemonicStr + inner.word + " "
+                }
+            }
+            this.mnemonicStr = this.mnemonicStr.trimEnd();
+
+            let wallet = bip39.genWalletWithMnemonic(this.mnemonicStr);
+
+            // this.$router.push({ name: "home" });
         },
         backAction() {
             this.$router.go(-1);

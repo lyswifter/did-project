@@ -61,7 +61,7 @@ export default defineComponent({
                     </a>
                 </div>
 
-                <img style="width: 64px;height: 64px;margin-top: 30px;" src="../assets/img/编组 3.svg" alt="">
+                <img style="width: 64px;height: 64px;margin-top: 30px;" src="../assets/img/编组_3.svg" alt="">
             </div>
 
             <img style="width: 69px;height: 72px;position: absolute;right: 60px;bottom: 60px;" src="../assets/img/LOGO_D.svg" alt="">

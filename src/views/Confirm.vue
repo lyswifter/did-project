@@ -68,7 +68,7 @@ export default defineComponent({
         randomLocate() {
             // generate 12 random numbers with no repeats
             //
-            let outer = []
+            let outer: number[] = []
             for (let i = 0; i < 12; i++) {
                 let prev = 0;
                 for (let j = 0; j < 100; j++) {
@@ -88,7 +88,7 @@ export default defineComponent({
                 }
             }
 
-            let randomWords = []
+            let randomWords: string[] = []
             for (let i = 0; i < this.originWords.length; i++) {
                 const index = outer[i]
                 const element = this.originWords[index];
@@ -116,7 +116,7 @@ export default defineComponent({
         },
         constructMnemonic(wordList) {
             for (let i = 0; i < wordList.length / this.single; i++) {
-                let innerArr = []
+                let innerArr: {}[] = []
                 for (let j = this.single * i; j < this.single * (i + 1); j++) {
                     let state = 0;
                     for (let k = 0; k < this.checkRandoms.length; k++) {
@@ -194,7 +194,7 @@ export default defineComponent({
 
             }
         },
-        clearAction(i, j) {
+        clearAction(i: number, j: number) {
             this.toggleTagAction(i * this.single + j);
         }
     }
