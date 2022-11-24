@@ -529,9 +529,9 @@
   
 <script>
 import { ref, h, reactive, toRaw, isProxy } from "vue";
-import axios from "axios";
 import { useRequest } from 'vue-request';
 
+import axios from "axios";
 import Domain from "../router/domain.js";
 
 let getUserInfoUrl = Domain.domainUrl + "/api/did-user/get-info";

@@ -6,8 +6,9 @@ import { CopyDocument } from '@element-plus/icons-vue'
 
 import axios from "axios";
 import Domain from "../router/domain.js";
+let loginWithMnemonicUrl = Domain.domainUrl + "/api/did-user/login-v2";
 
-import bip39 from "../crypto/bip39.js";
+import wallet from "../crypto/wallet.js";
 
 export default defineComponent({
     name: "Recovery",
@@ -43,7 +44,7 @@ export default defineComponent({
         reloadPage() {
             location.reload()
         },
-        confirmedAction() {
+        async confirmedAction() {
             for (let i = 0; i < this.mnemonicWords.length; i++) {
                 const outer = this.mnemonicWords[i];
                 for (let j = 0; j < outer.length; j++) {
@@ -53,9 +54,20 @@ export default defineComponent({
             }
             this.mnemonicStr = this.mnemonicStr.trimEnd();
 
-            let wallet = bip39.genWalletWithMnemonic(this.mnemonicStr);
+            let out = await wallet.signWith(this.mnemonicStr);
 
-            // this.$router.push({ name: "home" });
+            const res = await axios.post(loginWithMnemonicUrl, {
+                singer: out.sign
+            });
+
+            console.log(res.data)
+
+            if (res.data.code == 0) {
+                localStorage.setItem("userdid", out.did)
+                localStorage.setItem("token", res.data.data.token)
+
+                this.$router.push({ name: "home" });   
+            }
         },
         backAction() {
             this.$router.go(-1);

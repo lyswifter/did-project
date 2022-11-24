@@ -18,5 +18,10 @@ export default {
     async queryUser(did) {
         let info = await db.user.where('did').equals(did).toArray();
         return info[0]
+    },
+
+    async queryWithPublicKey(key) {
+        let info = await db.user.where('publicKey').equals(key).toArray();
+        return info[0]
     }
 }
