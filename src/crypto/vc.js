@@ -1,11 +1,15 @@
-import { createVerifiableCredentialJwt, verifyCredential } from 'did-jwt-vc';
-import { ES256KSigner, hexToBytes, createJWT, verifyJWT } from "did-jwt";
+import { ES256KSigner, hexToBytes, createJWT, verifyJWT, decodeJWT, verifyJWS } from "did-jwt";
 import { createVerifiablePresentationJwt, verifyPresentation } from 'did-jwt-vc'
 
 import { Resolver } from 'did-resolver'
 import { getResolver } from 'ethr-did-resolver'
 
 import dbvc from '../db/vc.js';
+
+import axios from "axios";
+import Domain from "../router/domain.js";
+
+let queryDidDocUrl = Domain.domainUrl + "/api/did-document/read/";
 
 export default {
     async createVcTemplate(issueDid, claims, tempId) {
@@ -80,15 +84,33 @@ export default {
         console.log(vpJwt)
     },
 
-    async verifyVc(vcJwt) {
-        const providerConfig = {
-            rpcUrl: 'https://mainnet.infura.io/v3/3d8fb59e25ee4c36afd778a4cc3bd014',
-            registry: '0xdca7ef03e98e0dc2b855be647c39abe984fcf21b'
-        }
-        const resolver = new Resolver(getResolver(providerConfig))
-        const verifiedVC = await verifyCredential(vcJwt, resolver)
-        console.log('verifiedVC')
-        console.log(verifiedVC)
+    async verifyVcJwt(vcJwt) {
+
+        let decode = decodeJWT(vcJwt);
+        console.log(decode)
+
+        // const { payload, header, signature, data } = decodeJWT(vcJwt)
+        // console.log(payload)
+        // console.log(header)
+        // console.log(signature)
+
+        let holderDid = decode.payload.vc.credentialSubject.id;
+        console.log(holderDid)
+
+        // query did docment and find out publicKey
+        let publicKey = await this.queryDidDocmentWith(holderDid)
+        console.log(publicKey)
+
+        verifyJWS(vcJwt, { publicKeyHex: publicKey}).then(
+            ok => {
+                console.log(ok)
+            },
+            err => {
+                console.log(err)
+            }
+        )
+
+        return ret
     },
 
     async verifyVp(vpJwt) {
@@ -100,5 +122,17 @@ export default {
 
         const verifiedVP = await verifyPresentation(vpJwt, resolver)
         console.log(verifiedVP)
+    },
+
+    async queryDidDocmentWith(did) {
+        const res = await axios.get(queryDidDocUrl + did, {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        });
+  
+        if (res.data.code == 0) {
+          return res.data.data.verificationMethod[0].publicKeyBase58
+        }
     }
 }

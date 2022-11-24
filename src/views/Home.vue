@@ -314,7 +314,7 @@
           </div>
           <template #tip>
             <div class="el-upload__tip">
-              jpg/png files with a size less than 500kb
+              files with a size less than 500kb
             </div>
           </template>
         </el-upload>
@@ -533,28 +533,12 @@ import axios from "axios";
 import { useRequest } from 'vue-request';
 
 import Domain from "../router/domain.js";
-let getUserInfoUrl = Domain.domainUrl + "/api/did-user/get-info";
-let vcTableUrl =
-  Domain.domainUrl + "/api/did-document-credential/credential-list";
-let getTemplListUrl =
-  Domain.domainUrl + "/api/did-document-credential/template-list";
-let templateClaimUrl =
-  Domain.domainUrl + "/api/did-document-credential/template-claim";
-let issueVcUrl = Domain.domainUrl + "/api/did-document-credential/credential";
-let singleDownloadUrl =
-  Domain.domainUrl + "/api/did-document-credential/credential-download/";
-let batchDownloadUrl =
-  Domain.domainUrl + "/api/did-document-credential/credential-download";
-let viewVcPicUrl =
-  Domain.domainUrl + "/api/did-document-credential/view-credential/";
-let VerifyVcUrl =
-  Domain.domainUrl + "/api/did-document-credential/verify-credential";
-let delVcUrl =
-  Domain.domainUrl + "/api/did-document-credential/credential-delete/";
-let multiVcCreationUrl =
-  Domain.domainUrl + "/api/did-document-credential/credential-parse/";
-let personalTagsUrl = Domain.domainUrl + "/api/did-holder-tag/list/";
 
+let getUserInfoUrl = Domain.domainUrl + "/api/did-user/get-info";
+let vcTableUrl = Domain.domainUrl + "/api/did-document-credential/credential-list";
+let VerifyVcUrl = Domain.domainUrl + "/api/did-document-credential/verify-credential";
+let delVcUrl = Domain.domainUrl + "/api/did-document-credential/credential-delete/";
+let personalTagsUrl = Domain.domainUrl + "/api/did-holder-tag/list/";
 let queryDidUrl = Domain.domainUrl + "/api/did-user/did";
 let queryDidDocUrl = Domain.domainUrl + "/api/did-document/read/";
 let backupVcsUrl = Domain.domainUrl + "/api/did-document-credential/credential";
@@ -672,7 +656,6 @@ export default {
 
       // did-wallet
       didWallet: {},
-      shareKey: null,
     };
   },
   components: {
@@ -1147,27 +1130,22 @@ export default {
     },
     handleExceed() { },
     async verifyFileAction() {
-      let formData = new FormData();
-      formData.append("multipartFile", this.fileList[0].raw);
 
-      const res = await axios.post(VerifyVcUrl, formData, {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      console.log(toRaw(this.fileList))
 
-      if (res.data.code == 0 && res.data.data.verify) {
-        this.verifyResultShow = true;
-        this.vcVerifyRet = res.data.data;
-      } else if (res.data.code == 40001) {
-        this.logoutAction();
-      } else {
-        ElMessage({
-          message: res.data.msg,
-          type: "error",
-        });
-      }
+      var reader = new FileReader();
+
+      reader.onload = function(e) {
+        var contents = e.target.result;
+
+        console.log("verify input " + contents)
+
+        vc.verifyVcJwt(contents).then(val => {
+          console.log("verify result " + val)
+        })
+      };
+      
+      reader.readAsText(this.fileList[0].raw);
     },
     async toCreateVcAction() {
       this.schemaList = tmpl.queryVcTemplate();
@@ -1401,7 +1379,7 @@ export default {
       for (let i = 0; i < rets.length; i++) {
         const element = rets[i];
         let filename = "file_" + rawDataIds[i] + ".json";
-        zip.file(filename, element.jwt + "\n");
+        zip.file(filename, element.jwt);
       }
 
       zip.generateAsync({ type: "blob" }).then(function (content) {
@@ -1438,7 +1416,6 @@ export default {
           this.data.splice(index, 1);
         }
 
-        // reload total count
         this.getUserInfo();
       } else if (res.data.code == 40001) {
         this.logoutAction();
@@ -1457,22 +1434,17 @@ export default {
 
       jsa.forEach((outer) => {
         let claimObj = {}
-        // let outerObj = {}
         this.inputRecipientsData.forEach(inner => {
           let claimName = inner['claimName'].substring(2);
           let claimCode = inner['claimCode'];
           let claimContent = outer[claimName];
           claimObj[claimCode] = claimContent;
-          // outerObj[claimCode] = claimContent;
         });
 
-        // let claimStr = JSON.stringify(outerObj);
         claimObj["issueDate"] = outer['Issue Date'];
         claimObj["expireDate"] = outer['Expiration Date'];
         claimObj["idx"] = this.recipientIdx;
-        // claimObj["claimsStr"] = claimStr;
         this.recipientTableData.push(claimObj);
-        // // increase index !IMPORTANT
         this.recipientIdx = this.recipientIdx + 1;
       });
 
