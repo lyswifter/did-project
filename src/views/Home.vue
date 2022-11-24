@@ -431,6 +431,49 @@
       </div>
     </el-dialog>
 
+    <!-- Dialog View Processing View -->
+    <el-dialog v-model="vcStateVisiable" :show-close="false" :width="540">
+      <template #header="{ close }">
+        <h4 class="dialog-header-title-m-credential">State</h4>
+        <img class="dialog-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
+      </template>
+
+      <div>
+        <el-timeline>
+          <el-timeline-item hide-timestamp=true placement="bottom">
+            <template #dot>
+              <div class="dot-normal">1</div>
+            </template>
+            <h4 class="timeline-title-view">The issuer sends the VC to the user's mailbox</h4>
+          </el-timeline-item>
+
+          <el-timeline-item hide-timestamp=true placement="bottom">
+            <template #dot>
+              <div class="dot-select">2</div>
+            </template>
+
+            <h4 class="timeline-title-view">Holder creates DID through mailbox</h4>
+            <div class="step2-desc-view">The holder has not created a DID via email, you can contact him offline to
+              create it as soon as
+              possible.</div>
+          </el-timeline-item>
+
+          <el-timeline-item hide-timestamp=true placement="bottom">
+            <template #dot>
+              <div class="dot-normal">3</div>
+            </template>
+            <h4 class="timeline-title-view">Holder receives VC and sends it successfully</h4>
+          </el-timeline-item>
+        </el-timeline>
+      </div>
+
+      <template #footer>
+        <div class="dialogFooterView">
+          <el-button class="vc-process-ensure-btn" type="default" @click="ensureVcProcessAction" round>Ok</el-button>
+        </div>
+      </template>
+    </el-dialog>
+
     <!-- Dialog Import with vc files -->
 
     <el-dialog v-model="issuleMultiVCVisiable" :show-close="false" :width="540">
@@ -536,7 +579,6 @@ import Domain from "../router/domain.js";
 
 let getUserInfoUrl = Domain.domainUrl + "/api/did-user/get-info";
 let vcTableUrl = Domain.domainUrl + "/api/did-document-credential/credential-list";
-let VerifyVcUrl = Domain.domainUrl + "/api/did-document-credential/verify-credential";
 let delVcUrl = Domain.domainUrl + "/api/did-document-credential/credential-delete/";
 let personalTagsUrl = Domain.domainUrl + "/api/did-holder-tag/list/";
 let queryDidUrl = Domain.domainUrl + "/api/did-user/did";
@@ -547,14 +589,11 @@ let newRelationUrl = Domain.domainUrl + "/api/did-document-credential/new-user-r
 
 import Header from "./Header.vue";
 
-import { ElMessage } from "element-plus";
+import { ElMessage, ElButton } from "element-plus";
 import { NButton, NIcon, NPopover } from "naive-ui";
 import {
   DotsVertical,
   CircleCheck,
-  Eye,
-  Download,
-  Trash,
 } from "@vicons/tabler";
 
 import VueQrcode from 'vue-qrcode'
@@ -636,6 +675,7 @@ export default {
 
       //view credential image
       vcViewVisiable: false,
+      vcStateVisiable: false,
       vcViewLink: "",
       fileList: [],
       viewVcRow: {},
@@ -687,6 +727,9 @@ export default {
 
     let that = this;
     this.columns = this.createColumns({
+      viewStateRow(row) {
+        that.vcStateVisiable = true;
+      },
       moreOpsRow(row) {
         that.popviewShow = !that.popviewShow;
       },
@@ -697,9 +740,9 @@ export default {
       downloadOpRow(row) {
         that.singleDownloadAction(row);
       },
-      trashOpRow(row) {
-        that.singleTrashAction(row.credentialId);
-      },
+      // trashOpRow(row) {
+      //   that.singleTrashAction(row.credentialId);
+      // },
       personalInfoRow(row) {
         that.personalTagTitle = row.holderName;
         that.personalTagsAction(row.holderDid);
@@ -878,7 +921,7 @@ export default {
       moreOpsRow,
       viewOpRow,
       downloadOpRow,
-      trashOpRow,
+      viewStateRow,
       personalInfoRow,
     }) {
       return [
@@ -890,12 +933,12 @@ export default {
         {
           title: "Credential ID",
           key: "credentialId",
-          width: 80,
+          width: 70,
         },
         {
           title: "Holder Did",
           key: "holderDid",
-          width: 80,
+          width: 100,
         },
         {
           title: "Holder Name",
@@ -920,12 +963,12 @@ export default {
         {
           title: "Issue AT",
           key: "issueDate",
-          width: 50,
+          width: 40,
         },
         {
           title: "Expires AT",
           key: "expireDate",
-          width: 50,
+          width: 40,
         },
         {
           title: "State",
@@ -934,12 +977,20 @@ export default {
           render(row, index) {
             if (row.filled == 1) {
               return h(
-                el-button, 
-                {
-                  type: "primary",
-                  loading: true,
-                }, 
-                ["Waiting"]
+                "div", {
+                style: {
+                  color: "#1E5CEF",
+                },
+                onClick: () => viewStateRow(row),
+              }, [
+                h("img", {
+                  style: {
+                    'width': "32px",
+                    'height': "32px",
+                    'vertical-align': "middle",
+                  },
+                  src: "/src/assets/img/loading.svg",
+                }), "Waiting"]
               )
             } else {
               let now = Date.now();
@@ -991,54 +1042,50 @@ export default {
 
                 default: () =>
                   h("div", { class: "popView" }, [
-                    h("div", null, [
+                    h("a", {
+                      href: "javascript:void(0)",
+                      class: "view-vc-pop-btn",
+                      onClick: () => viewOpRow(row),
+                    }, [
                       h(
-                        NButton,
-                        {
-                          style: {
-                            width: "120px",
-                          },
-                          onClick: () => viewOpRow(row),
+                        "img", {
+                        style: {
+                          width: '18px',
+                          height: '18px',
+                          'margin-left': '10px',
+                          'vertical-align': "middle",
                         },
-                        {
-                          icon: () => h(NIcon, null, { default: () => h(Eye) }),
-                          default: () => h("span", ["view"]),
+                        src: "/src/assets/img/16px_view_sel.svg"
+                      }
+                      ), h("span", {
+                        style: {
+                          'margin-left': '5px',
                         }
-                      ),
+                      }, ["view"]),
                     ]),
-                    h("div", null, [
+                    h("a", {
+                      href: "javascript:void(0)",
+                      class: "view-vc-pop-btn",
+                      onClick: () => downloadOpRow(row),
+                    }, [
                       h(
-                        NButton,
-                        {
-                          style: {
-                            width: "120px",
-                          },
-                          onClick: () => downloadOpRow(row),
+                        "img", {
+                        style: {
+                          width: '18px',
+                          height: '18px',
+                          'margin-left': '10px',
+                          'vertical-align': "middle",
                         },
-                        {
-                          icon: () =>
-                            h(NIcon, null, { default: () => h(Download) }),
-                          default: () => h("span", ["download"]),
+                        src: "/src/assets/img/16px_download_sel.svg"
+                      }
+                      ), h("span", {
+                        style: {
+                          'margin-left': '5px',
                         }
-                      ),
-                    ]),
-                    h("div", null, [
-                      h(
-                        NButton,
-                        {
-                          "text-color": "red",
-                          style: {
-                            width: "120px",
-                          },
-                          onClick: () => trashOpRow(row),
-                        },
-                        {
-                          icon: () =>
-                            h(NIcon, null, { default: () => h(Trash) }),
-                          default: () => h("span", ["delete"]),
-                        }
-                      ),
-                    ]),
+                      }, ["download"]),
+                    ])
+
+                    //onClick: () => trashOpRow(row),
                   ]),
               }
             );
@@ -1325,6 +1372,9 @@ export default {
         this.vcViewVisiable = true;
       });
     },
+    ensureVcProcessAction() {
+      this.vcStateVisiable = false;
+    },
     captureVcImage() {
       var node = document.getElementById("vc-image");
       domtoimage
@@ -1505,6 +1555,69 @@ export default {
 };
 </script>
 
+<style scope>
+.view-vc-pop-btn {
+  width: 120px;
+  height: 40px;
+  border-radius: 4px;
+  line-height: 40px;
+  text-decoration: none;
+  text-align: left;
+  display: block;
+  color: #272E3B;
+}
+
+.view-vc-pop-btn:hover {
+  background: rgb(243, 246, 253);
+}
+
+.dot-normal {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #4E5969;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #ffffff;
+  line-height: 20px;
+  text-align: center;
+  background-color: #4E5969;
+  margin-left: -6px;
+}
+
+.dot-select {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #1672F0;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  color: #ffffff;
+  line-height: 20px;
+  background-color: #1672F0;
+  margin-left: -6px;
+}
+
+.timeline-title-view {
+  font-size: 14px;
+  font-weight: 400;
+  color: #4E5969;
+  line-height: 21px;
+}
+
+.step2-desc-view {
+  background: #F2F3F5;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #86909C;
+  line-height: 18px;
+  padding: 10px;
+  word-wrap: normal;
+}
+</style>
+
 <!-- common -->
 
 <style scoped>
@@ -1592,6 +1705,18 @@ export default {
   font-weight: 400;
   color: #a9aeb8;
   line-height: 18px;
+}
+
+.dialogFooterView {
+  text-align: center;
+}
+
+.vc-process-ensure-btn {
+  width: 200px;
+  height: 44px;
+  background: #1D2129;
+  border-radius: 24px;
+  color: #FFFFFF;
 }
 
 .tagDescView {
