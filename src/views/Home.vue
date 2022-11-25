@@ -976,7 +976,7 @@ export default {
           key: "",
           width: 40,
           render(row, index) {
-            if (row.filled == 0) {
+            if (row.filled == 1) {
               return h(
                 "div", {
                 style: {
@@ -990,7 +990,7 @@ export default {
                     'height': "32px",
                     'vertical-align': "middle",
                   },
-                  src: "/src/assets/img/loading.svg",
+                  src: "../assets/img/loading.svg",
                 }), "Waiting"]
               )
             } else {
@@ -1137,6 +1137,8 @@ export default {
     },
     async getVcTableInfoLocal() {
       let localVals = await dbvc.queryVcs();
+
+      this.data = []
       this.data.push(...localVals)
 
       if (this.data.length == 0) {
@@ -1553,7 +1555,6 @@ export default {
     async syncVcsFromRemote() {
       // // retrieve vc info remote remote
       let localvcs = await dbvc.queryVcs();
-      console.log(localvcs)
 
       const remotevcs = await axios.post(queryRemoteVcsUrl, {
         size: 1,
@@ -1563,7 +1564,6 @@ export default {
           Authorization: localStorage.getItem("token"),
         },
       });
-      console.log(remotevcs)
 
       let remoteTotal = remotevcs.data.data.total
       let localTotal = localvcs.length
@@ -1573,10 +1573,11 @@ export default {
       } else {
         console.log("local vcs %d is not equal remote vcs %d, need to sync", localTotal, remoteTotal);
         let size = 100;
-        let pageNum = (remoteTotal % size == 0) ? remoteTotal / size : remoteTotal / size + 1;
+        let pageNum = (remoteTotal % size == 0) ? remoteTotal / size : Math.floor(remoteTotal / size) + 1;
 
         for (let i = 0; i < pageNum; i++) {
           const fetchDatas = await axios.post(queryRemoteVcsUrl, {
+            detail: 1,
             size: size,
             page: i,
           }, {
@@ -1590,24 +1591,49 @@ export default {
           if (records.length > 0) {
             console.log(records)
 
-            // records.forEach(element => {
-            //   dbvc.addVc({
-            //     credentialId: vcid,
-            //     templateId: tempId,
-            //     credentialType: type,
-            //     issuerDid: idid,
-            //     holderEmail: claim.holder,
-            //     holderName: element.holder_name,
-            //     holderDid: "",
-            //     credentialTitle: claim.credential_title,
-            //     expireFlag: needClaim.expireFlag,
-            //     issueDate: needClaim.issueDate,
-            //     expireDate: needClaim.expireDate,
-            //     filled: 1,
-            //     jwt: "",
-            //     backuped: 1,
-            //   })
-            // });
+            for (let i = 0; i < records.length; i++) {
+              const element = records[i];
+
+              let state = element.state;
+              let credentialId = element.credentialId;
+              let holderDid = element.holderDid;
+              let holderDoc = await this.queryDidDocmentWith(holderDid);
+              let holderPublicKey = holderDoc.verificationMethod[0].publicKeyBase58;
+              let myPrivateKey = this.userInfo.privateKey;
+
+              let shareSecret = ecdh.generateShareKey(myPrivateKey, holderPublicKey);
+              let decryptJwt = await ecdh.decryptFromString(element.vc, shareSecret);
+
+              console.log(decryptJwt)
+
+              let payload = await vc.decodeJwt(decryptJwt);
+
+              console.log(payload)
+
+              let tempId = 0;
+              if (payload.vc.type[0] == "Membership Card") {
+                tempId = 1
+              } else if (payload.vc.type[0] == "Activity Certificate") {
+                tempId = 2
+              }
+
+              dbvc.addVc({
+              credentialId: credentialId,
+              templateId: tempId,
+              credentialType: payload.vc.type[0],
+              issuerDid: payload.iss,
+              holderEmail: payload.vc.credentialSubject.email,
+              holderName: payload.vc.credentialSubject.holderName,
+              holderDid: payload.vc.credentialSubject.id,
+              credentialTitle: payload.vc.credentialSubject.credentialTitle,
+              expireFlag: payload.vc.credentialSubject.expireFlag,
+              issueDate: payload.vc.issuanceDate,
+              expireDate: payload.vc.expirationDate,
+              filled: 1,
+              jwt: decryptJwt,
+              backuped: 1,
+            })
+            }
           }
         }
 

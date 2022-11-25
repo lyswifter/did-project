@@ -73,9 +73,6 @@ export default {
         // console.log(signature)
         // console.log(data)
 
-        // let issuerDid = payload.vc.issuer;
-        console.log(issuerDid)
-
         // query did docment and find out publicKey
         let publicKey = await this.queryDidDocmentWith(issuerDid)
         // console.log(publicKey)
@@ -92,6 +89,11 @@ export default {
                 verify: false,
             }
         }
+    },
+
+    async decodeJwt(vcJwt) {
+        const { payload, header, signature, data } = decodeJWT(vcJwt)
+        return payload
     },
 
     async queryDidDocmentWith(did) {

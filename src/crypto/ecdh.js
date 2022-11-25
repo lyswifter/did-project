@@ -14,37 +14,42 @@ export default {
 
     // Encrypto
     async encrypt(msg, key) {
-        const blob = new Blob([msg], {type: 'text/plain; charset=utf-8'});
-        let buf = await blob.arrayBuffer();
-        let uint8arr = new Uint8Array(buf);
-
+        let uint8arr = this.stringToUint8Array(msg);
         let ret = await encrypt(uint8arr, key, this.iv, this.mode);
-        return ret;
+        return secp.utils.bytesToHex(ret);
     },
 
     // Decrypto
-    async decryptWithString(msgStr, key) {
+    async decryptFromString(hexString, key) {
         // decrypt(cypherText: Uint8Array, key: Uint8Array, iv: Uint8Array, mode?: string, pkcs7PaddingEnabled?: boolean): Promise<Uint8Array>;
-        const blob = new Blob([msgStr], {type: 'text/plain; charset=utf-8'});
-        let buf = await blob.arrayBuffer();
-        let uint8arr = new Uint8Array(buf);
-
-        let m = await decrypt(uint8arr, key, this.iv, this.mode)
-
-        const blobm = new Blob([m], {type: 'text/plain; charset=utf-8'});
-        let ret = await blobm.text();
-        return ret
+        let uint8arr = secp.utils.hexToBytes(hexString);
+        let ret = await decrypt(uint8arr, key, this.iv, this.mode)
+        return this.Uint8ArrayToString(ret);
     },
 
     // Decrypto
     async decrypt(msg, key) {
         // decrypt(cypherText: Uint8Array, key: Uint8Array, iv: Uint8Array, mode?: string, pkcs7PaddingEnabled?: boolean): Promise<Uint8Array>;
         let msgbuffer = new Uint8Array(msg);
-        let iv = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
-        let mode = 'aes-256-ctr';
         let m = await decrypt(msgbuffer, key, this.iv, this.mode)
-        const blob = new Blob([m], {type: 'text/plain; charset=utf-8'});
-        let ret = await blob.text();
-        return ret
+        return this.Uint8ArrayToString(ret);
     },
+
+    stringToUint8Array(str){
+        var arr = [];
+        for (var i = 0, j = str.length; i < j; ++i) {
+          arr.push(str.charCodeAt(i));
+        }
+       
+        var tmpUint8Array = new Uint8Array(arr);
+        return tmpUint8Array
+    },
+
+    Uint8ArrayToString(data) {
+        var dataString = ""
+        for (let i = 0; i < data.length; i++) {
+            dataString += String.fromCharCode(data[i]);
+        }
+        return dataString
+    }
 }
