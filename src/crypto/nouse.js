@@ -62,18 +62,19 @@ export default {
 
         console.log("publicKey " + publicKey)
         console.log("privateKey " + privateKey)
+        console.log("address " + wallet.address)
 
-        let message = "eyJhbGciOiJFUzI1NksiLCJraWQiOiJkaWQ6ZG1hc3RlcjoweEI0YkE3Qzc5NGFlMzE5RTU4NWU1RWU4NjZmMjZlNjQ4YzJhQkY1NzEja2V5LTEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJkaWQ6ZG1hc3RlcjoweEI0YkE3Qzc5NGFlMzE5RTU4NWU1RWU4NjZmMjZlNjQ4YzJhQkY1NzEiLCJkb2N1bWVudCI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvZGlkL3YxIl0sImlkIjoiZGlkOmRtYXN0ZXI6MHhCNGJBN0M3OTRhZTMxOUU1ODVlNUVlODY2ZjI2ZTY0OGMyYUJGNTcxIiwidmVyaWZpY2F0aW9uTWV0aG9kIjpbeyJ0eXBlIjoiRWNkc2FTZWNwMjU2azFWZXJpZmljYXRpb25LZXkyMDE5IiwiaWQiOiJkaWQ6ZG1hc3RlcjoweEI0YkE3Qzc5NGFlMzE5RTU4NWU1RWU4NjZmMjZlNjQ4YzJhQkY1NzEja2V5LTEiLCJjb250cm9sbGVyIjoiZGlkOmRtYXN0ZXI6MHhCNGJBN0M3OTRhZTMxOUU1ODVlNUVlODY2ZjI2ZTY0OGMyYUJGNTcxIiwicHVibGljS2V5QmFzZTU4IjoiMHgwNGE0OGMwNmU3OTNjNjg5NzdlODBmMTU2MGQxNDIxNTJmOTE3N2VlMzg4Y2IyYjEwMTMzODUxYzdhZDFiNGU5NDA4OWYwNTEzMWRjMDEzZGQ3MTQ4NWEwZDk0N2NkNGY4YTEzMjUwNzg1YWVmYTY3M2E2YjRmZDViZTQ4Nzk5M2QxIn1dLCJhdXRoZW50aWNhdGlvbiI6WyJkaWQ6ZG1hc3RlcjoweEI0YkE3Qzc5NGFlMzE5RTU4NWU1RWU4NjZmMjZlNjQ4YzJhQkY1NzEja2V5LTEiXSwiYXNzZXJ0aW9uTWV0aG9kIjpbImRpZDpkbWFzdGVyOjB4QjRiQTdDNzk0YWUzMTlFNTg1ZTVFZTg2NmYyNmU2NDhjMmFCRjU3MSNrZXktMSJdLCJrZXlBZ3JlZW1lbnQiOlsiZGlkOmRtYXN0ZXI6MHhCNGJBN0M3OTRhZTMxOUU1ODVlNUVlODY2ZjI2ZTY0OGMyYUJGNTcxI2tleS0xIl0sImNhcGFiaWxpdHlJbnZvY2F0aW9uIjpbImRpZDpkbWFzdGVyOjB4QjRiQTdDNzk0YWUzMTlFNTg1ZTVFZTg2NmYyNmU2NDhjMmFCRjU3MSNrZXktMSJdLCJjYXBhYmlsaXR5RGVsZWdhdGlvbiI6WyJkaWQ6ZG1hc3RlcjoweEI0YkE3Qzc5NGFlMzE5RTU4NWU1RWU4NjZmMjZlNjQ4YzJhQkY1NzEja2V5LTEiXX19.3zY-UpJzRRiKB5OL2ZBuOF9USk2rOsSv9Vb4d_-oEoOQWIUCTM1O2GmPC7d9-uOyZrr6CDEFs5KPZW1HOC3-wA";
-        let messageU8 = this.stringToUint8Array(message);
-        let messageRevert = this.Uint8ArrayToString(messageU8);
+        // let message = "eyJhbGciOiJFUzI1NksiLCJraWQiOiJkaWQ6ZG1hc3RlcjoweEI0YkE3Qzc5NGFlMzE5RTU4NWU1RWU4NjZmMjZlNjQ4YzJhQkY1NzEja2V5LTEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJkaWQ6ZG1hc3RlcjoweEI0YkE3Qzc5NGFlMzE5RTU4NWU1RWU4NjZmMjZlNjQ4YzJhQkY1NzEiLCJkb2N1bWVudCI6eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvZGlkL3YxIl0sImlkIjoiZGlkOmRtYXN0ZXI6MHhCNGJBN0M3OTRhZTMxOUU1ODVlNUVlODY2ZjI2ZTY0OGMyYUJGNTcxIiwidmVyaWZpY2F0aW9uTWV0aG9kIjpbeyJ0eXBlIjoiRWNkc2FTZWNwMjU2azFWZXJpZmljYXRpb25LZXkyMDE5IiwiaWQiOiJkaWQ6ZG1hc3RlcjoweEI0YkE3Qzc5NGFlMzE5RTU4NWU1RWU4NjZmMjZlNjQ4YzJhQkY1NzEja2V5LTEiLCJjb250cm9sbGVyIjoiZGlkOmRtYXN0ZXI6MHhCNGJBN0M3OTRhZTMxOUU1ODVlNUVlODY2ZjI2ZTY0OGMyYUJGNTcxIiwicHVibGljS2V5QmFzZTU4IjoiMHgwNGE0OGMwNmU3OTNjNjg5NzdlODBmMTU2MGQxNDIxNTJmOTE3N2VlMzg4Y2IyYjEwMTMzODUxYzdhZDFiNGU5NDA4OWYwNTEzMWRjMDEzZGQ3MTQ4NWEwZDk0N2NkNGY4YTEzMjUwNzg1YWVmYTY3M2E2YjRmZDViZTQ4Nzk5M2QxIn1dLCJhdXRoZW50aWNhdGlvbiI6WyJkaWQ6ZG1hc3RlcjoweEI0YkE3Qzc5NGFlMzE5RTU4NWU1RWU4NjZmMjZlNjQ4YzJhQkY1NzEja2V5LTEiXSwiYXNzZXJ0aW9uTWV0aG9kIjpbImRpZDpkbWFzdGVyOjB4QjRiQTdDNzk0YWUzMTlFNTg1ZTVFZTg2NmYyNmU2NDhjMmFCRjU3MSNrZXktMSJdLCJrZXlBZ3JlZW1lbnQiOlsiZGlkOmRtYXN0ZXI6MHhCNGJBN0M3OTRhZTMxOUU1ODVlNUVlODY2ZjI2ZTY0OGMyYUJGNTcxI2tleS0xIl0sImNhcGFiaWxpdHlJbnZvY2F0aW9uIjpbImRpZDpkbWFzdGVyOjB4QjRiQTdDNzk0YWUzMTlFNTg1ZTVFZTg2NmYyNmU2NDhjMmFCRjU3MSNrZXktMSJdLCJjYXBhYmlsaXR5RGVsZWdhdGlvbiI6WyJkaWQ6ZG1hc3RlcjoweEI0YkE3Qzc5NGFlMzE5RTU4NWU1RWU4NjZmMjZlNjQ4YzJhQkY1NzEja2V5LTEiXX19.3zY-UpJzRRiKB5OL2ZBuOF9USk2rOsSv9Vb4d_-oEoOQWIUCTM1O2GmPC7d9-uOyZrr6CDEFs5KPZW1HOC3-wA";
+        // let messageU8 = this.stringToUint8Array(message);
+        // let messageRevert = this.Uint8ArrayToString(messageU8);
 
-        let hashRet = hash(messageU8);
-        let hashSignOut = hdkey.sign(hashRet);
-        let verify = hdkey.verify(hashRet, hashSignOut)
+        // let hashRet = hash(messageU8);
+        // let hashSignOut = hdkey.sign(hashRet);
+        // let verify = hdkey.verify(hashRet, hashSignOut)
 
-        let sha256ret = await secp.utils.sha256(messageU8);
-        let sha256SignOut = hdkey.sign(sha256ret);
-        let sha256Verify = hdkey.verify(sha256ret, sha256SignOut)
+        // let sha256ret = await secp.utils.sha256(messageU8);
+        // let sha256SignOut = hdkey.sign(sha256ret);
+        // let sha256Verify = hdkey.verify(sha256ret, sha256SignOut)
 
         // console.log("message " + message)
         // console.log("messageU8 " + messageU8)
@@ -87,15 +88,15 @@ export default {
         // console.log("sha256SignOut " + secp.utils.bytesToHex(sha256SignOut))
         // console.log("sha256Verify " + sha256Verify)
 
-        let shareKey = this.generateShareKey(wallet, (await otherWallet).publicKey);
-        console.log("shareKey byte " + shareKey)
-        console.log("shareKey " + secp.utils.bytesToHex(shareKey))
+        // let shareKey = this.generateShareKey(wallet, (await otherWallet).publicKey);
+        // console.log("shareKey byte " + shareKey)
+        // console.log("shareKey " + secp.utils.bytesToHex(shareKey))
 
-        let encrypt = await this.encrypt(message, shareKey);
-        let decrypt = await this.decrypt(encrypt, shareKey);
+        // let encrypt = await this.encrypt(message, shareKey);
+        // let decrypt = await this.decrypt(encrypt, shareKey);
 
-        console.log("encrypt " + secp.utils.bytesToHex(encrypt))
-        console.log("decrypt " + decrypt)
+        // console.log("encrypt " + secp.utils.bytesToHex(encrypt))
+        // console.log("decrypt " + decrypt)
     },
 
     generateShareKey(myWallet, theirPublicKey) {

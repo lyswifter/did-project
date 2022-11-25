@@ -48,6 +48,14 @@ export default defineComponent({
             location.reload()
         },
         async sendVcodeAction() {
+            if (this.emailcontent == "") {
+                ElMessage({
+                    message: 'Email address must not be empty',
+                    type: 'error',
+                })
+                return
+            }
+
             const res = await axios.post(sendCodeUrl, {
                 email: this.emailcontent,
             });
@@ -73,9 +81,36 @@ export default defineComponent({
             }
         },
         async createDidAction() {
-            let ret = await this.createDid()
+            if (this.emailcontent == "") {
+                ElMessage({
+                    message: 'Mnemonic must not be empty',
+                    type: 'error',
+                })
+                return
+            }
 
+            if (this.vcodecontent == "") {
+                ElMessage({
+                    message: 'verify code must not be empty',
+                    type: 'error',
+                })
+                return
+            }
+
+            if (this.companycontent == "") {
+                ElMessage({
+                    message: 'Company must not be empty',
+                    type: 'error',
+                })
+                return
+            }
+
+            let ret = await this.createDid()
             if (ret == undefined) {
+                ElMessage({
+                    message: "user " + this.emailcontent + " already exist",
+                    type: 'error',
+                })
                 return
             }
 
@@ -120,16 +155,11 @@ export default defineComponent({
         async createDid() {
             let emails = await user.queryWithEmail(this.emailcontent);
             if (emails.length > 0) {
-                ElMessage({
-                    message: "user " + this.emailcontent + " already exist",
-                    type: 'error',
-                })
                 return undefined
             }
 
             let mnemonic = await bip39.genBip39Mnemonic();
             let wallet = await bip39.genWalletWithMnemonic(mnemonic);
-
             let did = "did:dmaster:" + wallet.address;
 
             let document = {

@@ -6,9 +6,13 @@ import { CopyDocument } from '@element-plus/icons-vue'
 
 import axios from "axios";
 import Domain from "../router/domain.js";
+
 let loginWithMnemonicUrl = Domain.domainUrl + "/api/did-user/login-v2";
+let queryRemoteVcsUrl = Domain.domainUrl + "/api/did-document-credential/credential-list";
 
 import wallet from "../crypto/wallet.js";
+import user from "../db/user.js";
+import dbvc from "../db/vc.js";
 
 export default defineComponent({
     name: "Recovery",
@@ -24,8 +28,8 @@ export default defineComponent({
     },
     mounted() {
         localStorage.removeItem("token")
-    localStorage.removeItem("userdid")
-    
+        localStorage.removeItem("userdid")
+
         for (let i = 0; i < 4; i++) {
             let innerArr = []
             for (let j = 0; j < 3; j++) {
@@ -33,7 +37,7 @@ export default defineComponent({
                     row: i,
                     col: j,
                     word: "",
-                    place: i*3+j,
+                    place: i * 3 + j + 1,
                     state: 1,
                 }
                 innerArr.push(ibj);
@@ -52,6 +56,13 @@ export default defineComponent({
                 const outer = this.mnemonicWords[i];
                 for (let j = 0; j < outer.length; j++) {
                     const inner = outer[j];
+                    if (inner.word == "") {
+                        ElMessage({
+                            message: 'Mnemonic must not be empty',
+                            type: 'error',
+                        })
+                        return
+                    }
                     this.mnemonicStr = this.mnemonicStr + inner.word + " "
                 }
             }
@@ -67,7 +78,32 @@ export default defineComponent({
                 localStorage.setItem("userdid", out.did)
                 localStorage.setItem("token", res.data.data.token)
 
-                this.$router.push({ name: "home" });   
+                let userinfo = await user.queryUser(out.did);
+                if (userinfo.length == 0) {
+                    // insert user info to indexDB
+
+                    let company = res.data.data.company;
+                    let email = res.data.data.email;
+
+                    user.createUser({
+                        email: email,
+                        did: out.did,
+                        company: company,
+                        address: out.address,
+                        privateKey: out.privateKey,
+                        publicKey: out.publicKey,
+                        mnemonic: out.mnemonic,
+                    })
+                }
+
+                // // retrieve vc info remote remote
+                // let localvcs = await dbvc.queryVcs();
+
+                // const res = await axios.post(queryRemoteVcsUrl, {
+                //     singer: out.sign
+                // });
+
+                this.$router.push({ name: "home" });
             }
         },
         backAction() {
@@ -80,7 +116,6 @@ export default defineComponent({
                     const element = allWords[i];
                     let row = Math.floor(i / this.single)
                     let col = Math.round(i % this.single);
-
                     this.mnemonicWords[row][col].word = element;
                     this.mnemonicWords[row][col].state = 2;
                 }

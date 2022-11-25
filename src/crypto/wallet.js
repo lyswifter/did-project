@@ -5,8 +5,6 @@ import { Wallet } from "@ethersproject/wallet";
 
 import { ES256KSigner, createJWT, hexToBytes } from "did-jwt";
 
-import user from "../db/user.js";
-
 export default {
     async signWith(mnemonic) {
         // Reversible: Converts mnemonic string to raw entropy in form of byte array.
@@ -22,9 +20,7 @@ export default {
 
         let wallet = new Wallet(hdkey.privateKey);
 
-        let userinfo = await user.queryWithPublicKey(wallet.publicKey);
-
-        let didMessage = userinfo.did;
+        let didMessage = "did:dmaster:" + wallet.address;
 
         const signer = ES256KSigner(hexToBytes(wallet.privateKey));
 
@@ -39,6 +35,10 @@ export default {
         return {
             sign: jwt,
             did:  didMessage,
+            address: wallet.address,
+            privateKey: wallet.privateKey,
+            publicKey: wallet.publicKey,
+            mnemonic: mnemonic,
         };
     },
 

@@ -42,7 +42,7 @@
 
     <!-- Main view -->
 
-    <el-main>
+    <el-main class="dm-main">
       <div class="did-main">
         <el-row>
           <el-col :span="3" :offset="1">
@@ -95,7 +95,7 @@
                   <h2 class="f-color">Verifiable Credentials</h2>
                   <h4 class="l-color">
                     Here are all the verifiable credentials you have issued. You can view, download or delete persistent
-                    credentials in D-pass.
+                    credentials in Dmaster.
                   </h4>
                 </div>
               </el-col>
@@ -410,13 +410,11 @@
     <!-- Dialog View vc image -->
     <el-dialog v-model="vcViewVisiable" :show-close="true" align-center="true" :width="680">
       <div style="text-align: center;">
-        <!-- <img style="width: 600px; height: 842px" :src="vcViewLink" alt="" /> -->
-        <div id="vc-image" class="vc-image-view">
+        <div id="vc-image" class="vc-image-view" :class="viewVcRow.template">
           <h3 class="sub-title g-color">{{ viewVcRow.credentialType }}</h3>
           <h2 class="main-title b-color">{{ viewVcRow.credentialType }}</h2>
           <h1 class="hoder-name b-color">{{ viewVcRow.holderName }}</h1>
-          <h3 class="holder-level g-color">Membership level <span class="b-color">{{ viewVcRow.credentialTitle
-          }}</span></h3>
+          <h3 class="holder-level g-color">Membership level <span class="b-color">{{ viewVcRow.credentialTitle }}</span></h3>
           <h3 class="holder-email g-color">{{ viewVcRow.holderEmail }}</h3>
           <h3 class="issuer-name g-color">Issue by <span class="b-color">{{ viewVcRow.holderName }}</span></h3>
           <h3 class="issue-time g-color">Issue AT <span class="b-color">{{ viewVcRow.issueDate }}</span></h3>
@@ -735,6 +733,7 @@ export default {
       },
       viewOpRow(row) {
         that.viewVcRow = row;
+        that.viewVcRow.template = "vc-template-" + row.templateId;
         that.vcViewVisiable = true;
       },
       downloadOpRow(row) {
@@ -1096,14 +1095,15 @@ export default {
     async getUserInfoLocal() {
       let userinfo = null
       let localdid = localStorage.getItem("userdid");
+
       if (localdid == undefined) {
         userinfo = await this.getUserInfoOnline();
       } else {
         let val = await user.queryUser(localdid);
-        if (val == undefined) {
-          userinfo = await this.getUserInfoOnline();
+        if (val.length > 0) {
+          userinfo = val[0];
         } else {
-          userinfo = val;
+          userinfo = await this.getUserInfoOnline();
         }
       }
 
@@ -1193,17 +1193,17 @@ export default {
 
           this.fileList = []
 
-          if (val == true) {
-            this.vcVerifyRet = {};
+          if (val.verify == true) {
+            this.vcVerifyRet = val.payload;
             this.verifyResultShow = true;
 
             ElMessage({
-              message: "Verify result " + val,
+              message: "Verify result " + val.verify,
               type: "success",
             });
           } else {
             ElMessage({
-              message: "Verify result " + val,
+              message: "Verify result " + val.verify,
               type: "err",
             });
           }
@@ -1790,6 +1790,10 @@ export default {
   background: linear-gradient(360deg, #eef1f8 0%, #d1dbf4 60%, #eef1f8 100%);
 }
 
+.dm-main {
+  padding: 0px !important;
+}
+
 .did-main {
   width: 1440px;
   margin: 0 auto;
@@ -2317,10 +2321,17 @@ export default {
 .vc-image-view {
   width: 600px;
   height: 842px;
-  background-image: url(../assets/img/卡面2@2x.png);
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
+}
+
+.vc-template-1 {
+  background-image: url(../assets/img/卡面2@2x.png);
+}
+
+.vc-template-2 {
+  background-image: url(../assets/img/卡面@2x.png);
 }
 
 .vc-image-view .sub-title {
