@@ -987,7 +987,7 @@ export default {
         {
           title: "State",
           key: "",
-          width: 40,
+          width: 70,
           render(row, index) {
             if (row.filled == 0) {
               return h(
