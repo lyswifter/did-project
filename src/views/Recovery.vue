@@ -8,11 +8,9 @@ import axios from "axios";
 import Domain from "../router/domain.js";
 
 let loginWithMnemonicUrl = Domain.domainUrl + "/api/did-user/login-v2";
-let queryRemoteVcsUrl = Domain.domainUrl + "/api/did-document-credential/credential-list";
 
 import wallet from "../crypto/wallet.js";
 import user from "../db/user.js";
-import dbvc from "../db/vc.js";
 
 export default defineComponent({
     name: "Recovery",
@@ -95,13 +93,6 @@ export default defineComponent({
                         mnemonic: out.mnemonic,
                     })
                 }
-
-                // // retrieve vc info remote remote
-                // let localvcs = await dbvc.queryVcs();
-
-                // const res = await axios.post(queryRemoteVcsUrl, {
-                //     singer: out.sign
-                // });
 
                 this.$router.push({ name: "home" });
             }

@@ -43,13 +43,19 @@ export default {
         return db.vc.toArray();
     },
 
+    async addVc(vcObj) {
+        let vc = await this.queryVcWithId(vcObj.credentialId);
+        if (vc == undefined) {
+            await db.vc.add(vcObj);
+        }
+    },
+
+    async queryVcWithId(id) {
+        return await db.vc.get(id);
+    },
+
     async queryVcsWithIds(ids) {
-        console.log(ids)
-        let ret = await db.vc.bulkGet(ids);
-
-        console.log(ret)
-
-        return ret;
+        return await db.vc.bulkGet(ids);
     },
 
     queryVcsWith(limit) {
@@ -78,11 +84,9 @@ export default {
 
     async updateVc(id, hdid, newJwt) {
         await db.vc.update(id, { filled: 1, holderDid: hdid, jwt: newJwt })
-        // console.log("update ret " + ret)
     },
 
     async updateVcBackup(id, backup) {
         await db.vc.update(id, { backuped: backup })
-        // console.log("update ret " + ret)
     }
 }

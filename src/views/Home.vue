@@ -414,7 +414,8 @@
           <h3 class="sub-title g-color">{{ viewVcRow.credentialType }}</h3>
           <h2 class="main-title b-color">{{ viewVcRow.credentialType }}</h2>
           <h1 class="hoder-name b-color">{{ viewVcRow.holderName }}</h1>
-          <h3 class="holder-level g-color">Membership level <span class="b-color">{{ viewVcRow.credentialTitle }}</span></h3>
+          <h3 class="holder-level g-color">Membership level <span class="b-color">{{ viewVcRow.credentialTitle }}</span>
+          </h3>
           <h3 class="holder-email g-color">{{ viewVcRow.holderEmail }}</h3>
           <h3 class="issuer-name g-color">Issue by <span class="b-color">{{ viewVcRow.holderName }}</span></h3>
           <h3 class="issue-time g-color">Issue AT <span class="b-color">{{ viewVcRow.issueDate }}</span></h3>
@@ -584,6 +585,7 @@ let queryDidDocUrl = Domain.domainUrl + "/api/did-document/read/";
 let backupVcsUrl = Domain.domainUrl + "/api/did-document-credential/credential";
 let bindingVcUrl = Domain.domainUrl + "/api/did-document-credential/bind-credential";
 let newRelationUrl = Domain.domainUrl + "/api/did-document-credential/new-user-relation";
+let queryRemoteVcsUrl = Domain.domainUrl + "/api/did-document-credential/credential-list";
 
 import Header from "./Header.vue";
 
@@ -750,7 +752,7 @@ export default {
 
     this.getUserInfoLocal();
     this.getVcTableInfoLocal();
-    // this.getVcTableInfo();
+    this.syncVcsFromRemote();
 
     // queryNewRelationship
     useRequest(this.queryNewRelationship, {
@@ -1548,6 +1550,71 @@ export default {
       this.personalTagDetail = this.personalTags[idx];
       this.personalTagsDetailVisiable = true;
     },
+    async syncVcsFromRemote() {
+      // // retrieve vc info remote remote
+      let localvcs = await dbvc.queryVcs();
+      console.log(localvcs)
+
+      const remotevcs = await axios.post(queryRemoteVcsUrl, {
+        size: 1,
+        page: 0,
+      }, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+      console.log(remotevcs)
+
+      let remoteTotal = remotevcs.data.data.total
+      let localTotal = localvcs.length
+
+      if (remoteTotal === localTotal) {
+        console.log("local vcs %d is equal remote vcs %d, no need to sync", localTotall, remoteTotal);
+      } else {
+        console.log("local vcs %d is not equal remote vcs %d, need to sync", localTotall, remoteTotal);
+        let size = 100;
+        let pageNum = (remoteTotal % size == 0) ? remoteTotal / size : remoteTotal / size + 1;
+
+        for (let i = 0; i < pageNum; i++) {
+          const fetchDatas = await axios.post(queryRemoteVcsUrl, {
+            size: size,
+            page: i,
+          }, {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+          });
+
+          //
+          let records = fetchDatas.data.data.records;
+          if (records.length > 0) {
+            console.log(records)
+
+            // records.forEach(element => {
+            //   dbvc.addVc({
+            //     credentialId: vcid,
+            //     templateId: tempId,
+            //     credentialType: type,
+            //     issuerDid: idid,
+            //     holderEmail: claim.holder,
+            //     holderName: element.holder_name,
+            //     holderDid: "",
+            //     credentialTitle: claim.credential_title,
+            //     expireFlag: needClaim.expireFlag,
+            //     issueDate: needClaim.issueDate,
+            //     expireDate: needClaim.expireDate,
+            //     filled: 1,
+            //     jwt: "",
+            //     backuped: 1,
+            //   })
+            // });
+          }
+        }
+
+        console.log("Sync all vc from remote to local")
+        this.getVcTableInfoLocal();
+      }
+    }
   },
   unmounted() {
     this.timer = {};
