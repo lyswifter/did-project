@@ -12,7 +12,10 @@ export default {
         // Reversible: Converts raw entropy in form of byte array to mnemonic string.
         bip39.entropyToMnemonic(ent, wordlist);
         // Validates mnemonic for being 12-24 words contained in `wordlist`.
-        bip39.validateMnemonic(mnemonic, wordlist);
+       let isvaild = bip39.validateMnemonic(mnemonic, wordlist);
+       if (!isvaild) {
+        return undefined
+       }
         // Irreversible: Uses KDF to derive 64 bytes of key data from mnemonic + optional password.
         const seed = await bip39.mnemonicToSeed(mnemonic, this.password);
 

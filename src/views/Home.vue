@@ -101,7 +101,7 @@
               </el-col>
               <el-col :span="4">
                 <div class="verify-right">
-                  <el-button color="#1E5CEF" class="verify-btn" type="primary" @click="toCreateVcAction" round>Create
+                  <el-button color="#1E5CEF" v-if="hasVc" class="verify-btn" type="primary" @click="toCreateVcAction" round>Create
                     Verifiable Credential</el-button>
                 </div>
               </el-col>
