@@ -83,7 +83,7 @@ export default defineComponent({
         async createDidAction() {
             if (this.emailcontent == "") {
                 ElMessage({
-                    message: 'Mnemonic must not be empty',
+                    message: 'Email must not be empty',
                     type: 'error',
                 })
                 return

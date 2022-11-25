@@ -30,7 +30,7 @@ export default defineComponent({
 
         let that = this;
         user.queryUser(this.did).then(val => {
-            that.originWords = val.mnemonic;
+            that.originWords = val[0].mnemonic;
             that.constructMnemonic(that.originWords);
         });
     },
