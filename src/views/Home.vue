@@ -133,13 +133,8 @@
 
     <!-- DRAWER Create Verify Credential -->
 
-    <el-drawer 
-      v-model="schemaVisible" 
-      :show-close="false" 
-      size="90%" 
-      :direction="direction" 
-      :before-close="handleVcDrawerClose"
-      @close="createVcDrawerDismissAction">
+    <el-drawer v-model="schemaVisible" :show-close="false" size="90%" :direction="direction"
+      :before-close="handleVcDrawerClose" @close="createVcDrawerDismissAction">
       <template #header="{ close }">
         <h4 class="drawer-title">Create Verifiable Credential</h4>
         <img class="drawer-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
@@ -331,7 +326,8 @@
               <!-- <h3 class="filenamesView">xxxxx.json</h3> -->
             </el-col>
             <el-col :span="6" :offset="20">
-              <el-button size="large" type="primary" @click="verifyFileAction" :disabled="fileList.length == 0 ? true : false" round>Verify</el-button>
+              <el-button size="large" type="primary" @click="verifyFileAction"
+                :disabled="fileList.length == 0 ? true : false" round>Verify</el-button>
             </el-col>
           </el-row>
         </div>
@@ -424,9 +420,9 @@
           <h3 class="holder-did" :class="viewVcRow.color">{{ viewVcRow.holderDid }} </h3>
 
           <h3 class="custom-title g-color">Custom title</h3>
-          <span class="custom-title-content" :class="viewVcRow.color">{{viewVcRow.credentialTitle}}</span>
+          <span class="custom-title-content" :class="viewVcRow.color">{{ viewVcRow.credentialTitle }}</span>
           <h3 class="issue-name g-color">Issue by</h3>
-          <span class="issue-name-content" :class="viewVcRow.color">{{userInfo.company}}</span>
+          <span class="issue-name-content" :class="viewVcRow.color">{{ userInfo.company }}</span>
           <h3 class="issue-time g-color">Issue AT</h3>
           <span class="issue-time-content" :class="viewVcRow.color">{{ viewVcRow.issueDate }}</span>
           <h3 class="expire-time g-color">Expires AT</h3>
