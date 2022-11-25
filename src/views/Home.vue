@@ -162,7 +162,7 @@
                 You can add some more information according to the schema
               </h4>
               <h4 v-else class="step-subtitle">
-                Please don’t close this window.
+                Please don't close this window.
               </h4>
             </div>
             <div v-else-if="vcStep == 3">
@@ -1187,6 +1187,16 @@ export default {
     },
     handleExceed() { },
     async verifyFileAction() {
+      let vcFile = this.fileList[0].raw;
+      console.log(vcFile)
+      if (vcFile.name) {
+        ElMessage({
+              message: "File selected must be json format",
+              type: "err",
+            });
+            return
+      }
+
       var reader = new FileReader();
 
       reader.onload = function (e) {
@@ -1196,7 +1206,6 @@ export default {
           console.log("verify result " + val)
 
           this.fileList = []
-
           if (val.verify == true) {
             this.vcVerifyRet = val.payload;
             this.verifyResultShow = true;
