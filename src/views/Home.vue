@@ -204,7 +204,7 @@
 
       <div v-if="vcStep == 1" class="select-schema-content">
         <el-row :gutter="80">
-          <el-col :lg="5" :xl="6">
+          <el-col :lg="5" :xl="4">
             <div class="card" @click="selectedOne" @dblclick="dbclickOneAction">
               <div class="card-top cardtopnormal" :class="{ cardtopselected: hasSelectedOne }">
                 <img style="width: 285px; height: 250px" src="../assets/img/schema_membership@2x.png" alt="" />
@@ -215,7 +215,7 @@
             </div>
           </el-col>
 
-          <el-col :lg="5" :xl="6">
+          <el-col :lg="5" :xl="4">
             <div class="card" @click="selectedTwo" @dblclick="dbclickTwoAction">
               <div class="card-top cardtopnormal" :class="{ cardtopselected: hasSelectedTwo }">
                 <img style="width: 285px; height: 250px" src="../assets/img/schema_acticit_1y@2x.png" alt="" />
@@ -226,7 +226,7 @@
             </div>
           </el-col>
 
-          <el-col :lg="5" :xl="6">
+          <el-col :lg="5" :xl="4">
             <div class="card">
               <div class="card-top cardtopnormal">
                 <img style="width: 285px; height: 250px" src="../assets/img/schema_coming@2x.png" alt="" />
