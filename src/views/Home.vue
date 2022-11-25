@@ -976,7 +976,7 @@ export default {
           key: "",
           width: 40,
           render(row, index) {
-            if (row.filled == 1) {
+            if (row.filled == 0) {
               return h(
                 "div", {
                 style: {
