@@ -54,7 +54,7 @@ export default defineComponent({
     mounted() {
         let that = this;
         user.queryUser(this.did).then(val => {
-            that.originWords = val.mnemonic.split(" ");
+            that.originWords = val[0].mnemonic.split(" ");
             // Random locate original words
 
             // let newWords = that.randomLocate()
