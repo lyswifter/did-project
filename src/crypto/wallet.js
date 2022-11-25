@@ -7,15 +7,30 @@ import { ES256KSigner, createJWT, hexToBytes } from "did-jwt";
 
 export default {
     async signWith(mnemonic) {
+        let isvalid = true;
+        let words = mnemonic.split(" ");
+        for (let i = 0; i < words.length; i++) {
+            const element = words[i];
+            let idx = wordlist.indexOf(element);
+            if (idx === -1) {
+                isvalid = false
+                break
+            }
+        }
+
+        if (!isvalid) {
+            return undefined
+        }
+
         // Reversible: Converts mnemonic string to raw entropy in form of byte array.
         const ent = bip39.mnemonicToEntropy(mnemonic, wordlist)
+
         // Reversible: Converts raw entropy in form of byte array to mnemonic string.
         bip39.entropyToMnemonic(ent, wordlist);
+
         // Validates mnemonic for being 12-24 words contained in `wordlist`.
-       let isvaild = bip39.validateMnemonic(mnemonic, wordlist);
-       if (!isvaild) {
-        return undefined
-       }
+        bip39.validateMnemonic(mnemonic, wordlist);
+
         // Irreversible: Uses KDF to derive 64 bytes of key data from mnemonic + optional password.
         const seed = await bip39.mnemonicToSeed(mnemonic, this.password);
 
@@ -28,7 +43,7 @@ export default {
         const signer = ES256KSigner(hexToBytes(wallet.privateKey));
 
         let jwt = await createJWT(
-            { iss: didMessage, iat: undefined},
+            { iss: didMessage, iat: undefined },
             { issuer: didMessage, signer },
             { alg: 'ES256K', kid: didMessage + "#key-1" }
         )
@@ -37,7 +52,7 @@ export default {
 
         return {
             sign: jwt,
-            did:  didMessage,
+            did: didMessage,
             address: wallet.address,
             privateKey: wallet.privateKey,
             publicKey: wallet.publicKey,

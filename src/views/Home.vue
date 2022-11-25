@@ -203,9 +203,9 @@
       </div>
 
       <div v-if="vcStep == 1" class="select-schema-content">
-        <el-row :gutter="40">
-          <el-col :span="4">
-            <div class="card" @click="selectedOne">
+        <el-row :gutter="80">
+          <el-col :lg="5" :xl="6">
+            <div class="card" @click="selectedOne" @dblclick="dbclickOneAction">
               <div class="card-top cardtopnormal" :class="{ cardtopselected: hasSelectedOne }">
                 <img style="width: 285px; height: 250px" src="../assets/img/schema_membership@2x.png" alt="" />
               </div>
@@ -215,8 +215,8 @@
             </div>
           </el-col>
 
-          <el-col :span="4">
-            <div class="card" @click="selectedTwo">
+          <el-col :lg="5" :xl="6">
+            <div class="card" @click="selectedTwo" @dblclick="dbclickTwoAction">
               <div class="card-top cardtopnormal" :class="{ cardtopselected: hasSelectedTwo }">
                 <img style="width: 285px; height: 250px" src="../assets/img/schema_acticit_1y@2x.png" alt="" />
               </div>
@@ -226,7 +226,7 @@
             </div>
           </el-col>
 
-          <el-col :span="4">
+          <el-col :lg="5" :xl="6">
             <div class="card">
               <div class="card-top cardtopnormal">
                 <img style="width: 285px; height: 250px" src="../assets/img/schema_coming@2x.png" alt="" />
@@ -1241,6 +1241,28 @@ export default {
         this.schemaType = "";
       }
     },
+    dbclickOneAction() {
+      this.hasSelectedTwo = false;
+      this.hasSelectedOne = !this.hasSelectedOne;
+
+      if (this.hasSelectedOne) {
+        this.schemaType = "Membership Card";
+      } else {
+        this.schemaType = "";
+      }
+      this.toAddRecipient();
+    },
+    dbclickTwoAction() {
+      this.hasSelectedOne = false;
+      this.hasSelectedTwo = !this.hasSelectedTwo;
+
+      if (this.hasSelectedTwo) {
+        this.schemaType = "Activity Certificate";
+      } else {
+        this.schemaType = "";
+      }
+      this.toAddRecipient();
+    },
     async toAddRecipient() {
       if (this.schemaType == "") {
         alert("Schema type must not be empty");
@@ -2117,7 +2139,6 @@ export default {
 }
 
 .continue-btn {
-  /* margin-top: 30px; */
   height: 34px;
   background: #1e5cef;
   border-radius: 24px;
