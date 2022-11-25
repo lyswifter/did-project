@@ -21,13 +21,16 @@ export default defineComponent({
             sendString: "Send",
             sendCount: 60,
             countLimit: 60,
-            emailcontent: "ly70835@163.com",
+            emailcontent: "",
             vcodecontent: "",
-            companycontent: "Tianru",
+            companycontent: "",
         }
     },
     mounted() {
         this.sendCount = this.countLimit;
+
+        localStorage.removeItem("token")
+        localStorage.removeItem("userdid")
     },
     watch: {
         sendCount(newVal, oldVal) {
@@ -72,6 +75,10 @@ export default defineComponent({
         async createDidAction() {
             let ret = await this.createDid()
 
+            if (ret == undefined) {
+                return
+            }
+
             localStorage.setItem("userdid", ret.didStr)
 
             // this.$router.push({ name: "mnemonic" });
@@ -103,6 +110,15 @@ export default defineComponent({
             }
         },
         async createDid() {
+            let emails = await user.queryWithEmail(this.emailcontent);
+            if (emails.length > 0) {
+                ElMessage({
+                    message: "user " + this.emailcontent + " already exist",
+                    type: 'error',
+                })
+                return undefined
+            }
+
             let mnemonic = await bip39.genBip39Mnemonic();
             let wallet = await bip39.genWalletWithMnemonic(mnemonic);
 
@@ -136,16 +152,16 @@ export default defineComponent({
                     did + "#key-1",
                 ],
                 "assertionMethod": [
-                    did  + "#key-1",
+                    did + "#key-1",
                 ],
                 "keyAgreement": [
-                    did  + "#key-1",
+                    did + "#key-1",
                 ],
                 "capabilityInvocation": [
-                    did  + "#key-1",
+                    did + "#key-1",
                 ],
                 "capabilityDelegation": [
-                    did  + "#key-1",
+                    did + "#key-1",
                 ]
             }
 

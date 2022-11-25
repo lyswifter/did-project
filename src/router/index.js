@@ -72,18 +72,15 @@ router.beforeEach((to, from, next) => {
     isDid = false;
   }
 
-  if (to.name !== 'entry' && (!isAuthenticated || !isDid)) {
+  if (to.name == 'recovery') next()
+
+  if (to.name == 'create') next()
+
+  if (to.name !== 'entry' && !isAuthenticated && !isDid) {
     next({ name: 'entry' })
-  }
-
-  if (to.name == 'recovery' || to.name == 'create' || to.name == 'entry') {
-    localStorage.removeItem("token")
-    localStorage.removeItem("userdid")
-
+  } else {
     next()
   }
-
-  next()
 })
 
 export default router;

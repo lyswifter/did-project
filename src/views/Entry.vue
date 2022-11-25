@@ -8,7 +8,8 @@ export default defineComponent({
         return {}
     },
     mounted() {
-
+        localStorage.removeItem("token")
+    localStorage.removeItem("userdid")
     },
     methods: {
         reloadPage() {

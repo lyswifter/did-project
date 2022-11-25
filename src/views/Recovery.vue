@@ -23,6 +23,9 @@ export default defineComponent({
         }
     },
     mounted() {
+        localStorage.removeItem("token")
+    localStorage.removeItem("userdid")
+    
         for (let i = 0; i < 4; i++) {
             let innerArr = []
             for (let j = 0; j < 3; j++) {
