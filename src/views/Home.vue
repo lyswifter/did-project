@@ -133,7 +133,12 @@
 
     <!-- DRAWER Create Verify Credential -->
 
-    <el-drawer v-model="schemaVisible" :show-close="false" size="90%" :direction="direction"
+    <el-drawer 
+      v-model="schemaVisible" 
+      :show-close="false" 
+      size="90%" 
+      :direction="direction" 
+      :before-close="handleVcDrawerClose"
       @close="createVcDrawerDismissAction">
       <template #header="{ close }">
         <h4 class="drawer-title">Create Verifiable Credential</h4>
@@ -326,7 +331,7 @@
               <!-- <h3 class="filenamesView">xxxxx.json</h3> -->
             </el-col>
             <el-col :span="6" :offset="20">
-              <el-button size="large" type="primary" @click="verifyFileAction" round>Verify</el-button>
+              <el-button size="large" type="primary" @click="verifyFileAction" :disabled="fileList.length == 0 ? true : false" round>Verify</el-button>
             </el-col>
           </el-row>
         </div>
@@ -773,6 +778,10 @@ export default {
     });
   },
   methods: {
+    handleVcDrawerClose(done) {
+      alert("drawer close")
+      done()
+    },
     async queryVcNoProof(releation) {
       let noProofVcs = await dbvc.queryNoFilledVc(releation.credentialId);
 
