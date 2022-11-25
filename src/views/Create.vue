@@ -254,7 +254,7 @@ export default defineComponent({
 
                 <div class="btn-view">
                     <a class="continue-btn" style="text-decoration: none;" href="javascript:void(0)"
-                        @click="createDidAction">Continue</a>
+                        @click="createDidAction" @keydown.enter="createDidAction">Continue</a>
                 </div>
             </div>
         </el-main>
