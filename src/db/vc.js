@@ -47,6 +47,8 @@ export default {
         let vc = await this.queryVcWithId(vcObj.credentialId);
         if (vc == undefined) {
             await db.vc.add(vcObj);
+        } else {
+            console.log("vc exist for %s", vcObj.credentialId)
         }
     },
 

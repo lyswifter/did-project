@@ -46,6 +46,7 @@ export default {
                 "id": specifyVc.holderDid,
                 "holderName": specifyVc.holderName,
                 "credentialTitle": specifyVc.credentialTitle,
+                "email": specifyVc.holderEmail,
             }
         }
 

@@ -18,5 +18,5 @@ export default defineConfig({
   server: {
     cors: true,
   },
-  ssr: { noExternal: true,}
+  ssr: { noExternal: true, }
 });

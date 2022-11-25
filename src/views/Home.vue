@@ -990,7 +990,7 @@ export default {
                     'height': "32px",
                     'vertical-align': "middle",
                   },
-                  src: "../assets/img/loading.svg",
+                  src: "https://dmaster.com/dcommon/img/loading.svg",
                 }), "Waiting"]
               )
             } else {
@@ -1056,7 +1056,7 @@ export default {
                           'margin-left': '10px',
                           'vertical-align': "middle",
                         },
-                        src: "/src/assets/img/16px_view_sel.svg"
+                        src: "https://dmaster.com/dcommon/img/16px_view_sel.svg"
                       }
                       ), h("span", {
                         style: {
@@ -1077,7 +1077,7 @@ export default {
                           'margin-left': '10px',
                           'vertical-align': "middle",
                         },
-                        src: "/src/assets/img/16px_download_sel.svg"
+                        src: "https://dmaster.com/dcommon/img/16px_download_sel.svg"
                       }
                       ), h("span", {
                         style: {
@@ -1557,6 +1557,7 @@ export default {
       let localvcs = await dbvc.queryVcs();
 
       const remotevcs = await axios.post(queryRemoteVcsUrl, {
+        detail: 0,
         size: 1,
         page: 0,
       }, {
@@ -1569,9 +1570,9 @@ export default {
       let localTotal = localvcs.length
 
       if (remoteTotal === localTotal) {
-        console.log("local vcs %d is equal remote vcs %d, no need to sync", localTotal, remoteTotal);
+        console.log("Local vcs %d is equal remote vcs %d, no need to sync", localTotal, remoteTotal);
       } else {
-        console.log("local vcs %d is not equal remote vcs %d, need to sync", localTotal, remoteTotal);
+        console.log("Local vcs %d is not equal remote vcs %d, need to sync", localTotal, remoteTotal);
         let size = 100;
         let pageNum = (remoteTotal % size == 0) ? remoteTotal / size : Math.floor(remoteTotal / size) + 1;
 
@@ -1589,8 +1590,6 @@ export default {
           //
           let records = fetchDatas.data.data.records;
           if (records.length > 0) {
-            console.log(records)
-
             for (let i = 0; i < records.length; i++) {
               const element = records[i];
 
@@ -1604,11 +1603,7 @@ export default {
               let shareSecret = ecdh.generateShareKey(myPrivateKey, holderPublicKey);
               let decryptJwt = await ecdh.decryptFromString(element.vc, shareSecret);
 
-              console.log(decryptJwt)
-
               let payload = await vc.decodeJwt(decryptJwt);
-
-              console.log(payload)
 
               let tempId = 0;
               if (payload.vc.type[0] == "Membership Card") {
@@ -1618,26 +1613,27 @@ export default {
               }
 
               dbvc.addVc({
-              credentialId: credentialId,
-              templateId: tempId,
-              credentialType: payload.vc.type[0],
-              issuerDid: payload.iss,
-              holderEmail: payload.vc.credentialSubject.email,
-              holderName: payload.vc.credentialSubject.holderName,
-              holderDid: payload.vc.credentialSubject.id,
-              credentialTitle: payload.vc.credentialSubject.credentialTitle,
-              expireFlag: payload.vc.credentialSubject.expireFlag,
-              issueDate: payload.vc.issuanceDate,
-              expireDate: payload.vc.expirationDate,
-              filled: 1,
-              jwt: decryptJwt,
-              backuped: 1,
-            })
+                credentialId: credentialId,
+                templateId: tempId,
+                credentialType: payload.vc.type[0],
+                issuerDid: payload.iss,
+                holderEmail: payload.vc.credentialSubject.email,
+                holderName: payload.vc.credentialSubject.holderName,
+                holderDid: payload.vc.credentialSubject.id,
+                credentialTitle: payload.vc.credentialSubject.credentialTitle,
+                expireFlag: state,
+                issueDate: payload.vc.issuanceDate,
+                expireDate: payload.vc.expirationDate,
+                filled: 1,
+                jwt: decryptJwt,
+                backuped: 1,
+              })
             }
           }
         }
 
-        console.log("Sync all vc from remote to local")
+        console.log("Sync all vcs from remote to local finished.")
+
         this.getVcTableInfoLocal();
       }
     }
