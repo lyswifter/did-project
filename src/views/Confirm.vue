@@ -55,10 +55,9 @@ export default defineComponent({
         let that = this;
         user.queryUser(this.did).then(val => {
             that.originWords = val[0].mnemonic.split(" ");
+            
             // Random locate original words
-
-            // let newWords = that.randomLocate()
-
+            let newWords = that.randomLocate()
             that.constructMnemonic(that.originWords);
         });
     },

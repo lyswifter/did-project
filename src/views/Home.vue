@@ -101,7 +101,8 @@
               </el-col>
               <el-col :span="4">
                 <div class="verify-right">
-                  <el-button color="#1E5CEF" v-if="hasVc" class="verify-btn" type="primary" @click="toCreateVcAction" round>Create
+                  <el-button color="#1E5CEF" v-if="hasVc" class="verify-btn" type="primary" @click="toCreateVcAction"
+                    round>Create
                     Verifiable Credential</el-button>
                 </div>
               </el-col>
@@ -407,24 +408,28 @@
       </div>
     </el-dialog>
 
-    <!-- Dialog View vc image -->
+    <!-- Dialog View Verify Credential image -->
     <el-dialog v-model="vcViewVisiable" :show-close="true" align-center="true" :width="680">
       <div style="text-align: center;">
         <div id="vc-image" class="vc-image-view" :class="viewVcRow.template">
-          <h3 class="sub-title g-color">{{ viewVcRow.credentialType }}</h3>
-          <h2 class="main-title b-color">{{ viewVcRow.credentialType }}</h2>
-          <h1 class="hoder-name b-color">{{ viewVcRow.holderName }}</h1>
-          <h3 class="holder-level g-color">Membership level <span class="b-color">{{ viewVcRow.credentialTitle }}</span>
-          </h3>
-          <h3 class="holder-email g-color">{{ viewVcRow.holderEmail }}</h3>
-          <h3 class="issuer-name g-color">Issue by <span class="b-color">{{ viewVcRow.holderName }}</span></h3>
-          <h3 class="issue-time g-color">Issue AT <span class="b-color">{{ viewVcRow.issueDate }}</span></h3>
-          <h3 class="expire-time g-color">Expires AT <span class="b-color">{{ viewVcRow.expireDate }}</span></h3>
+          <h3 class="sub-title" :class="viewVcRow.color">{{ viewVcRow.credentialType }}</h3>
+          <h2 class="main-title" :class="viewVcRow.color">{{ viewVcRow.credentialType }}</h2>
+          <h1 class="hoder-name" :class="viewVcRow.color">{{ viewVcRow.holderName }}</h1>
+          <h3 class="holder-email" :class="viewVcRow.color">{{ viewVcRow.holderEmail }}</h3>
+          <h3 class="holder-did" :class="viewVcRow.color">{{ viewVcRow.holderDid }} </h3>
+
+          <h3 class="custom-title g-color">Custom title</h3>
+          <span class="custom-title-content" :class="viewVcRow.color">{{viewVcRow.credentialTitle}}</span>
+          <h3 class="issue-name g-color">Issue by</h3>
+          <span class="issue-name-content" :class="viewVcRow.color">{{userInfo.company}}</span>
+          <h3 class="issue-time g-color">Issue AT</h3>
+          <span class="issue-time-content" :class="viewVcRow.color">{{ viewVcRow.issueDate }}</span>
+          <h3 class="expire-time g-color">Expires AT</h3>
+          <span class="expire-time-content" :class="viewVcRow.color">{{ viewVcRow.expireDate }}</span>
+
           <vue-qrcode class="qr-code" :value="viewVcRow.jwt" @change="onDataUrlChange" />
         </div>
-
         <br>
-
         <el-button type="primary" size="large" class="add-recipient-info-btn" color="#1E5CEF" @click="captureVcImage"
           round>Download</el-button>
       </div>
@@ -577,7 +582,6 @@ import axios from "axios";
 import Domain from "../router/domain.js";
 
 let getUserInfoUrl = Domain.domainUrl + "/api/did-user/get-info";
-let vcTableUrl = Domain.domainUrl + "/api/did-document-credential/credential-list";
 let delVcUrl = Domain.domainUrl + "/api/did-document-credential/credential-delete/";
 let personalTagsUrl = Domain.domainUrl + "/api/did-holder-tag/list/";
 let queryDidUrl = Domain.domainUrl + "/api/did-user/did";
@@ -601,7 +605,6 @@ import domtoimage from "dom-to-image";
 import { read, utils } from "xlsx";
 import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-import * as secp from '@noble/secp256k1';
 
 import vc from "../crypto/vc.js";
 import ecdh from "../crypto/ecdh.js";
@@ -694,23 +697,13 @@ export default {
       personalTagsDetailVisiable: false,
       personalTagDetail: {},
 
-      // did-wallet
       didWallet: {},
     };
   },
   components: {
     VueQrcode,
   },
-  created() { },
-  watch: {},
-  mounted() {
-    let indexdb = localStorage.getItem("indexDB");
-    if (indexdb == null || indexdb == undefined) {
-      tmpl.createVcTemplate()
-      claim.createClaims()
-      localStorage.setItem("indexDB", "1")
-    }
-
+  created() {
     this.pagination = reactive({
       page: 1,
       pageSize: 5,
@@ -724,6 +717,15 @@ export default {
         this.pagination.page = 1;
       },
     });
+  },
+  watch: {},
+  mounted() {
+    let indexdb = localStorage.getItem("indexDB");
+    if (indexdb == null || indexdb == undefined) {
+      tmpl.createVcTemplate()
+      claim.createClaims()
+      localStorage.setItem("indexDB", "1")
+    }
 
     let that = this;
     this.columns = this.createColumns({
@@ -735,7 +737,8 @@ export default {
       },
       viewOpRow(row) {
         that.viewVcRow = row;
-        that.viewVcRow.template = "vc-template-" + row.templateId;
+        that.viewVcRow.template = "vc-bg-tmpl-" + row.templateId;
+        that.viewVcRow.color = "vc-color-tmpl-" + + row.templateId;
         that.vcViewVisiable = true;
       },
       downloadOpRow(row) {
@@ -796,29 +799,29 @@ export default {
           const element = proofVcs[i];
 
           let myPublicKey = this.userInfo.publicKey;
+
+          // generate my own share secret
           let myShareSecret = ecdh.generateShareKey(this.userInfo.privateKey, myPublicKey);
-          let MyencryptJwt = await ecdh.encrypt(element.jwt, myShareSecret);
+          let myEncryptJwt = await ecdh.encrypt(element.jwt, myShareSecret);
 
           let holderDoc = await this.queryDidDocmentWith(element.holderDid);
           let holderPublicKey = holderDoc.verificationMethod[0].publicKeyBase58;
 
-          // generate share secret
+          // generate our share secret
           let shareSecret = ecdh.generateShareKey(this.userInfo.privateKey, holderPublicKey);
           let encryptJwt = await ecdh.encrypt(element.jwt, shareSecret);
-          // let decrypt = await ecdh.decrypt(encryptJwt, shareSecret);
 
           let obj = {
             credentialId: element.credentialId,
             holderDid: element.holderDid,
             ownerList: [{
               owner: element.issuerDid,
-              vc: secp.utils.bytesToHex(MyencryptJwt)
+              vc: myEncryptJwt
             },
             {
               owner: element.holderDid,
-              vc: secp.utils.bytesToHex(encryptJwt)
-            }
-            ],
+              vc: encryptJwt
+            }],
             templateId: element.templateId
           }
 
@@ -942,6 +945,11 @@ export default {
           width: 100,
         },
         {
+          title: "Holder Email",
+          key: "holderEmail",
+          width: 60,
+        },
+        {
           title: "Holder Name",
           key: "holderName",
           width: 50,
@@ -959,7 +967,7 @@ export default {
         {
           title: "Type",
           key: "credentialType",
-          width: 50,
+          width: 60,
         },
         {
           title: "Issue AT",
@@ -976,7 +984,7 @@ export default {
           key: "",
           width: 40,
           render(row, index) {
-            if (row.filled == 1) {
+            if (row.filled == 0) {
               return h(
                 "div", {
                 style: {
@@ -1147,36 +1155,6 @@ export default {
         this.hasVc = true;
       }
     },
-    async getVcTableInfo() {
-      const res = await axios.post(
-        vcTableUrl,
-        {
-          page: 1,
-          size: 100,
-        },
-        {
-          headers: {
-            Authorization: localStorage.getItem("token"),
-          },
-        }
-      );
-
-      if (res.data.code == 0) {
-        this.data.push(...res.data.data.records);
-        if (this.data.length == 0) {
-          this.hasVc = false;
-        } else {
-          this.hasVc = true;
-        }
-      } else if (res.data.code == 40001) {
-        this.logoutAction();
-      } else {
-        ElMessage({
-          message: res.data.msg,
-          type: "error",
-        });
-      }
-    },
     backAction() {
       this.vcStep = this.vcStep - 1;
     },
@@ -1188,17 +1166,15 @@ export default {
     handleExceed() { },
     async verifyFileAction() {
       let vcFile = this.fileList[0].raw;
-      console.log(vcFile)
-      if (vcFile.name) {
+      if (vcFile.name.indexOf(".json") == -1) {
         ElMessage({
-              message: "File selected must be json format",
-              type: "err",
-            });
-            return
+          message: "File selected must be .json format",
+          type: "err",
+        });
+        return
       }
 
       var reader = new FileReader();
-
       reader.onload = function (e) {
         var contents = e.target.result;
 
@@ -1223,7 +1199,7 @@ export default {
         })
       };
 
-      reader.readAsText(this.fileList[0].raw);
+      reader.readAsText(vcFile);
     },
     async toCreateVcAction() {
       this.schemaList = tmpl.queryVcTemplate();
@@ -1530,7 +1506,15 @@ export default {
       }
     },
     async multiVcImportAction() {
-      let file = this.multoVcFileList[0].raw;
+      let xlsxFile = this.multoVcFileList[0].raw;
+      if (xlsxFile.name.indexOf(".xlsx") == -1) {
+        ElMessage({
+          message: "File selected must be .xlsx format",
+          type: "err",
+        });
+        return
+      }
+
       let data = await file.arrayBuffer()
       let workbook = read(data);
       let jsa = utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { rawNumbers: false, raw: false });
@@ -1627,6 +1611,7 @@ export default {
               let state = element.state;
               let credentialId = element.credentialId;
               let holderDid = element.holderDid;
+
               let holderDoc = await this.queryDidDocmentWith(holderDid);
               let holderPublicKey = holderDoc.verificationMethod[0].publicKeyBase58;
               let myPrivateKey = this.userInfo.privateKey;
@@ -2445,12 +2430,20 @@ export default {
   background-size: cover;
 }
 
-.vc-template-1 {
+.vc-bg-tmpl-2 {
   background-image: url(../assets/img/卡面2@2x.png);
 }
 
-.vc-template-2 {
+.vc-bg-tmpl-1 {
   background-image: url(../assets/img/卡面@2x.png);
+}
+
+.vc-color-tmpl-1 {
+  color: #ffffff;
+}
+
+.vc-color-tmpl-2 {
+  color: #1D2129;
 }
 
 .vc-image-view .sub-title {
@@ -2473,100 +2466,122 @@ export default {
   line-height: 60px;
 }
 
-.hoder-name {
-  position: absolute;
-  left: 50px;
-  top: 230px;
-  height: 67px;
-  font-size: 48px;
-  font-weight: 500;
-  line-height: 72px;
-}
-
-.holder-level {
-  position: absolute;
-  left: 50px;
-  top: 307px;
-  height: 33px;
-  font-size: 24px;
-  font-weight: 400;
-  line-height: 35px;
-}
-
-.holder-level span {
-  position: absolute;
-  width: 150px;
-  height: 33px;
-  font-size: 24px;
-  font-weight: bold;
-  line-height: 35px;
-}
-
-.holder-email {
-  position: absolute;
-  left: 50px;
-  top: 400px;
-  height: 33px;
-  font-size: 24px;
-  font-weight: 400;
-  line-height: 35px;
-}
-
-.issuer-name {
+.vc-image-view .hoder-name {
   position: absolute;
   left: 40px;
-  top: 496px;
-  height: 33px;
-  font-size: 24px;
-  font-weight: 400;
-  line-height: 35px;
+  top: 286px;
+  height: 43px;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 46px;
 }
 
-.issuer-name span {
+.vc-image-view .holder-did {
   position: absolute;
-  width: 150px;
-  height: 33px;
-  font-size: 24px;
-  font-weight: bold;
-  line-height: 35px;
-}
-
-.issue-time {
-  position: absolute;
-  left: 30px;
-  top: 736px;
-  height: 33px;
-  font-size: 24px;
+  left: 40px;
+  top: 426px;
+  width: 520px;
+  height: 56px;
+  font-size: 20px;
   font-weight: 400;
-  line-height: 35px;
+  color: #86909C;
+  line-height: 30px;
+  text-align: left;
 }
 
-.issue-time span {
+.vc-image-view .holder-email {
   position: absolute;
-  width: 150px;
+  left: 40px;
+  top: 359px;
   height: 33px;
   font-size: 24px;
-  font-weight: 400;
+  font-weight: 600;
   line-height: 35px;
 }
 
-.expire-time {
+.vc-image-view .custom-title {
   position: absolute;
   left: 30px;
-  top: 779px;
-  height: 33px;
-  font-size: 24px;
+  top: 669px;
+  height: 28px;
+  font-size: 20px;
   font-weight: 400;
-  line-height: 35px;
+  color: #86909C;
+  line-height: 30px;
 }
 
-.expire-time span {
+.vc-image-view .custom-title-content {
   position: absolute;
-  width: 150px;
-  height: 33px;
-  font-size: 24px;
+  left: 227px;
+  top: 669px;
+  height: 28px;
+  font-size: 20px;
   font-weight: 400;
-  line-height: 35px;
+  line-height: 30px;
+}
+
+.vc-image-view .issue-name {
+  position: absolute;
+  left: 30px;
+  top: 707px;
+  height: 28px;
+  font-size: 20px;
+  font-weight: 400;
+  color: #86909C;
+  line-height: 30px;
+}
+
+.vc-image-view .issue-name-content {
+  position: absolute;
+  left: 227px;
+  top: 707px;
+  height: 33px;
+  height: 28px;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 30px;
+}
+
+.vc-image-view .issue-time {
+  position: absolute;
+  left: 30px;
+  top: 745px;
+  height: 28px;
+  font-size: 20px;
+  font-weight: 400;
+  color: #86909C;
+  line-height: 30px;
+}
+
+.vc-image-view .issue-time-content {
+  position: absolute;
+  left: 227px;
+  top: 745px;
+  height: 28px;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 30px;
+}
+
+.vc-image-view .expire-time {
+  position: absolute;
+  left: 30px;
+  top: 783px;
+  height: 28px;
+  font-size: 20px;
+  font-weight: 400;
+  color: #86909C;
+  line-height: 30px;
+}
+
+.vc-image-view .expire-time-content {
+  position: absolute;
+  left: 227px;
+  top: 783px;
+  height: 28px;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 30px;
 }
 
 .qr-code {

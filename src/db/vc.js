@@ -40,7 +40,7 @@ export default {
     },
 
     queryVcs() {
-        return db.vc.toArray();
+        return db.vc.reverse().toArray();
     },
 
     async addVc(vcObj) {
