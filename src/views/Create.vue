@@ -79,8 +79,6 @@ export default defineComponent({
                 return
             }
 
-            localStorage.setItem("userdid", ret.didStr)
-
             // this.$router.push({ name: "mnemonic" });
 
             const res = await axios.post(loginUrl, {
@@ -92,12 +90,22 @@ export default defineComponent({
             });
 
             if (res.data.code == 0) {
-                window.localStorage.setItem("token", res.data.data.token);
+                localStorage.setItem("token", res.data.data.token);
+                localStorage.setItem("userdid", ret.didStr)
 
-                // Create did
+                // save userinfo
+                user.createUser({
+                    email: this.emailcontent,
+                    did: ret.didStr,
+                    address: ret.address,
+                    company: this.companycontent,
+                    privateKey: ret.privateKey,
+                    publicKey: ret.publicKey,
+                    mnemonic: ret.mnemonic,
+                })
 
                 ElMessage({
-                    message: 'Login successed.',
+                    message: 'Create successed.',
                     type: 'success',
                 })
 
@@ -123,17 +131,6 @@ export default defineComponent({
             let wallet = await bip39.genWalletWithMnemonic(mnemonic);
 
             let did = "did:dmaster:" + wallet.address;
-
-            // save userinfo
-            user.createUser({
-                email: this.emailcontent,
-                did: did,
-                address: wallet.address,
-                company: this.companycontent,
-                privateKey: wallet.privateKey,
-                publicKey: wallet.publicKey,
-                mnemonic: mnemonic,
-            })
 
             let document = {
                 "@context": [
@@ -170,6 +167,10 @@ export default defineComponent({
             return {
                 didStr: did,
                 didJwt: didJwt,
+                privateKey: wallet.privateKey,
+                publicKey: wallet.publicKey,
+                address: wallet.address,
+                mnemonic: mnemonic,
             };
         },
         recoverFromDidAction() {
