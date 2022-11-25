@@ -1569,9 +1569,9 @@ export default {
       let localTotal = localvcs.length
 
       if (remoteTotal === localTotal) {
-        console.log("local vcs %d is equal remote vcs %d, no need to sync", localTotall, remoteTotal);
+        console.log("local vcs %d is equal remote vcs %d, no need to sync", localTotal, remoteTotal);
       } else {
-        console.log("local vcs %d is not equal remote vcs %d, need to sync", localTotall, remoteTotal);
+        console.log("local vcs %d is not equal remote vcs %d, need to sync", localTotal, remoteTotal);
         let size = 100;
         let pageNum = (remoteTotal % size == 0) ? remoteTotal / size : remoteTotal / size + 1;
 
