@@ -779,6 +779,8 @@ export default {
       if (this.vcStep != 3) {
         alert("drawer close")
         done()
+      } else {
+        done()
       }
     },
     async queryVcNoProof(releation) {
@@ -1404,7 +1406,7 @@ export default {
         if (element.holder.indexOf("did:dmaster") == -1) {
           bindingObj.list.push({
             credentialId: element.vcid,
-            holder: element.holder,
+            holderEmail: element.holder,
             templateId: this.schemaId,
           })
         } else {
