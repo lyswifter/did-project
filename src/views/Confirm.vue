@@ -22,6 +22,9 @@ export default defineComponent({
             originWords: [],
             mnemonicWords: [],
             checkWords: [],
+
+            isBackupVisiable: false,
+            backFunc: null,
         }
     },
     created() {
@@ -192,6 +195,12 @@ export default defineComponent({
         },
         backAction() {
             this.$router.go(-1);
+            
+            // this.isBackupVisiable = true;
+
+            // this.backFunc = function () {
+            //     this.$router.go(-1);   
+            // }
         },
         toggleTagAction(index) {
             let checked = this.checkWords[index].checked;
@@ -252,6 +261,16 @@ export default defineComponent({
                     break
                 }
             }
+        },
+        cancelAction() {
+            this.isBackupVisiable = false;
+
+            this.backFunc = null
+        },
+        ensureAction() {
+            if (this.backFunc) {
+                this.backFunc()
+            }
         }
     }
 })
@@ -311,6 +330,32 @@ export default defineComponent({
                 </div>
             </div>
         </el-main>
+
+        <el-dialog v-model="isBackupVisiable" :show-close="false" :width="540">
+            <template #header="{ close }">
+                <div class="dia-title-view">
+                    <img style="width: 32px;height: 32px;vertical-align: middle;" src="../assets/img/32px_warn.svg"
+                        alt="">
+                    <span style="margin-left: 20px;">Have you backed up mnemonics?</span>
+                </div>
+            </template>
+
+            <div class="dia-content-view">Please be sure to keep the account mnemonics, which will not be retrieved if
+                lost.</div>
+
+            <template #footer>
+                <div class="dia-footer-view"></div>
+                <el-row :gutter="10" justify="center">
+                    <el-col :span="10">
+                        <a href="javascript:void(0)" class="dia-cancel-btn" @click="cancelAction">Check it again</a>
+                    </el-col>
+                    <el-col :span="10">
+                        <a href="javascript:void(0)" class="dia-ensure-btn" @click="ensureAction">Yes, I have backed it
+                            up</a>
+                    </el-col>
+                </el-row>
+            </template>
+        </el-dialog>
 
         <img style="width: 69px;height: 72px;position: absolute;right: 60px;bottom: 60px;"
             src="../assets/img/LOGO_D.svg" alt="">
@@ -567,5 +612,52 @@ h4 {
     color: #1D2129;
     line-height: 21px;
     margin-bottom: 4px;
+}
+</style>
+
+<style scoped>
+.dia-title-view {
+    width: 448px;
+    height: 28px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1D2129;
+    line-height: 30px;
+}
+
+.dia-content-view {
+    width: 448px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #86909C;
+    line-height: 25px;
+}
+
+.dia-footer-view {
+
+}
+
+.dia-cancel-btn {
+    display: block;
+    width: 200px;
+    height: 44px;
+    border-radius: 24px;
+    border: 1px solid #1D2129;
+    text-decoration: none;
+    line-height: 44px;
+    text-align: center;
+    color: #1D2129;
+}
+
+.dia-ensure-btn {
+    display: block;
+    width: 200px;
+    height: 44px;
+    background: #1D2129;
+    border-radius: 24px;
+    text-decoration: none;
+    line-height: 44px;
+    text-align: center;
+    color: #FFFFFF;
 }
 </style>

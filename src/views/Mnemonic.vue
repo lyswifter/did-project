@@ -20,13 +20,16 @@ export default defineComponent({
             single: 3,
             originWords: "",
             mnemonicWords: [],
+
+            backFunc: null,
+            forwardFunc: null,
         }
     },
     mounted() {
-        // window.addEventListener('beforeunload', (event) => {
-        //     alert("close")
-        //     // event.preventDefault();
-        // })
+        window.addEventListener('beforeunload', (event) => {
+            alert("close")
+            // event.preventDefault();
+        })
 
         let that = this;
         user.queryUser(this.did).then(val => {
@@ -57,9 +60,17 @@ export default defineComponent({
         },
         confirmAction() {
             this.isBackupVisiable = true;
+
+            this.forwardFunc = function () {
+                this.$router.push({ name: "confirm" });
+            }
         },
         backAction() {
-            this.$router.go(-1);
+            this.isBackupVisiable = true;
+
+            this.backFunc = function () {
+                this.$router.go(-1);   
+            }
         },
         copyMnemonicAction() {
             navigator.clipboard.writeText(this.originWords).then(() => {
@@ -71,10 +82,21 @@ export default defineComponent({
         },
         cancelAction() {
             this.isBackupVisiable = false;
+
+            this.backFunc = null
+            this.forwardFunc = null
         },
         ensureAction() {
-            this.$router.push({ name: "confirm" });
+            if (this.backFunc) {
+                this.backFunc()
+            }
+
+            if (this.forwardFunc) {
+                this.forwardFunc()
+            }
         }
+    },
+    beforeUnmount() {
     }
 })
 </script>
@@ -397,7 +419,7 @@ h4 {
 }
 
 .dia-footer-view {
-    
+
 }
 
 .dia-cancel-btn {
