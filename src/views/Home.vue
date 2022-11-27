@@ -1675,7 +1675,7 @@ export default {
         return
       }
 
-      let data = await file.arrayBuffer()
+      let data = await xlsxFile.arrayBuffer()
       let workbook = read(data);
       let jsa = utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { rawNumbers: false, raw: false });
 
