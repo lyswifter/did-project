@@ -231,13 +231,13 @@ export default defineComponent({
 
                 <div class="content-view">
                     <h4>* Email</h4>
-                    <el-input class="email-input" v-model="emailcontent" placeholder="Enter your email" />
+                    <el-input class="email-input" v-model="emailcontent" placeholder="Enter your email" maxlength="30" show-word-limit />
                     <br>
                     <br>
                     <h4>* Email verification code</h4>
                     <div class="vcode-view">
                         <el-input class="vcode-input" v-model="vcodecontent"
-                            placeholder="Enter email verification code" />
+                            placeholder="Enter email verification code" maxlength="30" show-word-limit />
                         <a class="vcode-a" style="text-decoration: none;" href="javascript:void(0)"
                             @click="sendVcodeAction">{{ sendString }}</a>
                     </div>
@@ -249,7 +249,7 @@ export default defineComponent({
 
                     <h4>* Company or Organization</h4>
                     <el-input class="company-input" v-model="companycontent"
-                        placeholder="Enter your company or organization name" />
+                        placeholder="Enter your company or organization name" maxlength="30" show-word-limit />
                 </div>
 
                 <div class="btn-view">

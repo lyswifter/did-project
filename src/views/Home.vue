@@ -368,7 +368,7 @@
       <div class="addRecipientContent">
         <div v-for="item in inputRecipientsData" :key="item.claimSort">
           <h3 class="dialog-title">{{ item.claimName }}</h3>
-          <el-input class="inputw" v-model="item.claimContent" placeholder="Please input" />
+          <el-input class="inputw" v-model="item.claimContent" placeholder="Please input" maxlength="30" show-word-limit/>
           <h4 class="dialog-subtitle">
             {{ item.claimDesc }}
           </h4>
@@ -385,7 +385,7 @@
         <div style="margin-top: 5px">
           <el-row :gutter="5">
             <el-col :span="11">
-              <h3 class="dialog-title">* Issue Date</h3>
+              <h3 class="dialog-title">Issue Date</h3>
               <el-date-picker v-model="issueDate" type="date" placeholder="Pick a day" format="YYYY/MM/DD"
                 value-format="YYYY-MM-DD" />
             </el-col>
@@ -754,8 +754,6 @@ export default {
     this.recipientPagination = reactive({
       page: 1,
       pageSize: 5,
-      showSizePicker: true,
-      pageSizes: [3, 5, 7],
       itemCount: 2,
       onChange: (page) => {
         this.recipientPagination.page = page;
