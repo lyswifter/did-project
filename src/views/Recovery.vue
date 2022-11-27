@@ -166,7 +166,6 @@ export default defineComponent({
                   :placeholder="inner.place"
                   :clearable="true"
                   v-model="inner.word"
-                  maxlength="20"
                   @input="newInput"
                 ></el-input>
               </el-col>
