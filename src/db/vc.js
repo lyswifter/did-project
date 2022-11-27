@@ -63,6 +63,11 @@ export default {
         return await db.vc.bulkGet(ids);
     },
 
+    async queryVcWithVcid(vcid) {
+        let vcs = await db.vc.where( { 'credentialId': vcid }).toArray();
+        return vcs
+    },
+
     queryVcsWith(limit) {
         if (limit == null) {
             limit = 20

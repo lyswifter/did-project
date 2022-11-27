@@ -291,8 +291,8 @@
             </el-col>
 
             <el-col :span="2" style="margin-left: 10px">
-              <el-button type="primary" class="manually-add-btn" color="#1E5CEF" @click="toViewVcsAction(newVcId[0])"
-                round>View Credential</el-button>
+              <el-button type="primary" class="manually-add-btn" color="#1E5CEF" @click="toViewVcsAction" round>View
+                Credential</el-button>
             </el-col>
           </el-row>
         </div>
@@ -1389,7 +1389,7 @@ export default {
 
       console.log(value)
 
-      let newids = []
+      this.newVcId = [];
       let bindingObj = {
         list: []
       };
@@ -1397,7 +1397,7 @@ export default {
       for (let i = 0; i < value.length; i++) {
         const element = value[i];
 
-        newids.push(element.credentialId)
+        this.newVcId.push(element.vcid)
         bindingObj.list.push({
           credentialId: element.vcid,
           holder: element.holder,
@@ -1413,7 +1413,6 @@ export default {
       }
 
       this.vcStep = 3;
-      this.newVcId = newids;
       this.newVcNum = "Issued " + this.newVcId.length + " Verifiable Credential";
       this.processing = false;
       this.createOk = true;
@@ -1425,15 +1424,26 @@ export default {
       this.bindingHolderAndVCid(bindingObj)
     },
     toDownloadAction() {
-      // if (this.newVcId.length > 1) {
-      //   this.batchDownloadAction(this.newVcId);
-      // } else {
-      //   this.singleDownloadAction(this.newVcId[0]);
-      // }
+      if (this.newVcId.length > 1) {
+        dbvc.queryVcWithVcid(this.newVcId).then(val => {
+          let ids = []
+          for (let i = 0; i < val.length; i++) {
+            const element = val[i];
+            ids.push(element.id)
+          }
+          this.batchDownloadAction(ids);
+        });
+      } else {
+        dbvc.queryVcWithVcid(this.newVcId[0]).then(val => {
+          this.singleDownloadAction(val);
+        });
+      }
     },
-    async toViewVcsAction(vcid) {
-      dbvc.queryVc(vcid).then(val => {
+    async toViewVcsAction() {
+      dbvc.queryVcWithVcid(this.newVcId[0]).then(val => {
         this.viewVcRow = val[0];
+        this.viewVcRow.template = "vc-bg-tmpl-" + val[0].templateId;
+        this.viewVcRow.color = "vc-color-tmpl-" + + val[0].templateId;
         this.vcViewVisiable = true;
       });
     },
