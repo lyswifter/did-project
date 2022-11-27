@@ -24,6 +24,7 @@ export default {
                     await this.createVcJwt(innerEle, privateKey)
                 }
             }
+            
             vcs.push(newVc);
         }
 

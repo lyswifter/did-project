@@ -48,8 +48,6 @@ export default defineComponent({
         this.checkRandoms.sort(function (a, b) {
             return a.item - b.item
         })
-
-        console.log(this.checkRandoms)
     },
     mounted() {
         let that = this;
@@ -58,7 +56,8 @@ export default defineComponent({
             
             // Random locate original words
             let newWords = that.randomLocate()
-            that.constructMnemonic(that.originWords);
+
+            that.constructMnemonic(newWords);
         });
     },
     watch: {
@@ -144,6 +143,8 @@ export default defineComponent({
             });
         },
         confirmedAction() {
+            //ensure mnemonic is correct
+
             this.$router.push({ name: "home" });
         },
         backAction() {

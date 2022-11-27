@@ -990,7 +990,7 @@ export default {
         {
           title: "Holder Email",
           key: "holderEmail",
-          width: 60,
+          width: 70,
         },
         {
           title: "Holder Name",
@@ -1015,12 +1015,12 @@ export default {
         {
           title: "Issue AT",
           key: "issueDate",
-          width: 40,
+          width: 45,
         },
         {
           title: "Expires AT",
           key: "expireDate",
-          width: 40,
+          width: 45,
         },
         {
           title: "State",
@@ -1065,7 +1065,7 @@ export default {
         {
           title: "Operations",
           key: "",
-          width: 50,
+          width: 20,
           render(row, index) {
             return h(
               NPopover,

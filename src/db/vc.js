@@ -34,6 +34,12 @@ export default {
             backuped: 0,
         }
 
+        if (claim.holder.indexOf("did:dmaster") == -1) {
+            vcObj.holderEmail = claim.holder
+        } else {
+            vcObj.holderDid = claim.holder
+        }
+
         db.vc.add(vcObj);
 
         return {
