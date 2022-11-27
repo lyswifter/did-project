@@ -145,6 +145,14 @@ export default defineComponent({
             });
         },
         confirmedAction() {
+            let checkArr = []
+            for (let i = 0; i < this.checkWords.length; i++) {
+                const element = this.checkWords[i];
+                if (element.checked) {
+                    checkArr.push(element)
+                }
+            }
+
             //ensure mnemonic is correct
             for (let i = 0; i < this.checkRandoms.length; i++) {
                 const element = this.checkRandoms[i];
@@ -158,8 +166,7 @@ export default defineComponent({
                 }
 
                 const specifyWord = this.originWords[element.item]
-
-                const checkElement = this.checkWords[i];
+                const checkElement = checkArr[i];
 
                 console.log(specifyWord)
                 console.log(checkElement)
