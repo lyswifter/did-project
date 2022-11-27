@@ -396,7 +396,9 @@ h4 {
     line-height: 25px;
 }
 
-.dia-footer-view {}
+.dia-footer-view {
+    
+}
 
 .dia-cancel-btn {
     display: block;

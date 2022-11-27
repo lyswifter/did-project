@@ -72,14 +72,9 @@ export default {
 
     async verifyVcJwt(vcJwt) {
         const { payload, header, signature, data } = decodeJWT(vcJwt)
-        // console.log(payload)
-        // console.log(header)
-        // console.log(signature)
-        // console.log(data)
 
         // query did docment and find out publicKey
         let publicKey = await this.queryDidDocmentWith(payload.vc.issuer)
-        // console.log(publicKey)
 
         let ret = verifyJWS(vcJwt, { publicKeyHex: publicKey })
 

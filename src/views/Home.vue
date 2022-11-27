@@ -273,8 +273,8 @@
           </div>
 
           <!-- table -->
-          <n-data-table :columns="recipientTableColumns" :data="recipientTableData" :scroll-x="1000" :row-key="rowKey"
-            @update:checked-row-keys="handleRecipientCheck" />
+          <n-data-table :columns="recipientTableColumns" :data="recipientTableData" :pagination="recipientPagination"
+            :scroll-x="1000" :row-key="rowKey" @update:checked-row-keys="handleRecipientCheck" />
 
           <div v-if="processing" class="maskview" color="#FF427AFF" stroke-width="12">
             <el-progress class="progressView" type="circle" :percentage="percentageCount" />
@@ -561,6 +561,33 @@
       </div>
     </el-dialog>
 
+    <!-- Dialog to exit  -->
+
+    <el-dialog v-model="isExitVisiable" :show-close="false" :width="540">
+      <template #header="{ close }">
+        <div class="dia-title-view">
+          <img style="width: 32px;height: 32px;vertical-align: middle;" src="../assets/img/32px_warn.svg" alt="">
+          <span style="margin-left: 20px;">Do you want to exit?</span>
+        </div>
+      </template>
+
+      <div class="dia-content-view">Please be sure to keep the account mnemonics, which will not be retrieved if
+        lost.</div>
+
+      <template #footer>
+        <div class="dia-footer-view"></div>
+        <el-row :gutter="10" justify="center">
+          <el-col :span="10">
+            <a href="javascript:void(0)" class="dia-cancel-btn" @click="cancelAction">Check it again</a>
+          </el-col>
+          <el-col :span="10">
+            <a href="javascript:void(0)" class="dia-ensure-btn" @click="ensureAction">Yes, I have backed it
+              up</a>
+          </el-col>
+        </el-row>
+      </template>
+    </el-dialog>
+
     <!-- Footer view -->
 
     <el-footer>
@@ -662,6 +689,7 @@ export default {
       //input recipient
       inputRecipientVisiable: ref(false),
       inputRecipientsData: [],
+      recipientPagination: {},
       issueDate: null,
       expireDate: null,
 
@@ -696,6 +724,9 @@ export default {
       personalTagDetail: {},
 
       didWallet: {},
+
+      isExitVisiable: false,
+      willExit: {},
     };
   },
   components: {
@@ -707,6 +738,7 @@ export default {
       pageSize: 5,
       showSizePicker: true,
       pageSizes: [3, 5, 7],
+      itemCount: 1,
       onChange: (page) => {
         this.pagination.page = page;
       },
@@ -714,6 +746,27 @@ export default {
         this.pagination.pageSize = pageSize;
         this.pagination.page = 1;
       },
+      prefix({ itemCount }) {
+        return `Total is ${itemCount}.`
+      }
+    });
+
+    this.recipientPagination = reactive({
+      page: 1,
+      pageSize: 5,
+      showSizePicker: true,
+      pageSizes: [3, 5, 7],
+      itemCount: 2,
+      onChange: (page) => {
+        this.recipientPagination.page = page;
+      },
+      onUpdatePageSize: (pageSize) => {
+        this.recipientPagination.pageSize = pageSize;
+        this.recipientPagination.page = 1;
+      },
+      prefix({ itemCount }) {
+        return `Total is ${itemCount}.`
+      }
     });
   },
   watch: {},
@@ -771,10 +824,19 @@ export default {
     });
   },
   methods: {
+    cancelAction() {
+      this.isExitVisiable = false;
+      this.willExit = false
+      this.willExit = null;
+    },
+    ensureAction() {
+      this.isExitVisiable = false;
+      this.willExit()
+    },
     handleVcDrawerClose(done) {
       if (this.vcStep != 3) {
-        alert("drawer close")
-        done()
+        this.isExitVisiable = true;
+        this.willExit = done;
       } else {
         done()
       }
@@ -1045,7 +1107,7 @@ export default {
                 }), "Waiting"]
               )
             } else {
-              if (row.expireDate == "never") {
+              if (row.expireDate == "Never") {
                 return h(
                   NIcon,
                   {
@@ -1358,7 +1420,7 @@ export default {
       });
 
       obj["issueDate"] = this.issueDate ? this.issueDate : new Date().toISOString().split('T')[0];
-      obj["expireDate"] = this.expireDate ? this.expireDate : "never";
+      obj["expireDate"] = this.expireDate ? this.expireDate : "Never";
       obj["idx"] = this.recipientIdx;
       this.recipientTableData.push(obj);
 
@@ -1414,7 +1476,7 @@ export default {
         return;
       }
 
-      let value = await vc.createVcTemplate(this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
+      let value = await vc.createVcTemplate(this.userInfo.company, this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
 
       this.newVcId = [];
       let bindingObj = {
@@ -1766,6 +1828,51 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.dia-title-view {
+  width: 448px;
+  height: 28px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1D2129;
+  line-height: 30px;
+}
+
+.dia-content-view {
+  width: 448px;
+  font-size: 16px;
+  font-weight: 400;
+  color: #86909C;
+  line-height: 25px;
+}
+
+.dia-footer-view {}
+
+.dia-cancel-btn {
+  display: block;
+  width: 200px;
+  height: 44px;
+  border-radius: 24px;
+  border: 1px solid #1D2129;
+  text-decoration: none;
+  line-height: 44px;
+  text-align: center;
+  color: #1D2129;
+}
+
+.dia-ensure-btn {
+  display: block;
+  width: 200px;
+  height: 44px;
+  background: #1D2129;
+  border-radius: 24px;
+  text-decoration: none;
+  line-height: 44px;
+  text-align: center;
+  color: #FFFFFF;
+}
+</style>
 
 <style scope>
 .view-vc-pop-btn {
