@@ -340,22 +340,18 @@
 
           <div class="resBotView">
             <h3>
-              <span>{{ vcVerifyRet.issueName }}</span> issued to
-              <span>{{ vcVerifyRet.holderName }}</span>
+              <span>{{ vcVerifyRet.vc.issueName ? vcVerifyRet.vc.issueName : vcVerifyRet.vc.issuer }}</span> issued to
+              <span>{{ vcVerifyRet.vc.credentialSubject.holderName }}</span>
             </h3>
 
-            <h4>Issuer: {{ vcVerifyRet.issueName }}</h4>
-            <h4>IssuerDid: {{ vcVerifyRet.issueDid }}</h4>
-            <h4>Type: {{ vcVerifyRet.types[0] }}</h4>
-            <h4>Issue date: {{ vcVerifyRet.issueDate }}</h4>
-            <h4>Expire date: {{ vcVerifyRet.expireDate }}</h4>
-            <h4>Holder: {{ vcVerifyRet.holderName }}</h4>
-            <h4>Holder did: {{ vcVerifyRet.holderDid }}</h4>
-            <!-- <h4>Credential type:</h4> -->
-            <!-- <h4>
-                Proof:
-                hfoiwefgoenfmosdnfsdofjsdofsodfshdifhsdohfsodfhsodhfsodhfo
-              </h4> -->
+            <h4>IssueName: {{ vcVerifyRet.vc.issueName ? vcVerifyRet.vc.issueName : vcVerifyRet.vc.issuer }}</h4>
+            <h4>IssuerDid: {{ vcVerifyRet.vc.issuer }}</h4>
+            <h4>Type: {{ vcVerifyRet.vc.type[0] }}</h4>
+            <h4>Issue date: {{ vcVerifyRet.vc.issuanceDate }}</h4>
+            <h4>Expire date: {{ vcVerifyRet.vc.expirationDate }}</h4>
+            <h4>Holder: {{ vcVerifyRet.vc.credentialSubject.holderName }}</h4>
+            <h4>Holder did: {{ vcVerifyRet.vc.credentialSubject.id }}</h4>
+            <h4 class="proofView">Proof: {{ vcVerifyRet.proof }}</h4>
           </div>
         </div>
       </div>
@@ -791,7 +787,7 @@ export default {
           let ele = noProofVcs[i];
 
           ele.holderDid = releation.holderDid;
-          await vc.createVcJwt(ele, this.userInfo.privateKey);
+          await vc.createVcJwt(this.userInfo.company, ele, this.userInfo.privateKey);
         }
       } else {
         console.log("There is no unfilled vc to operate")
@@ -1049,9 +1045,7 @@ export default {
                 }), "Waiting"]
               )
             } else {
-              let now = Date.now();
-              let expireTiming = Date.parse(row.expireDate);
-              if (expireTiming > now) {
+              if (row.expireDate == "never") {
                 return h(
                   NIcon,
                   {
@@ -1061,7 +1055,18 @@ export default {
                   { default: () => h(CircleCheck) }
                 );
               } else {
-                return h("span", ["Expired"]);
+                if (Date.parse(row.expireDate) > Date.now()) {
+                  return h(
+                    NIcon,
+                    {
+                      size: 33,
+                      color: "#A9AEB8",
+                    },
+                    { default: () => h(CircleCheck) }
+                  );
+                } else {
+                  return h("span", ["Expired"]);
+                }
               }
             }
           },
@@ -1212,7 +1217,8 @@ export default {
     },
     handleExceed() { },
     async verifyFileAction() {
-      let vcFile = this.fileList[0].raw;
+      let that = this;
+      let vcFile = that.fileList[0].raw;
       if (vcFile.name.indexOf(".json") == -1) {
         ElMessage({
           message: "File selected must be .json format",
@@ -1226,12 +1232,13 @@ export default {
         var contents = e.target.result;
 
         vc.verifyVcJwt(contents).then(val => {
-          console.log("verify result " + val)
+          console.log("verify result " + JSON.stringify(val))
 
-          this.fileList = []
+          that.fileList = []
           if (val.verify == true) {
-            this.vcVerifyRet = val.payload;
-            this.verifyResultShow = true;
+            that.vcVerifyRet = val.payload;
+            that.vcVerifyRet.proof = contents;
+            that.verifyResultShow = true;
 
             ElMessage({
               message: "Verify result " + val.verify,
@@ -1297,7 +1304,10 @@ export default {
     },
     async toAddRecipient() {
       if (this.schemaType == "") {
-        alert("Schema type must not be empty");
+        ElMessage({
+          message: "Schema type must not be empty",
+          type: "error",
+        });
         return;
       }
 
@@ -1330,12 +1340,25 @@ export default {
       this.inputRecipientVisiable = true;
     },
     addRecipientAction() {
+      for (let i = 0; i < this.inputRecipientsData.length; i++) {
+        const element = this.inputRecipientsData[i];
+
+        if (!element.claimContent) {
+          ElMessage({
+            message: element.claimCode + " must not be empty",
+            type: "error",
+          });
+          return
+        }
+      }
+
       let obj = {};
       this.inputRecipientsData.forEach((element) => {
         obj[element.claimCode] = element.claimContent;
       });
-      obj["issueDate"] = this.issueDate;
-      obj["expireDate"] = this.expireDate;
+
+      obj["issueDate"] = this.issueDate ? this.issueDate : new Date().toISOString().split('T')[0];
+      obj["expireDate"] = this.expireDate ? this.expireDate : "never";
       obj["idx"] = this.recipientIdx;
       this.recipientTableData.push(obj);
 
@@ -2462,6 +2485,11 @@ export default {
   color: #1d2129;
   line-height: 46px;
   border-radius: 8px;
+}
+
+.proofView {
+  width: 90%;
+  word-break: break-all;
 }
 
 .resBotView h4 {

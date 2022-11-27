@@ -6,7 +6,7 @@ import Domain from "../router/domain.js";
 let queryDidDocUrl = Domain.domainUrl + "/api/did-document/read/";
 
 export default {
-    async createVcTemplate(issueDid, claims, tempId, privateKey) {
+    async createVcTemplate(issueName, issueDid, claims, tempId, privateKey) {
         let vcs = []
         for (let i = 0; i < claims.length; i++) {
             const element = claims[i];
@@ -21,7 +21,7 @@ export default {
                     const innerEle = noProofVcs[j];
 
                     innerEle.holderDid = claim.holder;
-                    await this.createVcJwt(innerEle, privateKey)
+                    await this.createVcJwt(issueName, innerEle, privateKey)
                 }
             }
             
@@ -31,7 +31,7 @@ export default {
         return vcs
     },
 
-    async createVcJwt(specifyVc, privateKey) {
+    async createVcJwt(issueName, specifyVc, privateKey) {
         const signer = ES256KSigner(hexToBytes(privateKey));
 
         // Assembly verify credential payload information
@@ -45,6 +45,7 @@ export default {
             "type": [
                 specifyVc.credentialType,
             ],
+            "issueName": issueName,
             "issuer": specifyVc.issuerDid,
             "issuanceDate": specifyVc.issueDate,
             "expirationDate": specifyVc.expireDate,
@@ -77,7 +78,7 @@ export default {
         // console.log(data)
 
         // query did docment and find out publicKey
-        let publicKey = await this.queryDidDocmentWith(issuerDid)
+        let publicKey = await this.queryDidDocmentWith(payload.vc.issuer)
         // console.log(publicKey)
 
         let ret = verifyJWS(vcJwt, { publicKeyHex: publicKey })
