@@ -594,7 +594,7 @@ let queryRemoteVcsUrl = Domain.domainUrl + "/api/did-document-credential/credent
 
 import Header from "./Header.vue";
 
-import { ElMessage, ElButton } from "element-plus";
+import { ElMessage, ElButton, ElTooltip } from "element-plus";
 import { NButton, NIcon, NPopover } from "naive-ui";
 import {
   DotsVertical,
@@ -763,6 +763,8 @@ export default {
       pollingInterval: 10000,
       pollingWhenHidden: true,
       onSuccess: data => {
+
+        console.log(data.data)
         for (let i = 0; i < data.data.data.length; i++) {
           const element = data.data.data[i];
           this.queryVcNoProof(element).then(val => {
@@ -943,11 +945,29 @@ export default {
           title: "Credential ID",
           key: "credentialId",
           width: 70,
+          render(row, index) {
+            return h(ElTooltip, {
+              placement: 'top',
+              content: row.credentialId,
+            }, [
+              h("div", {
+              }, [row.credentialId.substring(0, 16)+"..."])
+            ])
+          }
         },
         {
           title: "Holder Did",
           key: "holderDid",
-          width: 100,
+          width: 80,
+          render(row, index) {
+            return h(ElTooltip, {
+              placement: 'top',
+              content: row.holderDid,
+            }, [
+              h("div", {
+              }, [row.holderDid.substring(0, 16)+"..."])
+            ])
+          }
         },
         {
           title: "Holder Email",
