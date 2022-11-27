@@ -168,7 +168,7 @@ export default defineComponent({
                     return
                 }
 
-                const specifyWord = this.originWords[element.item]
+                const specifyWord = this.originWords[element.item-1]
                 const checkElement = checkArr[i];
 
                 console.log(specifyWord)
