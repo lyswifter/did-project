@@ -604,7 +604,7 @@ import {
 import VueQrcode from 'vue-qrcode'
 import domtoimage from "dom-to-image";
 import { read, utils } from "xlsx";
-import * as JSZip from 'jszip';
+import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 
 import vc from "../crypto/vc.js";
