@@ -368,7 +368,7 @@
       <div class="addRecipientContent">
         <div v-for="item in inputRecipientsData" :key="item.claimSort">
           <h3 class="dialog-title">{{ item.claimName }}</h3>
-          <el-input class="inputw" v-model="item.claimContent" placeholder="Please input" maxlength="30" show-word-limit/>
+          <el-input class="inputw" v-model="item.claimContent" placeholder="Please input" maxlength="60" show-word-limit/>
           <h4 class="dialog-subtitle">
             {{ item.claimDesc }}
           </h4>
