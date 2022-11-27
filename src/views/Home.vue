@@ -273,8 +273,8 @@
           </div>
 
           <!-- table -->
-          <n-data-table :columns="recipientTableColumns" :data="recipientTableData" :pagination="pagination"
-            :max-height="600" :scroll-x="1000" :row-key="rowKey" @update:checked-row-keys="handleRecipientCheck" />
+          <n-data-table :columns="recipientTableColumns" :data="recipientTableData" 
+          :scroll-x="1000" :row-key="rowKey" @update:checked-row-keys="handleRecipientCheck" />
 
           <div v-if="processing" class="maskview" color="#FF427AFF" stroke-width="12">
             <el-progress class="progressView" type="circle" :percentage="percentageCount" />
@@ -764,8 +764,6 @@ export default {
       pollingInterval: 10000,
       pollingWhenHidden: true,
       onSuccess: data => {
-
-        console.log(data.data)
         for (let i = 0; i < data.data.data.length; i++) {
           const element = data.data.data[i];
           this.queryVcNoProof(element).then(val => {
