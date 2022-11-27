@@ -273,8 +273,8 @@
           </div>
 
           <!-- table -->
-          <n-data-table :columns="recipientTableColumns" :data="recipientTableData" 
-          :scroll-x="1000" :row-key="rowKey" @update:checked-row-keys="handleRecipientCheck" />
+          <n-data-table :columns="recipientTableColumns" :data="recipientTableData" :scroll-x="1000" :row-key="rowKey"
+            @update:checked-row-keys="handleRecipientCheck" />
 
           <div v-if="processing" class="maskview" color="#FF427AFF" stroke-width="12">
             <el-progress class="progressView" type="circle" :percentage="percentageCount" />
@@ -776,8 +776,10 @@ export default {
   },
   methods: {
     handleVcDrawerClose(done) {
-      alert("drawer close")
-      done()
+      if (this.vcStep != 3) {
+        alert("drawer close")
+        done()
+      }
     },
     async queryVcNoProof(releation) {
       let noProofVcs = await dbvc.queryNoFilledVc(releation.credentialId);
@@ -1353,6 +1355,10 @@ export default {
         }
       }, 30);
 
+      //
+      // need to ensure that items has the same format
+      //
+
       let needClaims = [];
       this.recipientCheckedRowKeys.forEach((checkKey) => {
         let element = this.recipientTableData[checkKey - 1];
@@ -1394,11 +1400,24 @@ export default {
         const element = value[i];
 
         this.newVcId.push(element.vcid)
-        bindingObj.list.push({
-          credentialId: element.vcid,
-          holder: element.holder,
-          templateId: this.schemaId,
-        })
+
+        if (element.holder.indexOf("did:dmaster") == -1) {
+          bindingObj.list.push({
+            credentialId: element.vcid,
+            holder: element.holder,
+            templateId: this.schemaId,
+          })
+        } else {
+          this.ableDownload = true;
+          // upload to remote service
+          await this.queryVcWithProof({
+            credentialId: element.vcid
+          })
+        }
+      }
+
+      if (bindingObj.list.length > 0) {
+        this.bindingHolderAndVCid(bindingObj)
       }
 
       // addition actions
@@ -1412,11 +1431,6 @@ export default {
       this.newVcNum = "Issued " + this.newVcId.length + " Verifiable Credential";
       this.processing = false;
       this.createOk = true;
-      if (value[0].holder.indexOf("did:dmaster") != -1) {
-        this.ableDownload = true;
-      } else {
-        this.bindingHolderAndVCid(bindingObj)
-      }
     },
     toDownloadAction() {
       if (this.newVcId.length > 1) {
