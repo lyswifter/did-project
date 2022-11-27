@@ -119,8 +119,8 @@
               </el-row>
             </div>
 
-            <n-data-table :columns="columns" :data="data" :pagination="pagination" :max-height="600" :scroll-x="1000"
-              :row-key="vcRowKey" @update:checked-row-keys="handleCheck" />
+            <n-data-table :columns="columns" :data="data" :pagination="pagination" :scroll-x="1000" :row-key="vcRowKey"
+              @update:checked-row-keys="handleCheck" />
           </div>
 
           <div v-else class="emptyView">
@@ -283,7 +283,7 @@
       </div>
 
       <div v-else-if="vcStep == 3">
-        <div v-if="createOk" class="okCreatedVc">
+        <div v-if="createOk && ableDownload" class="okCreatedVc">
           <el-row>
             <el-col :span="2" :offset="17">
               <el-button type="default" class="manually-add-btn" @click="toDownloadAction" round>Download Credential
@@ -644,6 +644,7 @@ export default {
       percentageTotal: 100,
       timer: {},
       createOk: true,
+      ableDownload: false,
 
       //schema
       schemaVisible: ref(false),
@@ -857,6 +858,13 @@ export default {
 
       if (res.data.code == 0) {
         return true
+      } else if (res.data.code == 40001) {
+        this.logoutAction();
+      } else {
+        ElMessage({
+          message: res.data.msg,
+          type: "error",
+        });
       }
     },
     async queryDidDocmentWith(did) {
@@ -889,7 +897,7 @@ export default {
         },
       });
     },
-    async bindingEmailAndVCid(bindingObj) {
+    async bindingHolderAndVCid(bindingObj) {
       const res = await axios.post(bindingVcUrl, bindingObj, {
         headers: {
           Authorization: localStorage.getItem("token"),
@@ -898,6 +906,13 @@ export default {
 
       if (res.data.code == 0) {
         console.log("Binding ok for new vc template")
+      } else if (res.data.code == 40001) {
+        this.logoutAction();
+      } else {
+        ElMessage({
+          message: res.data.msg,
+          type: "error",
+        });
       }
     },
     createVcDrawerDismissAction() {
@@ -951,7 +966,7 @@ export default {
               content: row.credentialId,
             }, [
               h("div", {
-              }, [row.credentialId.substring(0, 16)+"..."])
+              }, [row.credentialId.substring(0, 16) + "..."])
             ])
           }
         },
@@ -960,13 +975,18 @@ export default {
           key: "holderDid",
           width: 80,
           render(row, index) {
-            return h(ElTooltip, {
-              placement: 'top',
-              content: row.holderDid,
-            }, [
-              h("div", {
-              }, [row.holderDid.substring(0, 16)+"..."])
-            ])
+            let holderdid = row.holderDid
+            if (holderdid) {
+              return h(ElTooltip, {
+                placement: 'top',
+                content: row.holderDid,
+              }, [
+                h("div", {
+                }, [holderdid.substring(0, 16) + "..."])
+              ])
+            } else {
+              return h()
+            }
           }
         },
         {
@@ -1007,7 +1027,7 @@ export default {
         {
           title: "State",
           key: "",
-          width: 70,
+          width: 50,
           render(row, index) {
             if (row.filled == 0) {
               return h(
@@ -1019,8 +1039,8 @@ export default {
               }, [
                 h("img", {
                   style: {
-                    'width': "32px",
-                    'height': "32px",
+                    'width': "18px",
+                    'height': "18px",
                     'vertical-align': "middle",
                   },
                   src: "https://dmaster.com/dcommon/img/loading.svg",
@@ -1365,35 +1385,44 @@ export default {
         return;
       }
 
-      vc.createVcTemplate(this.userInfo.did, needClaims, this.schemaId).then(
-        (value) => {
-          // bindingVcUrl
-          this.bindingEmailAndVCid(value)
+      let value = await vc.createVcTemplate(this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
 
-          // addition actions
-          clearInterval(timer);
-          this.percentageCount += 100;
-          if (this.percentageCount > 100) {
-            this.percentageCount = 100;
-          }
+      console.log(value)
 
-          let newids = []
-          value.list.forEach(element => {
-            newids.push(element.credentialId)
-          });
+      let newids = []
+      let bindingObj = {
+        list: []
+      };
 
-          this.newVcId = newids;
-          this.newVcNum = "Issued " + this.newVcId.length + " Verifiable Credential";
-          this.processing = false;
-          this.vcStep = 3;
-          this.createOk = true;
-        },
-        (reason) => {
-          clearInterval(timer);
-          this.processing = false;
-          this.createOk = false;
-        }
-      )
+      for (let i = 0; i < value.length; i++) {
+        const element = value[i];
+
+        newids.push(element.credentialId)
+        bindingObj.list.push({
+          credentialId: element.vcid,
+          holder: element.holder,
+          templateId: this.schemaId,
+        })
+      }
+
+      // addition actions
+      clearInterval(timer);
+      this.percentageCount += 100;
+      if (this.percentageCount > 100) {
+        this.percentageCount = 100;
+      }
+
+      this.vcStep = 3;
+      this.newVcId = newids;
+      this.newVcNum = "Issued " + this.newVcId.length + " Verifiable Credential";
+      this.processing = false;
+      this.createOk = true;
+      if (value[0].holder.indexOf("did:dmaster") != -1) {
+        this.ableDownload = true;
+      }
+
+      // bindingVcUrl
+      this.bindingHolderAndVCid(bindingObj)
     },
     toDownloadAction() {
       // if (this.newVcId.length > 1) {
@@ -1596,7 +1625,7 @@ export default {
       // // retrieve vc info remote remote
       let localvcs = await dbvc.queryVcs();
 
-      const remotevcs = await axios.post(queryRemoteVcsUrl, {
+      const res = await axios.post(queryRemoteVcsUrl, {
         detail: 0,
         size: 1,
         page: 0,
@@ -1606,76 +1635,85 @@ export default {
         },
       });
 
-      let remoteTotal = remotevcs.data.data.total
-      let localTotal = localvcs.length
+      if (res.data.code == 0) {
+        let remoteTotal = res.data.data.total
+        let localTotal = localvcs.length
 
-      if (remoteTotal === localTotal) {
-        console.log("Local vcs %d is equal remote vcs %d, no need to sync", localTotal, remoteTotal);
-      } else {
-        console.log("Local vcs %d is not equal remote vcs %d, need to sync", localTotal, remoteTotal);
-        let size = 100;
-        let pageNum = (remoteTotal % size == 0) ? remoteTotal / size : Math.floor(remoteTotal / size) + 1;
+        if (remoteTotal === localTotal) {
+          console.log("Local vcs %d is equal remote vcs %d, no need to sync", localTotal, remoteTotal);
+        } else {
+          console.log("Local vcs %d is not equal remote vcs %d, need to sync", localTotal, remoteTotal);
+          let size = 100;
+          let pageNum = (remoteTotal % size == 0) ? remoteTotal / size : Math.floor(remoteTotal / size) + 1;
 
-        for (let i = 0; i < pageNum; i++) {
-          const fetchDatas = await axios.post(queryRemoteVcsUrl, {
-            detail: 1,
-            size: size,
-            page: i,
-          }, {
-            headers: {
-              Authorization: localStorage.getItem("token"),
-            },
-          });
+          for (let i = 0; i < pageNum; i++) {
+            const fetchDatas = await axios.post(queryRemoteVcsUrl, {
+              detail: 1,
+              size: size,
+              page: i,
+            }, {
+              headers: {
+                Authorization: localStorage.getItem("token"),
+              },
+            });
 
-          //
-          let records = fetchDatas.data.data.records;
-          if (records.length > 0) {
-            for (let i = 0; i < records.length; i++) {
-              const element = records[i];
+            //
+            let records = fetchDatas.data.data.records;
+            if (records.length > 0) {
+              for (let i = 0; i < records.length; i++) {
+                const element = records[i];
 
-              let state = element.state;
-              let credentialId = element.credentialId;
-              let holderDid = element.holderDid;
+                let state = element.state;
+                let credentialId = element.credentialId;
+                let holderDid = element.holderDid;
 
-              let holderDoc = await this.queryDidDocmentWith(holderDid);
-              let holderPublicKey = holderDoc.verificationMethod[0].publicKeyBase58;
-              let myPrivateKey = this.userInfo.privateKey;
+                let holderDoc = await this.queryDidDocmentWith(holderDid);
+                let holderPublicKey = holderDoc.verificationMethod[0].publicKeyBase58;
+                let myPrivateKey = this.userInfo.privateKey;
 
-              let shareSecret = ecdh.generateShareKey(myPrivateKey, holderPublicKey);
-              let decryptJwt = await ecdh.decryptFromString(element.vc, shareSecret);
+                let shareSecret = ecdh.generateShareKey(myPrivateKey, holderPublicKey);
+                let decryptJwt = await ecdh.decryptFromString(element.vc, shareSecret);
 
-              let payload = await vc.decodeJwt(decryptJwt);
+                let payload = await vc.decodeJwt(decryptJwt);
 
-              let tempId = 0;
-              if (payload.vc.type[0] == "Membership Card") {
-                tempId = 1
-              } else if (payload.vc.type[0] == "Activity Certificate") {
-                tempId = 2
+                let tempId = 0;
+                if (payload.vc.type[0] == "Membership Card") {
+                  tempId = 1
+                } else if (payload.vc.type[0] == "Activity Certificate") {
+                  tempId = 2
+                }
+
+                dbvc.addVc({
+                  credentialId: credentialId,
+                  templateId: tempId,
+                  credentialType: payload.vc.type[0],
+                  issuerDid: payload.iss,
+                  holderEmail: payload.vc.credentialSubject.email,
+                  holderName: payload.vc.credentialSubject.holderName,
+                  holderDid: payload.vc.credentialSubject.id,
+                  credentialTitle: payload.vc.credentialSubject.credentialTitle,
+                  expireFlag: state,
+                  issueDate: payload.vc.issuanceDate,
+                  expireDate: payload.vc.expirationDate,
+                  filled: 1,
+                  jwt: decryptJwt,
+                  backuped: 1,
+                })
               }
-
-              dbvc.addVc({
-                credentialId: credentialId,
-                templateId: tempId,
-                credentialType: payload.vc.type[0],
-                issuerDid: payload.iss,
-                holderEmail: payload.vc.credentialSubject.email,
-                holderName: payload.vc.credentialSubject.holderName,
-                holderDid: payload.vc.credentialSubject.id,
-                credentialTitle: payload.vc.credentialSubject.credentialTitle,
-                expireFlag: state,
-                issueDate: payload.vc.issuanceDate,
-                expireDate: payload.vc.expirationDate,
-                filled: 1,
-                jwt: decryptJwt,
-                backuped: 1,
-              })
             }
           }
+
+          console.log("Sync all vcs from remote to local finished.")
+
+          this.getVcTableInfoLocal();
         }
-
-        console.log("Sync all vcs from remote to local finished.")
-
-        this.getVcTableInfoLocal();
+      } else if (res.data.code == 40001) {
+        this.logoutAction();
+      } else {
+        ElMessage({
+          message: res.data.msg,
+          type: "error",
+        });
       }
     }
   },

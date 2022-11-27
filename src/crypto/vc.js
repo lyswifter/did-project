@@ -6,23 +6,28 @@ import Domain from "../router/domain.js";
 let queryDidDocUrl = Domain.domainUrl + "/api/did-document/read/";
 
 export default {
-    async createVcTemplate(issueDid, claims, tempId) {
-        let bindingObj = {
-            list: []
-        };
+    async createVcTemplate(issueDid, claims, tempId, privateKey) {
+        let vcs = []
+        for (let i = 0; i < claims.length; i++) {
+            const element = claims[i];
 
-        claims.forEach(element => {
-            // generate vc object and insert to vc table
-            let newVc = dbvc.createVcModel(issueDid, element, tempId)
+            let claim = JSON.parse(element.claimsStr);
+            let newVc = await dbvc.createVcModel(issueDid, element, tempId, privateKey);
 
-            bindingObj.list.push({
-                credentialId: newVc.vcid,
-                holderEmail: newVc.holderEmail,
-                templateId: tempId,
-            })
-        });
+            if (claim.holder.indexOf("did:dmaster") != -1) {
+                let noProofVcs = await dbvc.queryNoFilledVc(newVc.vcid);
 
-        return bindingObj
+                for (let j = 0; j < noProofVcs.length; j++) {
+                    const innerEle = noProofVcs[j];
+
+                    innerEle.holderDid = claim.holder;
+                    await this.createVcJwt(innerEle, privateKey)
+                }
+            }
+            vcs.push(newVc);
+        }
+
+        return vcs
     },
 
     async createVcJwt(specifyVc, privateKey) {
@@ -55,16 +60,12 @@ export default {
             { issuer: specifyVc.issuerDid, signer },
             { alg: 'ES256K' })
 
-        // let verify = await this.verifyVcJwt(vcJwt)
-        // console.log("self verify " + verify)
-        // if (verify == false) {
-        //     return specifyVc.credentialId
-        // }
-
-        // update vc info in database
         await dbvc.updateVc(specifyVc.id, specifyVc.holderDid, vcJwt)
 
-        return specifyVc.credentialId
+        return {
+            vcid: specifyVc.credentialId,
+            jwt: vcJwt,
+        }
     },
 
     async verifyVcJwt(vcJwt) {

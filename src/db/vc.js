@@ -2,9 +2,12 @@ import db from "./db"
 import user from "./user.js"
 import { v4 as uuidv4 } from 'uuid';
 
+import vcjwt from "../crypto/vc.js";
+
 export default {
-    createVcModel(idid, needClaim, tempId) {
+    async createVcModel(idid, needClaim, tempId) {
         let vcid = uuidv4();
+
         let claim = JSON.parse(needClaim.claimsStr);
 
         let type = ""
@@ -19,7 +22,7 @@ export default {
             templateId: tempId,
             credentialType: type,
             issuerDid: idid,
-            holderEmail: claim.holder,
+            holderEmail: "",
             holderName: claim.holder_name,
             holderDid: "",
             credentialTitle: claim.credential_title,
@@ -35,7 +38,7 @@ export default {
 
         return {
             vcid: vcid,
-            holderEmail: claim.holder,
+            holder: claim.holder,
         }
     },
 
