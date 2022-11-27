@@ -94,7 +94,7 @@
                 <div class="verify-left">
                   <h2 class="f-color">Verifiable Credentials</h2>
                   <h4 class="l-color">
-                    Here are all the verifiable credentials you have issued. You can view, download or delete persistent
+                    Here are all the verifiable credentials you have issued. You can view, download persistent
                     credentials in Dmaster.
                   </h4>
                 </div>
@@ -1385,8 +1385,6 @@ export default {
 
       let value = await vc.createVcTemplate(this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
 
-      console.log(value)
-
       this.newVcId = [];
       let bindingObj = {
         list: []
@@ -1416,10 +1414,9 @@ export default {
       this.createOk = true;
       if (value[0].holder.indexOf("did:dmaster") != -1) {
         this.ableDownload = true;
+      } else {
+        this.bindingHolderAndVCid(bindingObj)
       }
-
-      // bindingVcUrl
-      this.bindingHolderAndVCid(bindingObj)
     },
     toDownloadAction() {
       if (this.newVcId.length > 1) {

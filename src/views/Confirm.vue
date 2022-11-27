@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, toRaw } from "vue";
 import { ElMessage } from 'element-plus'
 
 import { CopyDocument } from '@element-plus/icons-vue'
@@ -53,7 +53,7 @@ export default defineComponent({
         let that = this;
         user.queryUser(this.did).then(val => {
             that.originWords = val[0].mnemonic.split(" ");
-            
+
             // Random locate original words
             let newWords = that.randomLocate()
 
@@ -64,19 +64,22 @@ export default defineComponent({
     },
     methods: {
         randomLocate() {
-            // generate 12 random numbers with no repeats
-            //
             let outer: number[] = []
             for (let i = 0; i < 12; i++) {
                 let prev = 0;
-                for (let j = 0; j < 100; j++) {
-                    let rand = this.randomNum(1, 12);
+                for (let j = 0; j < 1000; j++) {
+                    let rand = this.randomNum(0, 11);
 
-                    if (rand == prev) {
+                    if (rand === prev) {
+                        continue
+                    }
+
+                    if (outer.indexOf(rand) != -1) {
                         continue
                     }
 
                     prev = rand;
+                    break
                 }
 
                 outer.push(prev)
@@ -90,7 +93,6 @@ export default defineComponent({
             for (let i = 0; i < this.originWords.length; i++) {
                 const index = outer[i]
                 const element = this.originWords[index];
-
                 randomWords.push(element)
             }
 
@@ -114,7 +116,7 @@ export default defineComponent({
         },
         constructMnemonic(wordList) {
             for (let i = 0; i < wordList.length / this.single; i++) {
-                let innerArr: {}[] = []
+                let innerArr = []
                 for (let j = this.single * i; j < this.single * (i + 1); j++) {
                     let state = 0;
                     for (let k = 0; k < this.checkRandoms.length; k++) {
@@ -126,7 +128,7 @@ export default defineComponent({
                     }
 
                     let oneWord = {
-                        word: wordList[j],
+                        word: "",
                         state: state,
                     }
                     innerArr.push(oneWord)
@@ -144,6 +146,40 @@ export default defineComponent({
         },
         confirmedAction() {
             //ensure mnemonic is correct
+            for (let i = 0; i < this.checkRandoms.length; i++) {
+                const element = this.checkRandoms[i];
+
+                if (!element.filled) {
+                    ElMessage({
+                        message: 'Comfirm mnemonic words incorrect, please retry.',
+                        type: 'error',
+                    })
+                    return
+                }
+
+                const specifyWord = this.originWords[element.item]
+
+                const checkElement = this.checkWords[i];
+
+                console.log(specifyWord)
+                console.log(checkElement)
+
+                if (!checkElement.checked) {
+                    ElMessage({
+                        message: 'Comfirm mnemonic words incorrect, please retry.',
+                        type: 'error',
+                    })
+                    return
+                }
+
+                if (specifyWord != checkElement.word) {
+                    ElMessage({
+                        message: 'Comfirm mnemonic words incorrect, please retry.',
+                        type: 'error',
+                    })
+                    return
+                }
+            }
 
             this.$router.push({ name: "home" });
         },
@@ -155,10 +191,6 @@ export default defineComponent({
             if (checked == true) {
                 for (let i = this.checkRandoms.length - 1; i >= 0; i--) {
                     const element = this.checkRandoms[i];
-
-                    if (index + 1 != element.item) {
-                        continue
-                    }
 
                     if (element.filled == true) {
                         let idx = element.item - 1
@@ -191,11 +223,28 @@ export default defineComponent({
                         break
                     }
                 }
-
             }
         },
         clearAction(i: number, j: number) {
-            this.toggleTagAction(i * this.single + j);
+            let idx = i * this.single + j;
+            let word = this.mnemonicWords[i][j].word;
+            for (let k = 0; k < this.checkWords.length; k++) {
+                if (this.checkWords[k].word == word) {
+                    this.checkWords[k].checked = false;
+                    break
+                }
+            }
+
+            this.mnemonicWords[i][j].word = "";
+            this.mnemonicWords[i][j].state = 1;
+
+            for (let i = 0; i < this.checkRandoms.length; i++) {
+                const element = this.checkRandoms[i];
+                if (element.item == idx + 1) {
+                    this.checkRandoms[i].filled = false;
+                    break
+                }
+            }
         }
     }
 })
