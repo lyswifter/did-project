@@ -32,7 +32,6 @@ export default {
     },
 
     async createVcJwt(specifyVc, privateKey) {
-        console.log("specifyVc " + JSON.stringify(specifyVc))
         const signer = ES256KSigner(hexToBytes(privateKey));
 
         // Assembly verify credential payload information

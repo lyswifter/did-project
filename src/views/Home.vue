@@ -876,18 +876,12 @@ export default {
           let myShareSecret = ecdh.generateShareKey(this.userInfo.privateKey, myPublicKey);
           let myEncryptJwt = await ecdh.encrypt(element.jwt, myShareSecret);
 
-          console.log("myShareSecret " + myShareSecret)
-          console.log("myEncryptJwt " + myEncryptJwt)
-
           let holderDoc = await this.queryDidDocmentWith(element.holderDid);
           let holderPublicKey = holderDoc.verificationMethod[0].publicKeyBase58;
 
           // generate our share secret
           let shareSecret = ecdh.generateShareKey(this.userInfo.privateKey, holderPublicKey);
           let encryptJwt = await ecdh.encrypt(element.jwt, shareSecret);
-
-          console.log("shareSecret " + shareSecret)
-          console.log("encryptJwt " + encryptJwt)
 
           let obj = {
             credentialId: element.credentialId,

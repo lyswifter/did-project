@@ -10,8 +10,6 @@ export default {
 
         let claim = JSON.parse(needClaim.claimsStr);
 
-        console.log("claim " + JSON.stringify(claim))
-
         let type = ""
         if (tempId == 1) {
             type = "Membership Card"
