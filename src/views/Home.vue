@@ -803,7 +803,7 @@ export default {
 
     that.getUserInfoLocal().then(val => {
       that.getVcTableInfoLocal().then(val1 => {
-        that.syncVcsFromRemote();
+        // that.syncVcsFromRemote();
       });
     });
 
@@ -1268,7 +1268,7 @@ export default {
     },
     async getVcTableInfoLocal() {
       this.data = []
-      
+
       let localVals = await dbvc.queryVcs(this.userInfo.did);
       this.data.push(...localVals)
 
