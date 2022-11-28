@@ -1,8 +1,5 @@
 import db from "./db"
-import user from "./user.js"
 import { v4 as uuidv4 } from 'uuid';
-
-import vcjwt from "../crypto/vc.js";
 
 export default {
     async createVcModel(iname, idid, needClaim, tempId) {
@@ -17,15 +14,14 @@ export default {
             type = "Activity Certificate"
         }
 
-        let customName = ""
+        let customName = claim.claimName
         let customContent = ""
         let keys = Object.keys(claim);
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i];
-            if (key=="credential_title" || key=="holder_name" || key=="holder") {
+            if (key=="credential_title" || key=="holder_name" || key=="holder" || key==customName) {
                 continue 
             }
-            customName = key
             customContent = claim[key]
         }
 

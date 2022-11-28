@@ -5,7 +5,7 @@ export default {
         let claimOfTmpl1 = [
             {
                 templateId: 1,
-                claimName: "* Holder DID or Email",
+                claimName: "Holder DID or Email",
                 claimCode: "holder",
                 claimDesc: "A unique identifier of recipient. Enter credential holder did or email address.",
                 claimContent: null,
@@ -15,7 +15,7 @@ export default {
             },
             {
                 templateId: 1,
-                claimName: "* Holder name",
+                claimName: "Holder name",
                 claimCode: "holder_name",
                 claimDesc: "The name of the credential holder.",
                 claimContent: null,
@@ -25,7 +25,7 @@ export default {
             },
             {
                 templateId: 1,
-                claimName: "* Credential title",
+                claimName: "Credential title",
                 claimCode: "credential_title",
                 claimDesc: "The Credential.",
                 claimContent: null,
@@ -35,7 +35,7 @@ export default {
             },
             {
                 templateId: 1,
-                claimName: "* Membership level",
+                claimName: "Membership level",
                 claimCode: "level",
                 claimDesc: null,
                 claimContent: null,
@@ -48,7 +48,7 @@ export default {
         let claimOfTmpl2 = [
             {
                 "templateId": 2,
-                "claimName": "* Holder DID or Email",
+                "claimName": "Holder DID or Email",
                 "claimCode": "holder",
                 "claimDesc": "A unique identifier of recipient. Enter credential holder did or email address.",
                 "claimContent": null,
@@ -58,7 +58,7 @@ export default {
             },
             {
                 "templateId": 2,
-                "claimName": "* Holder name",
+                "claimName": "Holder name",
                 "claimCode": "holder_name",
                 "claimDesc": "The name of the credential holder.",
                 "claimContent": null,
@@ -68,7 +68,7 @@ export default {
             },
             {
                 "templateId": 2,
-                "claimName": "* Credential title",
+                "claimName": "Credential title",
                 "claimCode": "credential_title",
                 "claimDesc": "The Credential.",
                 "claimContent": null,
@@ -78,7 +78,7 @@ export default {
             },
             {
                 "templateId": 2,
-                "claimName": "* Sessions",
+                "claimName": "Sessions",
                 "claimCode": "sessions",
                 "claimDesc": null,
                 "claimContent": null,

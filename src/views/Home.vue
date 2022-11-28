@@ -296,7 +296,8 @@
                 Credential</el-button>
             </el-col>
             <e-col v-else-if="!ableDownload" :span="2" style="margin-right: 20px;">
-              <el-button type="primary" class="manually-add-btn" color="#1E5CEF" @click="dismissDrawer" round>Dismiss</el-button>
+              <el-button type="primary" class="manually-add-btn" color="#1E5CEF" @click="dismissDrawer" round>Confirm
+              </el-button>
             </e-col>
           </el-row>
         </div>
@@ -312,7 +313,8 @@
       </template>
 
       <div class="verifyContentView">
-        <el-upload class="verifyFile" drag :limit="1" :on-exceed="handleExceed" :auto-upload="false" v-model:file-list="fileList">
+        <el-upload class="verifyFile" drag :limit="1" :on-exceed="handleExceed" :auto-upload="false"
+          v-model:file-list="fileList">
           <img style="width: 64px; height: 64px" src="../assets/img/file@2x.png" alt="" />
           <div class="el-upload__text">
             Drop json file here or <em>click to upload</em>
@@ -371,7 +373,7 @@
 
       <div class="addRecipientContent">
         <div v-for="item in inputRecipientsData" :key="item.claimSort">
-          <h3 class="dialog-title" style="margin-top: 5px">{{ item.claimName }}</h3>
+          <h3 class="dialog-title" style="margin-top: 5px">{{ "* " + item.claimName }}</h3>
           <el-input class="inputw" v-model="item.claimContent" placeholder="Please input" maxlength="60"
             show-word-limit />
           <h4 class="dialog-subtitle">
@@ -384,7 +386,7 @@
             <el-col :span="11">
               <h3 class="dialog-title">Issue Date</h3>
               <el-date-picker v-model="issueDate" type="date" placeholder="Pick a day" format="YYYY/MM/DD"
-                value-format="YYYY-MM-DD"  :default-value="new Date()" />
+                value-format="YYYY-MM-DD" :default-value="new Date()" />
             </el-col>
             <el-col :span="11" :offset="1">
               <h3 class="dialog-title">Expiration Date</h3>
@@ -493,7 +495,8 @@
           <br />
         </div>
 
-        <el-upload class="multiVcUploadView" drag :limit="1" :on-exceed="handleXlslExceed" :auto-upload="false" v-model:file-list="multoVcFileList">
+        <el-upload class="multiVcUploadView" drag :limit="1" :on-exceed="handleXlslExceed" :auto-upload="false"
+          v-model:file-list="multoVcFileList">
           <div class="el-upload__text">
             <em>Upload & drop your file</em>
           </div>
@@ -767,7 +770,7 @@ export default {
   mounted() {
     let indexdb = localStorage.getItem("indexDB");
     if (indexdb == null || indexdb == undefined) {
-      tmpl.createVcTemplate()
+      tmpl.createClaimTemplate()
       claim.createClaims()
       localStorage.setItem("indexDB", "1")
     }
@@ -789,9 +792,6 @@ export default {
       downloadOpRow(row) {
         that.singleDownloadAction(row);
       },
-      // trashOpRow(row) {
-      //   that.singleTrashAction(row.credentialId);
-      // },
       personalInfoRow(row) {
         that.personalTagTitle = row.holderName;
         that.personalTagsAction(row.holderDid);
@@ -1384,8 +1384,6 @@ export default {
         return;
       }
 
-      // get recipients list
-
       this.vcStep = 2;
       this.isEmptyRecipient = true;
       this.recipientTableData = [];
@@ -1427,7 +1425,9 @@ export default {
 
       let obj = {};
       this.inputRecipientsData.forEach((element) => {
-        obj[element.claimCode] = element.claimContent;
+        console.log(element)
+        obj[element.claimCode] = element.claimContent
+        obj['claimName'] = element.claimName
       });
 
       obj["issueDate"] = this.issueDate ? this.issueDate : new Date().toISOString().split('T')[0];
@@ -1460,6 +1460,18 @@ export default {
       let needClaims = [];
       this.recipientCheckedRowKeys.forEach((checkKey) => {
         let element = this.recipientTableData[checkKey - 1];
+
+        const allkeys = Object.keys(element)
+        for (let i = 0; i < allkeys.length; i++) {
+          const key = allkeys[i];
+          if (!element[key]) {
+            ElMessage({
+              message: key + " must not be empty",
+              type: "error",
+            });
+            return
+          }
+        }
 
         let now = Date.now();
         let giving = Date.parse(element.expireDate);
@@ -1507,6 +1519,7 @@ export default {
           })
         } else {
           this.ableDownload = true;
+
           // upload to remote service
           await this.queryVcWithProof({
             credentialId: element.vcid
@@ -1579,21 +1592,11 @@ export default {
       cols.push(first);
 
       orign.forEach((element) => {
-        let claimName = "";
-        let isinclude = element.claimName.includes("* ");
-        if (isinclude) {
-          claimName = element.claimName.substring(1);
-        } else {
-          claimName = element.claimName;
-        }
-
-        let obj = {
-          title: claimName,
+        cols.push({
+          title: element.claimName,
           key: element.claimCode,
           width: 80,
-        };
-
-        cols.push(obj);
+        });
       });
 
       let issue = {
@@ -1701,7 +1704,7 @@ export default {
       jsa.forEach((outer) => {
         let claimObj = {}
         this.inputRecipientsData.forEach(inner => {
-          let claimName = inner['claimName'].substring(2);
+          let claimName = inner['claimName'];
           let claimCode = inner['claimCode'];
           let claimContent = outer[claimName];
           claimObj[claimCode] = claimContent;
@@ -1775,7 +1778,7 @@ export default {
             const fetchDatas = await axios.post(queryRemoteVcsUrl, {
               detail: 1,
               size: size,
-              page: i+1,
+              page: i + 1,
             }, {
               headers: {
                 Authorization: localStorage.getItem("token"),

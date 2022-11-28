@@ -1,21 +1,21 @@
 import db from "./db"
 
 export default {
-    createVcTemplate() {
+    createClaimTemplate() {
         let temp1 = {
             templateId: 1,
             templateName: "Membership Card",
             templateType: "Membership Card",
-            templateImage: "https://filecoin-file-hk.oss-cn-hongkong.aliyuncs.com/DataCore/template/1.png",
-            templateExcelUrl: "https://filecoin-file-hk.oss-cn-hongkong.aliyuncs.com/DataCore/template/Membership_Card.xlsx",
+            templateImage: "https://dmaster.com/dcommon/template/1.png",
+            templateExcelUrl: "https://dmaster.com/dcommon/template/Membership_Card.xlsx",
         }
   
         let temp2 = {
             templateId: 2,
             templateName: "Activity Certificate",
             templateType: "Activity Certificate",
-            templateImage: "https://filecoin-file-hk.oss-cn-hongkong.aliyuncs.com/DataCore/template/2.png",
-            templateExcelUrl: "https://filecoin-file-hk.oss-cn-hongkong.aliyuncs.com/DataCore/template/Activity_Certificate.xlsx",
+            templateImage: "https://dmaster.com/dcommon/template/2.png",
+            templateExcelUrl: "https://dmaster.com/dcommon/template/Activity_Certificate.xlsx",
         }
   
         db.tmpl.add(temp1);
