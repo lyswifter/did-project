@@ -285,17 +285,19 @@
       </div>
 
       <div v-else-if="vcStep == 3">
-        <div v-if="createOk && ableDownload" class="okCreatedVc">
-          <el-row>
-            <el-col :span="2" :offset="17">
+        <div v-if="createOk" class="okCreatedVc">
+          <el-row justify="end">
+            <el-col v-if="ableDownload" :span="3">
               <el-button type="default" class="manually-add-btn" @click="toDownloadAction" round>Download Credential
               </el-button>
             </el-col>
-
-            <el-col :span="2" style="margin-left: 10px">
+            <el-col v-if="ableDownload" :span="2" style="margin-right: 20px;">
               <el-button type="primary" class="manually-add-btn" color="#1E5CEF" @click="toViewVcsAction" round>View
                 Credential</el-button>
             </el-col>
+            <e-col v-else-if="!ableDownload" :span="2" style="margin-right: 20px;">
+              <el-button type="primary" class="manually-add-btn" color="#1E5CEF" @click="dismissDrawer" round>Dismiss</el-button>
+            </e-col>
           </el-row>
         </div>
       </div>
@@ -369,19 +371,11 @@
 
       <div class="addRecipientContent">
         <div v-for="item in inputRecipientsData" :key="item.claimSort">
-          <h3 class="dialog-title">{{ item.claimName }}</h3>
+          <h3 class="dialog-title" style="margin-top: 5px">{{ item.claimName }}</h3>
           <el-input class="inputw" v-model="item.claimContent" placeholder="Please input" maxlength="60"
             show-word-limit />
           <h4 class="dialog-subtitle">
             {{ item.claimDesc }}
-          </h4>
-        </div>
-
-        <div>
-          <!-- v-model="checked1" -->
-          <el-checkbox label=" Expire this credential" size="large" />
-          <h4 class="dialog-subtitle">
-            This option will expire the credential after the specified date.
           </h4>
         </div>
 
@@ -810,7 +804,6 @@ export default {
       });
     });
 
-    // queryNewRelationship
     useRequest(this.queryNewRelationship, {
       pollingInterval: 10000,
       pollingWhenHidden: true,
@@ -982,12 +975,6 @@ export default {
           type: "error",
         });
       }
-    },
-    createVcDrawerDismissAction() {
-      this.data = []
-      this.getUserInfoLocal();
-      this.getVcTableInfoLocal();
-      // this.getVcTableInfo();
     },
     handleRecipientCheck(row) {
       this.recipientCheckedRowKeys = row;
@@ -1328,6 +1315,19 @@ export default {
 
       reader.readAsText(vcFile.raw ? vcFile.raw : vcFile);
     },
+    createVcDrawerDismissAction() {
+      let that = this;
+      that.getUserInfoLocal().then(val => {
+        that.getVcTableInfoLocal();
+      });
+    },
+    dismissDrawer() {
+      let that = this;
+      that.schemaVisible = false
+      that.getUserInfoLocal().then(val => {
+        that.getVcTableInfoLocal();
+      });
+    },
     async toCreateVcAction() {
       this.schemaList = tmpl.queryVcTemplate();
       this.schemaVisible = true;
@@ -1542,6 +1542,7 @@ export default {
         });
       } else {
         dbvc.queryVcWithVcid(this.newVcId[0]).then(val => {
+          console.log(val)
           this.singleDownloadAction(val);
         });
       }
@@ -1637,7 +1638,9 @@ export default {
       });
     },
     async singleDownloadAction(rowData) {
-      let url = window.URL.createObjectURL(new Blob([rowData.jwt]));
+      console.log(rowData.jwt)
+      let blob = new Blob([rowData.jwt]);
+      let url = window.URL.createObjectURL(blob);
       let a = document.createElement("a");
       a.style.display = "none";
       a.href = url;

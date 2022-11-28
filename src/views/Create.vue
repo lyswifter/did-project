@@ -172,7 +172,7 @@ export default defineComponent({
                         "type": "Secp256k1VerificationKey",
                         "id": did + "#key-1",
                         "controller": did,
-                        "publicKeyBase64": wallet.publicKey,
+                        "publicKeyHex": wallet.publicKey,
                     }
                 ],
                 "authentication": [
