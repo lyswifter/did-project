@@ -63,8 +63,8 @@ export default {
         }
     },
 
-    queryVcs() {
-        return db.vc.reverse().toArray();
+    queryVcs(issuerDid) {
+        return db.vc.where( { 'issuerDid': issuerDid }).reverse().toArray();
     },
 
     async addVc(vcObj) {

@@ -801,9 +801,11 @@ export default {
       },
     });
 
-    this.getUserInfoLocal();
-    this.getVcTableInfoLocal();
-    this.syncVcsFromRemote();
+    that.getUserInfoLocal().then(val => {
+      that.getVcTableInfoLocal().then(val1 => {
+        that.syncVcsFromRemote();
+      });
+    });
 
     // queryNewRelationship
     useRequest(this.queryNewRelationship, {
@@ -1265,7 +1267,7 @@ export default {
       }
     },
     async getVcTableInfoLocal() {
-      let localVals = await dbvc.queryVcs();
+      let localVals = await dbvc.queryVcs(this.userInfo.did);
 
       this.data = []
       this.data.push(...localVals)
@@ -1739,7 +1741,7 @@ export default {
     },
     async syncVcsFromRemote() {
       // // retrieve vc info remote remote
-      let localvcs = await dbvc.queryVcs();
+      let localvcs = await dbvc.queryVcs(this.userInfo.did);
 
       const res = await axios.post(queryRemoteVcsUrl, {
         detail: 0,
