@@ -1744,7 +1744,7 @@ export default {
       const res = await axios.post(queryRemoteVcsUrl, {
         detail: 0,
         size: 1,
-        page: 0,
+        page: 1,
       }, {
         headers: {
           Authorization: localStorage.getItem("token"),
@@ -1766,7 +1766,7 @@ export default {
             const fetchDatas = await axios.post(queryRemoteVcsUrl, {
               detail: 1,
               size: size,
-              page: i,
+              page: i+1,
             }, {
               headers: {
                 Authorization: localStorage.getItem("token"),
