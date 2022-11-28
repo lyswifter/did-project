@@ -803,7 +803,7 @@ export default {
 
     that.getUserInfoLocal().then(val => {
       that.getVcTableInfoLocal().then(val1 => {
-        // that.syncVcsFromRemote();
+        that.syncVcsFromRemote();
       });
     });
 
