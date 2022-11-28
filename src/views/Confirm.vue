@@ -148,15 +148,8 @@ export default defineComponent({
             });
         },
         confirmedAction() {
-            let checkArr = []
-            for (let i = 0; i < this.checkWords.length; i++) {
-                const element = this.checkWords[i];
-                if (element.checked) {
-                    checkArr.push(element)
-                }
-            }
-
-            //ensure mnemonic is correct
+            // ensure mnemonic is correct
+            //
             for (let i = 0; i < this.checkRandoms.length; i++) {
                 const element = this.checkRandoms[i];
 
@@ -168,13 +161,15 @@ export default defineComponent({
                     return
                 }
 
-                const specifyWord = this.originWords[element.item-1]
-                const checkElement = checkArr[i];
+                let specifyItem = element.item - 1
 
-                console.log(specifyWord)
-                console.log(checkElement)
+                let row = Math.floor(specifyItem / this.single)
+                let col = Math.round(specifyItem % this.single);
 
-                if (!checkElement.checked) {
+                const specifyWord = this.originWords[specifyItem]
+                const filledWord = this.mnemonicWords[row][col];
+
+                if (filledWord.state == 1) {
                     ElMessage({
                         message: 'Comfirm mnemonic words incorrect, please retry.',
                         type: 'error',
@@ -182,7 +177,7 @@ export default defineComponent({
                     return
                 }
 
-                if (specifyWord != checkElement.word) {
+                if (specifyWord != filledWord.word) {
                     ElMessage({
                         message: 'Comfirm mnemonic words incorrect, please retry.',
                         type: 'error',
