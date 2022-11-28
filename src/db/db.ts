@@ -17,11 +17,14 @@ export interface DidCredential {
   credentialId: string;
   templateId: string;
   credentialType: string;
+  issuerName: string;
   issuerDid: string;
   holderDid?: string;
   holderEmail: string;
   holderName: string;
   credentialTitle: string;
+  customName: string;
+  customContent: string;
   expireFlag: number;
   issueDate: string;
   expireDate: string;

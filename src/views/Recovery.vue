@@ -66,7 +66,6 @@ export default defineComponent({
       this.mnemonicStr = this.mnemonicStr.trimEnd();
 
       let out = await wallet.signWith(this.mnemonicStr);
-      console.log(out)
       if (out == undefined) {
         ElMessage({
           message: "Mnemonic words are invaild",

@@ -5,10 +5,12 @@ import { v4 as uuidv4 } from 'uuid';
 import vcjwt from "../crypto/vc.js";
 
 export default {
-    async createVcModel(idid, needClaim, tempId) {
+    async createVcModel(iname, idid, needClaim, tempId) {
         let vcid = uuidv4();
 
         let claim = JSON.parse(needClaim.claimsStr);
+
+        console.log("claim " + JSON.stringify(claim))
 
         let type = ""
         if (tempId == 1) {
@@ -17,15 +19,30 @@ export default {
             type = "Activity Certificate"
         }
 
+        let customName = ""
+        let customContent = ""
+        let keys = Object.keys(claim);
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+            if (key=="credential_title" || key=="holder_name" || key=="holder") {
+                continue 
+            }
+            customName = key
+            customContent = claim[key]
+        }
+
         let vcObj = {
             credentialId: vcid,
             templateId: tempId,
             credentialType: type,
+            issuerName: iname,
             issuerDid: idid,
             holderEmail: "",
             holderName: claim.holder_name,
             holderDid: "",
             credentialTitle: claim.credential_title,
+            customName: customName,
+            customContent: customContent,
             expireFlag: needClaim.expireFlag,
             issueDate: needClaim.issueDate,
             expireDate: needClaim.expireDate,

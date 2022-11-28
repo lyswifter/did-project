@@ -411,13 +411,13 @@
       <div style="text-align: center;">
         <div id="vc-image" class="vc-image-view" :class="viewVcRow.template">
           <h3 class="sub-title" :class="viewVcRow.color">{{ viewVcRow.credentialType }}</h3>
-          <h2 class="main-title" :class="viewVcRow.color">{{ viewVcRow.credentialType }}</h2>
+          <h2 class="main-title" :class="viewVcRow.color">{{ viewVcRow.credentialTitle }}</h2>
           <h1 class="hoder-name" :class="viewVcRow.color">{{ viewVcRow.holderName }}</h1>
           <h3 class="holder-email" :class="viewVcRow.color">{{ viewVcRow.holderEmail }}</h3>
           <h3 class="holder-did" :class="viewVcRow.color">{{ viewVcRow.holderDid }} </h3>
 
-          <h3 class="custom-title g-color">Custom title</h3>
-          <span class="custom-title-content" :class="viewVcRow.color">{{ viewVcRow.credentialTitle }}</span>
+          <h3 class="custom-title g-color">{{ viewVcRow.customName }}</h3>
+          <span class="custom-title-content" :class="viewVcRow.color">{{ viewVcRow.customContent }}</span>
           <h3 class="issue-name g-color">Issue by</h3>
           <span class="issue-name-content" :class="viewVcRow.color">{{ userInfo.company }}</span>
           <h3 class="issue-time g-color">Issue AT</h3>
@@ -852,9 +852,8 @@ export default {
       if (noProofVcs.length > 0) {
         for (let i = 0; i < noProofVcs.length; i++) {
           let ele = noProofVcs[i];
-
           ele.holderDid = releation.holderDid;
-          await vc.createVcJwt(this.userInfo.company, ele, this.userInfo.privateKey);
+          await vc.createVcJwt(ele, this.userInfo.privateKey);
         }
       } else {
         console.log("There is no unfilled vc to operate")
@@ -877,12 +876,18 @@ export default {
           let myShareSecret = ecdh.generateShareKey(this.userInfo.privateKey, myPublicKey);
           let myEncryptJwt = await ecdh.encrypt(element.jwt, myShareSecret);
 
+          console.log("myShareSecret " + myShareSecret)
+          console.log("myEncryptJwt " + myEncryptJwt)
+
           let holderDoc = await this.queryDidDocmentWith(element.holderDid);
           let holderPublicKey = holderDoc.verificationMethod[0].publicKeyBase58;
 
           // generate our share secret
           let shareSecret = ecdh.generateShareKey(this.userInfo.privateKey, holderPublicKey);
           let encryptJwt = await ecdh.encrypt(element.jwt, shareSecret);
+
+          console.log("shareSecret " + shareSecret)
+          console.log("encryptJwt " + encryptJwt)
 
           let obj = {
             credentialId: element.credentialId,
@@ -1782,13 +1787,15 @@ export default {
 
                 let state = element.state;
                 let credentialId = element.credentialId;
-                let holderDid = element.holderDid;
+                // let holderDid = element.holderDid;
 
-                let holderDoc = await this.queryDidDocmentWith(holderDid);
-                let holderPublicKey = holderDoc.verificationMethod[0].publicKeyBase58;
+                // let holderDoc = await this.queryDidDocmentWith(holderDid);
+                // let holderPublicKey = holderDoc.verificationMethod[0].publicKeyBase58;
+
                 let myPrivateKey = this.userInfo.privateKey;
+                let myPublicKey = this.userInfo.publicKey;
 
-                let shareSecret = ecdh.generateShareKey(myPrivateKey, holderPublicKey);
+                let shareSecret = ecdh.generateShareKey(myPrivateKey, myPublicKey);
                 let decryptJwt = await ecdh.decryptFromString(element.vc, shareSecret);
 
                 let payload = await vc.decodeJwt(decryptJwt);

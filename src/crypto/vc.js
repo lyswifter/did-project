@@ -12,7 +12,7 @@ export default {
             const element = claims[i];
 
             let claim = JSON.parse(element.claimsStr);
-            let newVc = await dbvc.createVcModel(issueDid, element, tempId, privateKey);
+            let newVc = await dbvc.createVcModel(issueName, issueDid, element, tempId, privateKey);
 
             if (claim.holder.indexOf("did:dmaster") != -1) {
                 let noProofVcs = await dbvc.queryNoFilledVc(newVc.vcid);
@@ -21,7 +21,7 @@ export default {
                     const innerEle = noProofVcs[j];
 
                     innerEle.holderDid = claim.holder;
-                    await this.createVcJwt(issueName, innerEle, privateKey)
+                    await this.createVcJwt(innerEle, privateKey)
                 }
             }
             
@@ -31,7 +31,8 @@ export default {
         return vcs
     },
 
-    async createVcJwt(issueName, specifyVc, privateKey) {
+    async createVcJwt(specifyVc, privateKey) {
+        console.log("specifyVc " + JSON.stringify(specifyVc))
         const signer = ES256KSigner(hexToBytes(privateKey));
 
         // Assembly verify credential payload information
@@ -45,7 +46,7 @@ export default {
             "type": [
                 specifyVc.credentialType,
             ],
-            "issueName": issueName,
+            "issueName": specifyVc.issueName,
             "issuer": specifyVc.issuerDid,
             "issuanceDate": specifyVc.issueDate,
             "expirationDate": specifyVc.expireDate,
@@ -54,6 +55,8 @@ export default {
                 "holderName": specifyVc.holderName,
                 "credentialTitle": specifyVc.credentialTitle,
                 "email": specifyVc.holderEmail,
+                "customName": specifyVc.customName,
+                "customContent": specifyVc.customContent,
             }
         }
 
