@@ -40,6 +40,8 @@ export default defineComponent({
 
             this.checkRandoms.push({
                 item: rand,
+                word: "",
+                tag: null,
                 filled: false
             });
 
@@ -200,10 +202,11 @@ export default defineComponent({
         toggleTagAction(index) {
             let checked = this.checkWords[index].checked;
             if (checked == true) {
+                
                 for (let i = this.checkRandoms.length - 1; i >= 0; i--) {
                     const element = this.checkRandoms[i];
 
-                    if (element.filled == true) {
+                    if (element.filled == true && element.word != "" && element.tag == index) {
                         let idx = element.item - 1
 
                         let row = Math.floor(idx / this.single)
@@ -214,23 +217,29 @@ export default defineComponent({
 
                         this.checkWords[index].checked = false;
                         element.filled = false;
+                        element.word = "";
+                        element.tag = null;
                         break
                     }
                 }
             } else {
                 for (let i = 0; i < this.checkRandoms.length; i++) {
                     const element = this.checkRandoms[i];
-                    if (element.filled == false) {
+                    if (!element.filled && !element.tag && element.word == "") {
                         let idx = element.item - 1
 
                         let row = Math.floor(idx / this.single)
                         let col = Math.round(idx % this.single);
 
-                        this.mnemonicWords[row][col].word = this.checkWords[index].word;
+                        let specifyWord = this.checkWords[index].word
+
+                        this.mnemonicWords[row][col].word = specifyWord;
                         this.mnemonicWords[row][col].state = 2;
 
                         this.checkWords[index].checked = true;
                         element.filled = true;
+                        element.tag = index;
+                        element.word = specifyWord;
                         break
                     }
                 }
@@ -253,6 +262,8 @@ export default defineComponent({
                 const element = this.checkRandoms[i];
                 if (element.item == idx + 1) {
                     this.checkRandoms[i].filled = false;
+                    this.checkRandoms[i].word = "";
+                    this.checkRandoms[i].tag = null;
                     break
                 }
             }
@@ -289,7 +300,7 @@ export default defineComponent({
                     <a href="javascript:void(0)" @click="backAction">
                         <div class="back-view"></div>
                     </a>
-                    <span>Backup Mnemonic Phrase</span>
+                    <span>Confirm Mnemonic</span>
                 </div>
 
                 <div class="content-view">

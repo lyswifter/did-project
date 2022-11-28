@@ -152,7 +152,7 @@
             <div v-if="vcStep == 1">
               <h3 class="step-title">Select Schema</h3>
               <h4 class="step-subtitle">
-                Select the schema you want to issue an credenitial
+                Select the schema you want to issue an credential
               </h4>
             </div>
             <div v-else-if="vcStep == 2">
@@ -308,7 +308,7 @@
       </template>
 
       <div class="verifyContentView">
-        <el-upload class="verifyFile" drag :limit="1" :auto-upload="false" v-model:file-list="fileList">
+        <el-upload class="verifyFile" drag :limit="1" :on-exceed="handleExceed" :auto-upload="false" v-model:file-list="fileList">
           <img style="width: 64px; height: 64px" src="../assets/img/file@2x.png" alt="" />
           <div class="el-upload__text">
             Drop json file here or <em>click to upload</em>
@@ -368,7 +368,8 @@
       <div class="addRecipientContent">
         <div v-for="item in inputRecipientsData" :key="item.claimSort">
           <h3 class="dialog-title">{{ item.claimName }}</h3>
-          <el-input class="inputw" v-model="item.claimContent" placeholder="Please input" maxlength="60" show-word-limit/>
+          <el-input class="inputw" v-model="item.claimContent" placeholder="Please input" maxlength="60"
+            show-word-limit />
           <h4 class="dialog-subtitle">
             {{ item.claimDesc }}
           </h4>
@@ -495,7 +496,7 @@
           <br />
         </div>
 
-        <el-upload class="multiVcUploadView" drag :limit="1" :auto-upload="false" v-model:file-list="multoVcFileList">
+        <el-upload class="multiVcUploadView" drag :limit="1" :on-exceed="handleXlslExceed" :auto-upload="false" v-model:file-list="multoVcFileList">
           <div class="el-upload__text">
             <em>Upload & drop your file</em>
           </div>
@@ -567,22 +568,20 @@
       <template #header="{ close }">
         <div class="dia-title-view">
           <img style="width: 32px;height: 32px;vertical-align: middle;" src="../assets/img/32px_warn.svg" alt="">
-          <span style="margin-left: 20px;">Do you want to exit?</span>
+          <span style="margin-left: 20px;">Are you sure to exit editing?</span>
         </div>
       </template>
 
-      <div class="dia-content-view">Please be sure to keep the account mnemonics, which will not be retrieved if
-        lost.</div>
+      <div class="dia-content-view">Your edits will not be saved.</div>
 
       <template #footer>
         <div class="dia-footer-view"></div>
         <el-row :gutter="10" justify="center">
           <el-col :span="10">
-            <a href="javascript:void(0)" class="dia-cancel-btn" @click="cancelAction">Check it again</a>
+            <a href="javascript:void(0)" class="dia-cancel-btn" @click="ensureAction">Confirm</a>
           </el-col>
           <el-col :span="10">
-            <a href="javascript:void(0)" class="dia-ensure-btn" @click="ensureAction">Yes, I have backed it
-              up</a>
+            <a href="javascript:void(0)" class="dia-ensure-btn" @click="cancelAction">Cancel</a>
           </el-col>
         </el-row>
       </template>
@@ -811,17 +810,25 @@ export default {
       pollingInterval: 10000,
       pollingWhenHidden: true,
       onSuccess: data => {
-        for (let i = 0; i < data.data.data.length; i++) {
-          const element = data.data.data[i];
-          this.queryVcNoProof(element).then(val => {
-            this.queryVcWithProof(element).then(val1 => {
+        if (data.data.code == 0) {
+          for (let i = 0; i < data.data.data.length; i++) {
+            const element = data.data.data[i];
+            this.queryVcNoProof(element).then(val => {
+              this.queryVcWithProof(element).then(val1 => {
+              })
             })
-          })
+          }
+        } else if (data.data.code == 40001) {
+          this.logoutAction();
         }
       }
     });
   },
   methods: {
+    handleXlslExceed(files) {
+      this.multoVcFileList = []
+      this.multoVcFileList.push(...files)
+    },
     cancelAction() {
       this.isExitVisiable = false;
       this.willExit = false
@@ -933,10 +940,13 @@ export default {
         },
       });
 
-      console.log(res)
-
       if (res.data.code == 0) {
         return res.data.data
+      } else {
+        ElMessage({
+          message: res.data.msg,
+          type: "error",
+        });
       }
     },
     queryHolderDidWithEmail(email) {
@@ -1275,7 +1285,10 @@ export default {
       this.fileList = [];
       this.verifyResultShow = false;
     },
-    handleExceed() { },
+    handleExceed(files) {
+      this.fileList = []
+      this.fileList.push(...files)
+    },
     async verifyFileAction() {
       let that = this;
       let vcFile = that.fileList[0].raw;
