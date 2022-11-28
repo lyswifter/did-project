@@ -1267,9 +1267,9 @@ export default {
       }
     },
     async getVcTableInfoLocal() {
-      let localVals = await dbvc.queryVcs(this.userInfo.did);
-
       this.data = []
+      
+      let localVals = await dbvc.queryVcs(this.userInfo.did);
       this.data.push(...localVals)
 
       if (this.data.length == 0) {
@@ -1803,7 +1803,7 @@ export default {
                   tempId = 2
                 }
 
-                dbvc.addVc({
+                await dbvc.addVc({
                   credentialId: credentialId,
                   templateId: tempId,
                   credentialType: payload.vc.type[0],
