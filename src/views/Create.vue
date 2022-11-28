@@ -169,10 +169,10 @@ export default defineComponent({
                 "id": did,
                 "verificationMethod": [
                     {
-                        "type": "EcdsaSecp256k1VerificationKey2019",
+                        "type": "Secp256k1VerificationKey",
                         "id": did + "#key-1",
                         "controller": did,
-                        "publicKeyBase58": wallet.publicKey,
+                        "publicKeyBase64": wallet.publicKey,
                     }
                 ],
                 "authentication": [

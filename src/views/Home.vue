@@ -388,7 +388,7 @@
             <el-col :span="11">
               <h3 class="dialog-title">Issue Date</h3>
               <el-date-picker v-model="issueDate" type="date" placeholder="Pick a day" format="YYYY/MM/DD"
-                value-format="YYYY-MM-DD" />
+                value-format="YYYY-MM-DD"  :default-value="new Date()" />
             </el-col>
             <el-col :span="11" :offset="1">
               <h3 class="dialog-title">Expiration Date</h3>
@@ -1812,6 +1812,8 @@ export default {
                   holderName: payload.vc.credentialSubject.holderName,
                   holderDid: payload.vc.credentialSubject.id,
                   credentialTitle: payload.vc.credentialSubject.credentialTitle,
+                  customName: payload.vc.credentialSubject.customName,
+                  customContent: payload.vc.credentialSubject.customContent,
                   expireFlag: state,
                   issueDate: payload.vc.issuanceDate,
                   expireDate: payload.vc.expirationDate,
