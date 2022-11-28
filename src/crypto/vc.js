@@ -88,6 +88,7 @@ export default {
         } else {
             return {
                 verify: false,
+                reason: ""
             }
         }
     },

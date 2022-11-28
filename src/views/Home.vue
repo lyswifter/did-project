@@ -1,6 +1,8 @@
 <template>
   <el-container class="dm-container">
 
+    <!-- Header view -->
+
     <el-header class="dm-header">
       <el-row class="dm-row" justify="space-between">
         <el-col :span="3">
@@ -407,6 +409,7 @@
     </el-dialog>
 
     <!-- Dialog View Verify Credential image -->
+
     <el-dialog v-model="vcViewVisiable" :show-close="true" align-center="true" :width="680">
       <div style="text-align: center;">
         <div id="vc-image" class="vc-image-view" :class="viewVcRow.template">
@@ -827,10 +830,6 @@ export default {
     });
   },
   methods: {
-    handleXlslExceed(files) {
-      this.multoVcFileList = []
-      this.multoVcFileList.push(...files)
-    },
     cancelAction() {
       this.isExitVisiable = false;
       this.willExit = false
@@ -1288,11 +1287,11 @@ export default {
     },
     handleExceed(files) {
       this.fileList = []
-      this.fileList.push(...files)
+      this.fileList.push(files[0])
     },
     async verifyFileAction() {
       let that = this;
-      let vcFile = that.fileList[0].raw;
+      let vcFile = toRaw(that.fileList)[0];
       if (vcFile.name.indexOf(".json") == -1) {
         ElMessage({
           message: "File selected must be .json format",
@@ -1327,7 +1326,7 @@ export default {
         })
       };
 
-      reader.readAsText(vcFile);
+      reader.readAsText(vcFile.raw ? vcFile.raw : vcFile);
     },
     async toCreateVcAction() {
       this.schemaList = tmpl.queryVcTemplate();
@@ -1677,8 +1676,13 @@ export default {
         });
       }
     },
+    handleXlslExceed(files) {
+      this.multoVcFileList = []
+      this.multoVcFileList.push(...files)
+    },
     async multiVcImportAction() {
-      let xlsxFile = this.multoVcFileList[0].raw;
+      let xlsxFile = toRaw(this.multoVcFileList)[0];
+      xlsxFile = xlsxFile.raw ? xlsxFile.raw : xlsxFile;
       if (xlsxFile.name.indexOf(".xlsx") == -1) {
         ElMessage({
           message: "File selected must be .xlsx format",
