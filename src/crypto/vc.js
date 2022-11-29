@@ -106,7 +106,7 @@ export default {
         });
 
         if (res.data.code == 0) {
-            return convertPubKey(res.data.data.verificationMethod[0].publicKeyHex)
+            return this.convertPubKey(res.data.data.verificationMethod[0].publicKeyHex)
         }
     },
 
