@@ -816,6 +816,7 @@ export default {
       pollingInterval: 10000,
       pollingWhenHidden: true,
       onSuccess: data => {
+        console.log(data.data)
         if (data.data.code == 0) {
           for (let i = 0; i < data.data.data.length; i++) {
             const element = data.data.data[i];
@@ -1784,7 +1785,7 @@ export default {
         issueDate = issueDate ? issueDate : new Date().toISOString().split('T')[0];
         expireDate = expireDate ? expireDate : "Never";
 
-        if (expireDate == "Never" && Date.parse(issueDate) > Date.parse(expireDate)) {
+        if (expireDate != "Never" && Date.parse(issueDate) >= Date.parse(expireDate)) {
           ElMessage({
             message: "Issue date " + issueDate + "must before than Expire date " + expireDate,
             type: "error",
@@ -1792,11 +1793,8 @@ export default {
           return /////////
         }
 
-        obj["issueDate"] = issueDate;
-        obj["expireDate"] = expireDate;
-
-        claimObj["issueDate"] = outer['Issue Date'];
-        claimObj["expireDate"] = outer['Expiration Date'];
+        claimObj["issueDate"] = issueDate;
+        claimObj["expireDate"] = expireDate;
         claimObj["idx"] = this.recipientIdx;
         this.recipientTableData.push(claimObj);
         this.recipientIdx = this.recipientIdx + 1;
