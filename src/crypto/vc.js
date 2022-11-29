@@ -1,7 +1,17 @@
-import { ES256KSigner, hexToBytes, createJWT, decodeJWT, verifyJWS } from "did-jwt";
+import { ES256KSigner, createJWT, decodeJWT, verifyJWS } from "did-jwt";
+import { base64ToBytes, hexToBytes } from "did-jwt";
 import dbvc from '../db/vc.js';
 import axios from "axios";
 import Domain from "../router/domain.js";
+
+import * as secp from '@noble/secp256k1';
+
+import * as u8a from 'uint8arrays'
+import { hash } from '@stablelib/sha256'
+
+import elliptic from 'elliptic'
+
+const secp256k1 = new elliptic.ec('secp256k1')
 
 let queryDidDocUrl = Domain.domainUrl + "/api/did-document/read/";
 
@@ -24,7 +34,7 @@ export default {
                     await this.createVcJwt(innerEle, privateKey)
                 }
             }
-            
+
             vcs.push(newVc);
         }
 
@@ -75,8 +85,15 @@ export default {
     async verifyVcJwt(vcJwt) {
         const { payload, header, signature, data } = decodeJWT(vcJwt)
 
+        console.log("payload " + payload)
+        console.log("header " + header)
+        console.log("signature " + signature)
+        console.log("data " + data)
+
         // query did docment and find out publicKey
         let publicKey = await this.queryDidDocmentWith(payload.vc.issuer)
+
+        console.log("publicKey " + publicKey)
 
         let ret = verifyJWS(vcJwt, { publicKeyHex: publicKey })
 
@@ -89,6 +106,51 @@ export default {
             return {
                 verify: false,
                 reason: ""
+            }
+        }
+    },
+
+    async verifyVcJwtCustom(vcJwt) {
+        let jws = this.decodeJwtStr(vcJwt);
+
+        if (!jws) {
+            return {
+                verify: false,
+            }
+        }
+
+        const decodedJwt = Object.assign(jws, { payload: JSON.parse(this.decodeBase64url(jws.payload)) })
+
+        let data = decodedJwt.data;
+        let payload = decodedJwt.payload;
+        // let header = decodedJwt.header;
+        let signature = decodedJwt.signature;
+
+        let publicKey = await this.queryDidDocmentWith(payload.vc.issuer)
+
+        let dataByte = u8a.fromString(data)
+
+        let msgHash = hash(dataByte);
+
+        let rawSig = base64ToBytes(signature)
+
+        const r = u8a.toString(rawSig.slice(0, 32), 'base16')
+        const s = u8a.toString(rawSig.slice(32, 64), 'base16')
+        const sigObj = { r, s }
+
+        let rawPk = hexToBytes(publicKey)
+
+        let isVerify = secp256k1.keyFromPublic(rawPk).verify(msgHash, sigObj);
+        console.log(isVerify)
+
+        if (isVerify) {
+            return {
+                verify: true,
+                payload: payload,
+            }
+        } else {
+            return {
+                verify: false,
             }
         }
     },
@@ -121,9 +183,27 @@ export default {
 
         // has 04, del 04
         if (pubKey.indexOf("0x") != -1 && pubKey.indexOf("0x04") != -1) {
-           return "0x" + pubKey.substring(4);
+            return "0x" + pubKey.substring(4);
         }
 
         return ret
-    }
+    },
+
+    decodeJwtStr(vcJwt) {
+        const parts = vcJwt.match(/^([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_-]+)$/)
+        if (parts) {
+            return {
+                header: JSON.parse(this.decodeBase64url(parts[1])),
+                payload: parts[2],
+                signature: parts[3],
+                data: `${parts[1]}.${parts[2]}`,
+            }
+        } else {
+            return undefined
+        }
+    },
+
+    decodeBase64url(s) {
+        return u8a.toString(base64ToBytes(s))
+      }
 }

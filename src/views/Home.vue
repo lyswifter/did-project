@@ -351,7 +351,7 @@
               <span>{{ vcVerifyRet.vc.credentialSubject.holderName }}</span>
             </h3>
 
-            <h4>IssueName: {{ vcVerifyRet.vc.issueName ? vcVerifyRet.vc.issueName : vcVerifyRet.vc.issuer }}</h4>
+            <h4>Issuer: {{ vcVerifyRet.vc.issueName ? vcVerifyRet.vc.issueName : vcVerifyRet.vc.issuer }}</h4>
             <h4>IssuerDid: {{ vcVerifyRet.vc.issuer }}</h4>
             <h4>Type: {{ vcVerifyRet.vc.type[0] }}</h4>
             <h4>Issue date: {{ vcVerifyRet.vc.issuanceDate }}</h4>
@@ -1321,7 +1321,9 @@ export default {
       reader.onload = function (e) {
         var contents = e.target.result;
 
-        vc.verifyVcJwt(contents).then(val => {
+        //verifyVcJwt
+        //verifyVcJwtCustom
+        vc.verifyVcJwtCustom(contents).then(val => {
           that.fileList = []
           if (val.verify == true) {
             that.vcVerifyRet = val.payload;
@@ -1335,7 +1337,7 @@ export default {
           } else {
             ElMessage({
               message: "Verify result " + val.verify,
-              type: "err",
+              type: "error",
             });
           }
         })
@@ -1760,7 +1762,7 @@ export default {
       if (xlsxFile.name.indexOf(".xlsx") == -1) {
         ElMessage({
           message: "File selected must be .xlsx format",
-          type: "err",
+          type: "error",
         });
         return
       }
