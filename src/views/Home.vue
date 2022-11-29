@@ -352,7 +352,7 @@
             </h3>
 
             <h4>Issuer: {{ vcVerifyRet.vc.issueName ? vcVerifyRet.vc.issueName : vcVerifyRet.vc.issuer }}</h4>
-            <h4>IssuerDid: {{ vcVerifyRet.vc.issuer }}</h4>
+            <h4>Issuer did: {{ vcVerifyRet.vc.issuer }}</h4>
             <h4>Type: {{ vcVerifyRet.vc.type[0] }}</h4>
             <h4>Issue date: {{ vcVerifyRet.vc.issuanceDate }}</h4>
             <h4>Expire date: {{ vcVerifyRet.vc.expirationDate }}</h4>
@@ -808,7 +808,7 @@ export default {
 
     that.getUserInfoLocal().then(val => {
       that.getVcTableInfoLocal().then(val1 => {
-        // that.syncVcsFromRemote();
+        that.syncVcsFromRemote();
       });
     });
 
@@ -816,7 +816,6 @@ export default {
       pollingInterval: 10000,
       pollingWhenHidden: true,
       onSuccess: data => {
-        console.log(data.data)
         if (data.data.code == 0) {
           for (let i = 0; i < data.data.data.length; i++) {
             const element = data.data.data[i];
@@ -1308,6 +1307,10 @@ export default {
     },
     async verifyFileAction() {
       let that = this;
+
+      that.vcVerifyRet = null;
+      that.verifyResultShow = false;
+
       let vcFile = toRaw(that.fileList)[0];
       if (vcFile.name.indexOf(".json") == -1) {
         ElMessage({
