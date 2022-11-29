@@ -121,7 +121,7 @@
               </el-row>
             </div>
 
-            <n-data-table :columns="columns" :data="data" :pagination="pagination" :scroll-x="1000" :row-key="vcRowKey"
+            <n-data-table :columns="columns" :data="data" :pagination="pagination" :row-key="vcRowKey"
               @update:checked-row-keys="handleCheck" />
           </div>
 
@@ -2191,12 +2191,8 @@ export default {
   background: linear-gradient(360deg, #eef1f8 0%, #d1dbf4 60%, #eef1f8 100%);
 }
 
-.dm-main {
-  padding: 0px !important;
-}
-
 .did-main {
-  width: 1440px;
+  width: 100%;
   margin: 0 auto;
 }
 
