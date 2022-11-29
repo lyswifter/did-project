@@ -3,6 +3,8 @@ import { wordlist } from '@scure/bip39/wordlists/english';
 import { HDKey } from 'ethereum-cryptography/hdkey'
 import { Wallet } from "@ethersproject/wallet";
 
+import util from "../crypto/util.js";
+
 import { ES256KSigner, createJWT, hexToBytes } from "did-jwt";
 
 export default {
@@ -38,7 +40,7 @@ export default {
 
         let wallet = new Wallet(hdkey.privateKey);
 
-        let didMessage = "did:dmaster:" + wallet.address;
+        let didMessage = util.getDIdAddr(wallet.address);
 
         const signer = ES256KSigner(hexToBytes(wallet.privateKey));
 
@@ -53,7 +55,7 @@ export default {
         return {
             sign: jwt,
             did: didMessage,
-            address: wallet.address,
+            address: wallet.address.toLowerCase(),
             privateKey: wallet.privateKey,
             publicKey: wallet.publicKey,
             mnemonic: mnemonic,

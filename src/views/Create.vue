@@ -6,6 +6,7 @@ import bip39 from '../crypto/bip39.js';
 import user from "../db/user.js";
 import didc from "../crypto/did.js";
 import vc from "../crypto/vc.js";
+import util from "../crypto/util.js";
 
 import axios from "axios";
 import Domain from "../router/domain.js";
@@ -133,7 +134,7 @@ export default defineComponent({
                 user.createUser({
                     email: this.emailcontent,
                     did: ret.didStr,
-                    address: ret.address,
+                    address: ret.address.toLowerCase(),
                     company: this.companycontent,
                     privateKey: ret.privateKey,
                     publicKey: ret.publicKey,
@@ -161,7 +162,7 @@ export default defineComponent({
 
             let mnemonic = await bip39.genBip39Mnemonic();
             let wallet = await bip39.genWalletWithMnemonic(mnemonic);
-            let did = "did:dmaster:" + wallet.address;
+            let did = util.getDIdAddr(wallet.address);
 
             let document = {
                 "@context": [
@@ -200,7 +201,7 @@ export default defineComponent({
                 didJwt: didJwt,
                 privateKey: wallet.privateKey,
                 publicKey: wallet.publicKey,
-                address: wallet.address,
+                address: wallet.address.toLowerCase(),
                 mnemonic: mnemonic,
             };
         },

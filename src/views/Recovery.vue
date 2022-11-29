@@ -93,7 +93,7 @@ export default defineComponent({
             email: email,
             did: out.did,
             company: company,
-            address: out.address,
+            address: out.address.toLowerCase(),
             privateKey: out.privateKey,
             publicKey: out.publicKey,
             mnemonic: out.mnemonic,

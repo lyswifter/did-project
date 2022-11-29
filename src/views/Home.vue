@@ -1321,8 +1321,6 @@ export default {
         var contents = e.target.result;
 
         vc.verifyVcJwt(contents).then(val => {
-          console.log("verify result " + JSON.stringify(val))
-
           that.fileList = []
           if (val.verify == true) {
             that.vcVerifyRet = val.payload;
