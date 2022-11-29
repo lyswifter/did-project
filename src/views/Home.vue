@@ -1484,21 +1484,22 @@ export default {
       let needClaims = [];
       for (let i = 0; i < this.recipientCheckedRowKeys.length; i++) {
         const idx = this.recipientCheckedRowKeys[i];
-
         let element = this.recipientTableData[idx - 1];
 
-        const res = await axios.get(queryDidDocUrl + element.holder, {
-          headers: {
-            Authorization: localStorage.getItem("token"),
-          },
-        });
-
-        if (res.data.code != 0) {
-          ElMessage({
-            message: res.data.msg,
-            type: "error",
+        if (element.holder.indexOf("did:dmaster") != -1) {
+          const res = await axios.get(queryDidDocUrl + element.holder, {
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
           });
-          return
+
+          if (res.data.code != 0) {
+            ElMessage({
+              message: res.data.msg,
+              type: "error",
+            });
+            return
+          }
         }
 
         const allkeys = Object.keys(element)
@@ -1516,7 +1517,7 @@ export default {
         let now = Date.now();
         let giving = Date.parse(element.expireDate);
 
-        let obj = {
+        let obj2 = {
           issueDate: element.issueDate,
           expireDate: element.expireDate,
           expireFlag: giving > now ? 0 : 1,
@@ -1529,9 +1530,9 @@ export default {
           }
         });
 
-        obj["claimsStr"] = JSON.stringify(obj2);
-        
-        needClaims.push(obj);
+        obj2["claimsStr"] = JSON.stringify(obj2);
+
+        needClaims.push(obj2);
       }
 
       if (needClaims.length == 0) {
