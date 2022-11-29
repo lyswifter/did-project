@@ -35,7 +35,7 @@ export default defineComponent({
           row: i,
           col: j,
           word: "",
-          place: i * 3 + j + 1,
+          place: (i * 3 + j + 1).toString(),
           state: 1,
         };
         innerArr.push(ibj);

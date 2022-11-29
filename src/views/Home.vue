@@ -424,7 +424,7 @@
           <h3 class="expire-time g-color">Expires AT</h3>
           <span class="expire-time-content" :class="viewVcRow.color">{{ viewVcRow.expireDate }}</span>
 
-          <vue-qrcode class="qr-code" :value="viewVcRow.jwt" @change="onDataUrlChange" />
+          <vue-qrcode v-if="viewVcRow.jwt" class="qr-code" :value="viewVcRow.jwt" @change="onDataUrlChange" />
         </div>
         <br>
         <el-button type="primary" size="large" class="add-recipient-info-btn" color="#1E5CEF" @click="captureVcImage"
@@ -793,8 +793,9 @@ export default {
         that.singleDownloadAction(row);
       },
       personalInfoRow(row) {
+        that.personalTagsVisiable = true;
         that.personalTagTitle = row.holderName;
-        that.personalTagsAction(row.holderDid);
+        that.personalTagDis = row.holderDid;
       },
     });
 
@@ -871,7 +872,7 @@ export default {
           let myEncryptJwt = await ecdh.encrypt(element.jwt, myShareSecret);
 
           let holderDoc = await this.queryDidDocmentWith(element.holderDid);
-          let holderPublicKey = holderDoc.verificationMethod[0].publicKeyBase58;
+          let holderPublicKey = holderDoc.verificationMethod[0].publicKeyHex;
 
           // generate our share secret
           let shareSecret = ecdh.generateShareKey(this.userInfo.privateKey, holderPublicKey);
@@ -1253,10 +1254,25 @@ export default {
       }
     },
     async getVcTableInfoLocal() {
-      this.data = []
-
       let localVals = await dbvc.queryVcs(this.userInfo.did);
-      this.data.push(...localVals)
+      
+      for (let i = 0; i < localVals.length; i++) {
+        const outer = localVals[i];
+        let isHas = false;
+        for (let j = 0; j < this.data.length; j++) {
+          const inner = this.data[j];
+          if (outer.credentialId == inner.credentialId) {
+            isHas = true
+            break
+          }
+        }
+
+        if (isHas) {
+          continue
+        }
+
+        this.data.push(outer)
+      }
 
       if (this.data.length == 0) {
         this.hasVc = false;
@@ -1322,11 +1338,8 @@ export default {
       });
     },
     dismissDrawer() {
-      let that = this;
-      that.schemaVisible = false
-      that.getUserInfoLocal().then(val => {
-        that.getVcTableInfoLocal();
-      });
+      this.schemaVisible = false
+      this.getVcTableInfoLocal();
     },
     async toCreateVcAction() {
       this.schemaList = tmpl.queryVcTemplate();
