@@ -387,12 +387,12 @@
           <el-row :gutter="5">
             <el-col :span="11">
               <h3 class="dialog-title">Issue Date</h3>
-              <el-date-picker v-model="issueDate" type="date" placeholder="Pick a day" format="YYYY/MM/DD"
-                value-format="YYYY-MM-DD" :default-value="new Date()" />
+              <el-date-picker v-model="issueDate" type="date" :placeholder="new Date().toISOString().split('T')[0]" format="YYYY/MM/DD"
+                value-format="YYYY-MM-DD" :default-value="new Date().toISOString().split('T')[0]" />
             </el-col>
             <el-col :span="11" :offset="1">
               <h3 class="dialog-title">Expiration Date</h3>
-              <el-date-picker v-model="expireDate" type="date" placeholder="Pick a day" format="YYYY/MM/DD"
+              <el-date-picker v-model="expireDate" type="date" placeholder="Never" format="YYYY/MM/DD"
                 value-format="YYYY-MM-DD" />
             </el-col>
           </el-row>
@@ -1441,10 +1441,17 @@ export default {
 
       let obj = {};
       this.inputRecipientsData.forEach((element) => {
-        console.log(element)
         obj[element.claimCode] = element.claimContent
         obj['claimName'] = element.claimName
       });
+
+      if (Date.parse(this.issueDate) > Date.parse(this.expireDate)) {
+        ElMessage({
+            message: "Issue date " + this.issueDate + "must before than Expire date " + this.expireDate,
+            type: "error",
+          });
+          return
+      }
 
       obj["issueDate"] = this.issueDate ? this.issueDate : new Date().toISOString().split('T')[0];
       obj["expireDate"] = this.expireDate ? this.expireDate : "Never";
@@ -1756,6 +1763,7 @@ export default {
           let claimCode = inner['claimCode'];
           let claimContent = outer[claimName];
           claimObj[claimCode] = claimContent;
+          claimObj['claimName'] = claimName;
         });
 
         claimObj["issueDate"] = outer['Issue Date'];
