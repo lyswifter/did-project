@@ -808,7 +808,7 @@ export default {
 
     that.getUserInfoLocal().then(val => {
       that.getVcTableInfoLocal().then(val1 => {
-        that.syncVcsFromRemote();
+        // that.syncVcsFromRemote();
       });
     });
 
@@ -1837,6 +1837,8 @@ export default {
     async syncVcsFromRemote() {
       // // retrieve vc info remote remote
       let localvcs = await dbvc.queryVcs(this.userInfo.did);
+
+      console.log(localvcs)
 
       const res = await axios.post(queryRemoteVcsUrl, {
         detail: 0,

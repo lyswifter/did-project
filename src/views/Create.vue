@@ -134,7 +134,7 @@ export default defineComponent({
                 user.createUser({
                     email: this.emailcontent,
                     did: ret.didStr,
-                    address: ret.address.toLowerCase(),
+                    address: ret.address,
                     company: this.companycontent,
                     privateKey: ret.privateKey,
                     publicKey: ret.publicKey,
@@ -201,7 +201,7 @@ export default defineComponent({
                 didJwt: didJwt,
                 privateKey: wallet.privateKey,
                 publicKey: wallet.publicKey,
-                address: wallet.address.toLowerCase(),
+                address: wallet.address,
                 mnemonic: mnemonic,
             };
         },

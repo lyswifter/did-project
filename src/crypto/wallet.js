@@ -55,7 +55,7 @@ export default {
         return {
             sign: jwt,
             did: didMessage,
-            address: wallet.address.toLowerCase(),
+            address: wallet.address,
             privateKey: wallet.privateKey,
             publicKey: wallet.publicKey,
             mnemonic: mnemonic,

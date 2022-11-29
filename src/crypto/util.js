@@ -1,5 +1,5 @@
 export default {
     getDIdAddr(address) {
-        return "did:dmaster:" + address.toLowerCase();
+        return "did:dmaster:" + address;
     }
 }
