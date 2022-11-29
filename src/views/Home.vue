@@ -1519,8 +1519,9 @@ export default {
         let obj = {
           issueDate: element.issueDate,
           expireDate: element.expireDate,
-          expireFlag: giving > nmyPublicKey,
+          expireFlag: giving > now ? 0 : 1,
         };
+
         let keys = Object.keys(element);
         keys.forEach(key => {
           if (key != "issueDate" && key != "expireDate" && key != "expireFlag" && key != "idx") {
@@ -1529,6 +1530,7 @@ export default {
         });
 
         obj["claimsStr"] = JSON.stringify(obj2);
+        
         needClaims.push(obj);
       }
 
