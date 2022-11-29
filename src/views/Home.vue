@@ -738,7 +738,7 @@ export default {
       page: 1,
       pageSize: 5,
       showSizePicker: true,
-      pageSizes: [3, 5, 7],
+      pageSizes: [5, 10, 20],
       itemCount: 1,
       onChange: (page) => {
         this.pagination.page = page;
@@ -771,7 +771,7 @@ export default {
   watch: {},
   mounted() {
     let indexdb = localStorage.getItem("indexDB");
-    if (indexdb == null || indexdb == undefined) {
+    if (!indexdb) {
       tmpl.createClaimTemplate()
       claim.createClaims()
       localStorage.setItem("indexDB", "1")
@@ -822,6 +822,11 @@ export default {
           }
         } else if (data.data.code == 40001) {
           this.logoutAction();
+        } else {
+          ElMessage({
+            message: data.data.msg,
+            type: "error",
+          });
         }
       }
     });
