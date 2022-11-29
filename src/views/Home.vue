@@ -814,6 +814,7 @@ export default {
             const element = data.data.data[i];
             this.queryVcNoProof(element).then(val => {
               this.queryVcWithProof(element).then(val1 => {
+                this.getVcTableInfoLocal();
               })
             })
           }
@@ -1255,7 +1256,7 @@ export default {
     },
     async getVcTableInfoLocal() {
       let localVals = await dbvc.queryVcs(this.userInfo.did);
-      
+
       for (let i = 0; i < localVals.length; i++) {
         const outer = localVals[i];
         let isHas = false;
