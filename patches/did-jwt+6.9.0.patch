@@ -1,0 +1,56 @@
+diff --git a/node_modules/did-jwt/src/JWT.ts b/node_modules/did-jwt/src/JWT.ts
+index 116b041..d50b5cf 100644
+--- a/node_modules/did-jwt/src/JWT.ts
++++ b/node_modules/did-jwt/src/JWT.ts
+@@ -329,9 +329,9 @@ export async function createJWT(
+ function verifyJWSDecoded(
+   { header, data, signature }: JWSDecoded,
+   pubKeys: VerificationMethod | VerificationMethod[]
+-): VerificationMethod {
++): VerificationMethod | undefined {
+   if (!Array.isArray(pubKeys)) pubKeys = [pubKeys]
+-  const signer: VerificationMethod = VerifierAlgorithm(header.alg)(data, signature, pubKeys)
++  const signer: VerificationMethod | undefined = VerifierAlgorithm(header.alg)(data, signature, pubKeys)
+   return signer
+ }
+ 
+@@ -346,7 +346,7 @@ function verifyJWSDecoded(
+  *  @param    {Array<VerificationMethod> | VerificationMethod}    pubKeys     The public keys used to verify the JWS
+  *  @return   {VerificationMethod}                       The public key used to sign the JWS
+  */
+-export function verifyJWS(jws: string, pubKeys: VerificationMethod | VerificationMethod[]): VerificationMethod {
++export function verifyJWS(jws: string, pubKeys: VerificationMethod | VerificationMethod[]): VerificationMethod | undefined {
+   const jwsDecoded: JWSDecoded = decodeJWS(jws)
+   return verifyJWSDecoded(jwsDecoded, pubKeys)
+ }
+diff --git a/node_modules/did-jwt/src/VerifierAlgorithm.ts b/node_modules/did-jwt/src/VerifierAlgorithm.ts
+index cf920bd..1554d9d 100644
+--- a/node_modules/did-jwt/src/VerifierAlgorithm.ts
++++ b/node_modules/did-jwt/src/VerifierAlgorithm.ts
+@@ -93,7 +93,7 @@ export function verifyES256K(
+   data: string,
+   signature: string,
+   authenticators: VerificationMethod[]
+-): VerificationMethod {
++): VerificationMethod | undefined {
+   const hash: Uint8Array = sha256(data)
+   const sigObj: EcdsaSignature = toSignatureObject(signature)
+   const fullPublicKeys = authenticators.filter(({ ethereumAddress, blockchainAccountId }) => {
+@@ -116,7 +116,7 @@ export function verifyES256K(
+     signer = verifyRecoverableES256K(data, signature, blockchainAddressKeys)
+   }
+ 
+-  if (!signer) throw new Error('invalid_signature: Signature invalid for JWT')
++  // if (!signer) throw new Error('invalid_signature: Signature invalid for JWT')
+   return signer
+ }
+ 
+@@ -180,7 +180,7 @@ export function verifyEd25519(
+   return signer
+ }
+ 
+-type Verifier = (data: string, signature: string, authenticators: VerificationMethod[]) => VerificationMethod
++type Verifier = (data: string, signature: string, authenticators: VerificationMethod[]) => VerificationMethod | undefined
+ interface Algorithms {
+   [name: string]: Verifier
+ }

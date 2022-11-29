@@ -1,4 +1,4 @@
-import { ES256KSigner, hexToBytes, createJWT, verifyJWT, decodeJWT, verifyJWS } from "did-jwt";
+import { ES256KSigner, hexToBytes, createJWT, decodeJWT, verifyJWS } from "did-jwt";
 import dbvc from '../db/vc.js';
 import axios from "axios";
 import Domain from "../router/domain.js";
