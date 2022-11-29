@@ -291,14 +291,16 @@
               <el-button type="default" class="manually-add-btn" @click="toDownloadAction" round>Download Credential
               </el-button>
             </el-col>
-            <el-col v-if="ableDownload" :span="2" style="margin-right: 20px;">
+
+            <el-col v-if="ableDownload" :span="2">
               <el-button type="primary" class="manually-add-btn" color="#1E5CEF" @click="toViewVcsAction" round>View
                 Credential</el-button>
             </el-col>
-            <e-col v-else-if="!ableDownload" :span="2" style="margin-right: 20px;">
+
+            <el-col :span="2" style="margin-right: 20px;">
               <el-button type="primary" class="manually-add-btn" color="#1E5CEF" @click="dismissDrawer" round>Confirm
               </el-button>
-            </e-col>
+            </el-col>
           </el-row>
         </div>
       </div>
@@ -1483,6 +1485,13 @@ export default {
               message: key + " must not be empty",
               type: "error",
             });
+
+            clearInterval(timer);
+            this.percentageCount += 100;
+            if (this.percentageCount > 100) {
+              this.percentageCount = 100;
+            }
+            this.processing = false;
             return
           }
         }
@@ -1510,6 +1519,12 @@ export default {
 
       if (needClaims.length == 0) {
         alert("need claim must not be empty");
+        clearInterval(timer);
+        this.percentageCount += 100;
+        if (this.percentageCount > 100) {
+          this.percentageCount = 100;
+        }
+        this.processing = false;
         return;
       }
 
@@ -1551,10 +1566,10 @@ export default {
       if (this.percentageCount > 100) {
         this.percentageCount = 100;
       }
+      this.processing = false;
 
       this.vcStep = 3;
       this.newVcNum = "Issued " + vcValues.length + " Verifiable Credential";
-      this.processing = false;
       this.createOk = true;
     },
     async toDownloadAction() {
@@ -1565,10 +1580,10 @@ export default {
 
       if (!newVCIds) {
         ElMessage({
-            message: "no new vc issued",
-            type: "error",
-          });
-          return
+          message: "no new vc issued",
+          type: "error",
+        });
+        return
       }
 
       if (newVCIds.length > 1) {
@@ -1666,7 +1681,7 @@ export default {
       var zip = new JSZip();
       for (let i = 0; i < rets.length; i++) {
         const element = rets[i];
-        let filename = "file_" + rawDataIds[i] + ".json";
+        let filename = "file_" + element.id + ".json";
         zip.file(filename, element.jwt);
       }
 

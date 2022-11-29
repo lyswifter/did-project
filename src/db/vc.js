@@ -60,7 +60,7 @@ export default {
     },
 
     queryVcs(issuerDid) {
-        return db.vc.where( { 'issuerDid': issuerDid }).reverse().toArray();
+        return db.vc.where( { 'issuerDid': issuerDid }).toArray();
     },
 
     async addVc(vcObj) {
