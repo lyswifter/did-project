@@ -1272,7 +1272,7 @@ export default {
           continue
         }
 
-        this.data.push(outer)
+        this.data.unshift(outer)
       }
 
       if (this.data.length == 0) {
@@ -1513,17 +1513,15 @@ export default {
         return;
       }
 
-      let value = await vc.createVcTemplate(this.userInfo.company, this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
+      let vcValues = await vc.createVcTemplate(this.userInfo.company, this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
 
       this.newVcId = [];
       let bindingObj = {
         list: []
       };
 
-      for (let i = 0; i < value.length; i++) {
-        const element = value[i];
-
-        this.newVcId.push(element.vcid)
+      for (let i = 0; i < vcValues.length; i++) {
+        const element = vcValues[i];
 
         if (element.holder.indexOf("did:dmaster") == -1) {
           bindingObj.list.push({
@@ -1532,6 +1530,8 @@ export default {
             templateId: this.schemaId,
           })
         } else {
+          this.newVcId.push(element.vcid)
+
           this.ableDownload = true;
 
           // upload to remote service
@@ -1553,25 +1553,40 @@ export default {
       }
 
       this.vcStep = 3;
-      this.newVcNum = "Issued " + this.newVcId.length + " Verifiable Credential";
+      this.newVcNum = "Issued " + vcValues.length + " Verifiable Credential";
       this.processing = false;
       this.createOk = true;
     },
-    toDownloadAction() {
-      if (this.newVcId.length > 1) {
-        dbvc.queryVcWithVcid(this.newVcId).then(val => {
-          let ids = []
-          for (let i = 0; i < val.length; i++) {
-            const element = val[i];
-            ids.push(element.id)
-          }
-          this.batchDownloadAction(ids);
+    async toDownloadAction() {
+      let newVCIds = null
+      if (isProxy(this.newVcId)) {
+        newVCIds = toRaw(this.newVcId)
+      }
+
+      if (!newVCIds) {
+        ElMessage({
+            message: "no new vc issued",
+            type: "error",
+          });
+          return
+      }
+
+      if (newVCIds.length > 1) {
+        let objs = []
+        for (let i = 0; i < newVCIds.length; i++) {
+          await dbvc.queryVcWithVcid(newVCIds[i]).then(val => {
+            objs.push(...val)
+          });
+        }
+
+        this.batchDownloadDirectly(objs);
+
+      } else if (this.newVcId.length == 1) {
+        dbvc.queryVcWithVcid(this.newVcId[0]).then(val => {
+          this.singleDownloadAction(isProxy(val) ? toRaw(val) : val);
         });
       } else {
-        dbvc.queryVcWithVcid(this.newVcId[0]).then(val => {
-          console.log(val)
-          this.singleDownloadAction(val);
-        });
+        console.log("no vc to download")
       }
     },
     async toViewVcsAction() {
@@ -1635,14 +1650,19 @@ export default {
     },
     rowKey: (row) => row.idx,
     vcRowKey: (row) => row.id,
-    async batchDownloadAction(rowIds) {
-      let rawDataIds = {};
-      if (isProxy(rowIds)) {
-        rawDataIds = toRaw(rowIds)
+    async batchDownloadDirectly(rawData) {
+      var zip = new JSZip();
+      for (let i = 0; i < rawData.length; i++) {
+        const element = rawData[i];
+        let filename = "file_" + element.id + ".json";
+        zip.file(filename, element.jwt);
       }
-
-      let rets = await dbvc.queryVcsWithIds(rawDataIds);
-
+      zip.generateAsync({ type: "blob" }).then(function (content) {
+        saveAs(content, "jwt.zip");
+      });
+    },
+    async batchDownloadAction(rowIds) {
+      let rets = await dbvc.queryVcsWithIds(rowIds);
       var zip = new JSZip();
       for (let i = 0; i < rets.length; i++) {
         const element = rets[i];
@@ -1655,8 +1675,7 @@ export default {
       });
     },
     async singleDownloadAction(rowData) {
-      console.log(rowData.jwt)
-      let blob = new Blob([rowData.jwt]);
+      let blob = new Blob([rowData[0].jwt]);
       let url = window.URL.createObjectURL(blob);
       let a = document.createElement("a");
       a.style.display = "none";
