@@ -74,7 +74,6 @@
                   <h2 class="dis-title f-color">Credentials</h2>
                   <h1 class="dis-count f-color">
                     {{ data.length }}
-                    <!-- userInfo.credentialCount -->
                   </h1>
                 </div>
               </el-col>
@@ -387,8 +386,8 @@
           <el-row :gutter="5">
             <el-col :span="11">
               <h3 class="dialog-title">Issue Date</h3>
-              <el-date-picker v-model="issueDate" type="date" :placeholder="new Date().toISOString().split('T')[0]" format="YYYY/MM/DD"
-                value-format="YYYY-MM-DD" :default-value="new Date().toISOString().split('T')[0]" />
+              <el-date-picker v-model="issueDate" type="date" :placeholder="new Date().toISOString().split('T')[0]"
+                format="YYYY/MM/DD" value-format="YYYY-MM-DD" :default-value="new Date().toISOString().split('T')[0]" />
             </el-col>
             <el-col :span="11" :offset="1">
               <h3 class="dialog-title">Expiration Date</h3>
@@ -792,7 +791,13 @@ export default {
         that.vcViewVisiable = true;
       },
       downloadOpRow(row) {
-        that.singleDownloadAction(row);
+        let rawData = null
+        if (isProxy(row)) {
+          rawData = toRaw(row);
+        } else {
+          rawData = row;
+        }
+        that.singleDownloadAction(rawData);
       },
       personalInfoRow(row) {
         that.personalTagsVisiable = true;
@@ -880,7 +885,7 @@ export default {
           let myEncryptJwt = await ecdh.encrypt(element.jwt, myShareSecret);
 
           let holderDoc = await this.queryDidDocmentWith(element.holderDid);
-          let holderPublicKey = holderDoc.verificationMethod[0].publicKeyHex;
+          let holderPublicKey = vc.convertPubKey(holderDoc.verificationMethod[0].publicKeyHex);
 
           // generate our share secret
           let shareSecret = ecdh.generateShareKey(this.userInfo.privateKey, holderPublicKey);
@@ -1452,10 +1457,10 @@ export default {
 
       if (Date.parse(this.issueDate) > Date.parse(this.expireDate)) {
         ElMessage({
-            message: "Issue date " + this.issueDate + "must before than Expire date " + this.expireDate,
-            type: "error",
-          });
-          return
+          message: "Issue date " + this.issueDate + "must before than Expire date " + this.expireDate,
+          type: "error",
+        });
+        return
       }
 
       obj["issueDate"] = this.issueDate ? this.issueDate : new Date().toISOString().split('T')[0];
@@ -1472,22 +1477,29 @@ export default {
       this.issuleMultiVCVisiable = true;
     },
     async toIssueCredentials() {
-      this.processing = true;
-
-      let timer = setInterval(() => {
-        this.percentageCount += 1;
-        if (this.percentageCount > 100) {
-          this.percentageCount = 100;
-        }
-      }, 30);
-
       //
       // need to ensure that items has the same format
       //
 
       let needClaims = [];
-      this.recipientCheckedRowKeys.forEach((checkKey) => {
-        let element = this.recipientTableData[checkKey - 1];
+      for (let i = 0; i < this.recipientCheckedRowKeys.length; i++) {
+        const idx = this.recipientCheckedRowKeys[i];
+
+        let element = this.recipientTableData[idx - 1];
+
+        const res = await axios.get(queryDidDocUrl + element.holder, {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        });
+
+        if (res.data.code != 0) {
+          ElMessage({
+            message: res.data.msg,
+            type: "error",
+          });
+          return
+        }
 
         const allkeys = Object.keys(element)
         for (let i = 0; i < allkeys.length; i++) {
@@ -1497,13 +1509,6 @@ export default {
               message: key + " must not be empty",
               type: "error",
             });
-
-            clearInterval(timer);
-            this.percentageCount += 100;
-            if (this.percentageCount > 100) {
-              this.percentageCount = 100;
-            }
-            this.processing = false;
             return
           }
         }
@@ -1514,10 +1519,8 @@ export default {
         let obj = {
           issueDate: element.issueDate,
           expireDate: element.expireDate,
-          expireFlag: giving > now ? 1 : 0,
+          expireFlag: giving > nmyPublicKey,
         };
-
-        let obj2 = {}
         let keys = Object.keys(element);
         keys.forEach(key => {
           if (key != "issueDate" && key != "expireDate" && key != "expireFlag" && key != "idx") {
@@ -1527,18 +1530,23 @@ export default {
 
         obj["claimsStr"] = JSON.stringify(obj2);
         needClaims.push(obj);
-      });
+      }
 
       if (needClaims.length == 0) {
-        alert("need claim must not be empty");
-        clearInterval(timer);
-        this.percentageCount += 100;
+        ElMessage({
+          message: "need claim must not be empty",
+          type: "error",
+        });
+        return;
+      }
+
+      this.processing = true;
+      let timer = setInterval(() => {
+        this.percentageCount += 1;
         if (this.percentageCount > 100) {
           this.percentageCount = 100;
         }
-        this.processing = false;
-        return;
-      }
+      }, 30);
 
       let vcValues = await vc.createVcTemplate(this.userInfo.company, this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
 
@@ -1558,7 +1566,6 @@ export default {
           })
         } else {
           this.newVcId.push(element.vcid)
-
           this.ableDownload = true;
 
           // upload to remote service
@@ -1607,10 +1614,9 @@ export default {
         }
 
         this.batchDownloadDirectly(objs);
-
       } else if (this.newVcId.length == 1) {
         dbvc.queryVcWithVcid(this.newVcId[0]).then(val => {
-          this.singleDownloadAction(isProxy(val) ? toRaw(val) : val);
+          this.singleDownloadAction(isProxy(val) ? toRaw(val)[0] : val[0]);
         });
       } else {
         console.log("no vc to download")
@@ -1702,7 +1708,7 @@ export default {
       });
     },
     async singleDownloadAction(rowData) {
-      let blob = new Blob([rowData[0].jwt]);
+      let blob = new Blob([rowData.jwt]);
       let url = window.URL.createObjectURL(blob);
       let a = document.createElement("a");
       a.style.display = "none";
@@ -1770,6 +1776,23 @@ export default {
           claimObj[claimCode] = claimContent;
           claimObj['claimName'] = claimName;
         });
+
+        let issueDate = outer['Issue Date']
+        let expireDate = outer['Expiration Date']
+
+        issueDate = issueDate ? issueDate : new Date().toISOString().split('T')[0];
+        expireDate = expireDate ? expireDate : "Never";
+
+        if (expireDate == "Never" && Date.parse(issueDate) > Date.parse(expireDate)) {
+          ElMessage({
+            message: "Issue date " + issueDate + "must before than Expire date " + expireDate,
+            type: "error",
+          });
+          return /////////
+        }
+
+        obj["issueDate"] = issueDate;
+        obj["expireDate"] = expireDate;
 
         claimObj["issueDate"] = outer['Issue Date'];
         claimObj["expireDate"] = outer['Expiration Date'];
@@ -2484,6 +2507,7 @@ export default {
 </style>
 
 <!-- recipient step 2 -->
+
 <style scoped>
 .issue-btn {
   background-color: #1e5cef;

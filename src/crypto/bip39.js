@@ -28,7 +28,6 @@ export default {
 
         // Generate x random words. Uses Cryptographically-Secure Random Number Generator.
         const mnemonic = bip39.generateMnemonic(wordlist);
-        console.log(mnemonic);
 
         return mnemonic;
     }

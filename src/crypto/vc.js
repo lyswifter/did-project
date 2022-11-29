@@ -106,7 +106,24 @@ export default {
         });
 
         if (res.data.code == 0) {
-            return res.data.data.verificationMethod[0].publicKeyBase58
+            return convertPubKey(res.data.data.verificationMethod[0].publicKeyHex)
         }
+    },
+
+    convertPubKey(pubKey) {
+        let ret = pubKey
+
+        // no 04, add 04
+        if (pubKey.indexOf("0x") != -1 && pubKey.indexOf("0x04") == -1) {
+            ret = "0x04" + pubKey.substring(2);
+            return ret
+        }
+
+        // has 04, del 04
+        if (pubKey.indexOf("0x") != -1 && pubKey.indexOf("0x04") != -1) {
+           return "0x" + pubKey.substring(4);
+        }
+
+        return ret
     }
 }

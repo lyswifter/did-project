@@ -5,6 +5,7 @@ import { ElMessage } from 'element-plus'
 import bip39 from '../crypto/bip39.js';
 import user from "../db/user.js";
 import didc from "../crypto/did.js";
+import vc from "../crypto/vc.js";
 
 import axios from "axios";
 import Domain from "../router/domain.js";
@@ -172,7 +173,7 @@ export default defineComponent({
                         "type": "Secp256k1VerificationKey",
                         "id": did + "#key-1",
                         "controller": did,
-                        "publicKeyHex": wallet.publicKey,
+                        "publicKeyHex": vc.convertPubKey(wallet.publicKey),
                     }
                 ],
                 "authentication": [
