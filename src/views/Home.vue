@@ -620,6 +620,8 @@
 import { ref, h, reactive, toRaw, isProxy } from "vue";
 import { useRequest } from 'vue-request';
 
+import * as secp from '@noble/secp256k1';
+
 import axios from "axios";
 import Domain from "../router/domain.js";
 
@@ -912,6 +914,11 @@ export default {
           let myShareSecret = ecdh.generateShareKey(this.userInfo.privateKey, myPublicKey);
           let myEncryptJwt = await ecdh.encrypt(element.jwt, myShareSecret);
 
+          console.log("myPublicKey " + myPublicKey)
+          console.log("myPrivateKey " + this.userInfo.privateKey)
+          console.log("myShareSecret " + secp.utils.bytesToHex(myShareSecret))
+          console.log("myEncryptJwt " + myEncryptJwt)
+
           let holderDoc = await this.queryDidDocmentWith(element.holderDid);
           if (!holderDoc) {
             return undefined
@@ -922,6 +929,10 @@ export default {
           // generate our share secret
           let shareSecret = ecdh.generateShareKey(this.userInfo.privateKey, holderPublicKey);
           let encryptJwt = await ecdh.encrypt(element.jwt, shareSecret);
+
+          console.log("holderPublicKey " + holderPublicKey)
+          console.log("shareSecret " + secp.utils.bytesToHex(shareSecret))
+          console.log("encryptJwt " + encryptJwt)
 
           let obj = {
             credentialId: element.credentialId,
