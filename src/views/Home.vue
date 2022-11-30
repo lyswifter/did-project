@@ -81,9 +81,7 @@
                 <div class="display-right">
                   <h2 class="w-color">Credential Verifier</h2>
                   <br />
-                  <h3 @click="toVerifyAction">
-                    <a class="w-color" href="javascript:void();" style="text-decoration: none">Easy Verify</a>
-                  </h3>
+                  <a class="w-color" href="javascript:void();" style="text-decoration: none" @click="toVerifyAction">Easy Verify</a>
                 </div>
               </el-col>
             </el-row>
@@ -175,8 +173,7 @@
               <h3 v-else class="step-title">Issue failed</h3>
 
               <h4 v-if="createOk" class="step-subtitle">
-                The VC certificate has been successfully sent to the recipient
-                and has been backed up on the chain.
+                The VC certificate has been successfully sent to the recipient.
               </h4>
               <h4 v-else class="step-subtitle">
                 Description of the reason for the failure
@@ -333,15 +330,8 @@
         </el-upload>
 
         <div class="fileShowView">
-          <el-row>
-            <el-col :span="18" :offset="1">
-              <!-- <h3 class="filenamesView">xxxxx.json</h3> -->
-            </el-col>
-            <el-col :span="6" :offset="20">
-              <el-button size="large" type="primary" @click="verifyFileAction"
+          <el-button style="float: right;margin-top: 22px;margin-right: 20px;" size="large" type="primary" @click="verifyFileAction"
                 :disabled="fileList.length == 0 ? true : false" round>Verify</el-button>
-            </el-col>
-          </el-row>
         </div>
 
         <div class="verifyResultView" v-if="verifyResultShow">
@@ -361,7 +351,7 @@
             <h4>Type: {{ vcVerifyRet.vc.type[0] }}</h4>
             <h4>Issue date: {{ vcVerifyRet.vc.issuanceDate }}</h4>
             <h4>Expire date: {{ vcVerifyRet.vc.expirationDate }}</h4>
-            <h4>Holder: {{ vcVerifyRet.vc.credentialSubject.holderName }}</h4>
+            <h4>Holder: {{ vcVerifyRet.vc.credentialSubject.holder_name }}</h4>
             <h4>Holder did: {{ vcVerifyRet.vc.credentialSubject.id }}</h4>
             <h4 class="proofView">Proof: {{ vcVerifyRet.proof }}</h4>
           </div>
@@ -808,7 +798,6 @@ export default {
         that.popviewShow = !that.popviewShow;
       },
       viewOpRow(row) {
-        console.log(row)
         let temp = JSON.parse(row.template);
 
         that.viewVcRow = row;
@@ -820,17 +809,13 @@ export default {
         let allkeys = Object.keys(that.viewVcRow.templateObj);
         for (let i = 0; i < allkeys.length; i++) {
           const ele = allkeys[i];
-          
           if (ele == "credential_title" || ele == "expireDate" || 
           ele == "expireFlag" || ele == "holder" || ele == "holder_name" || ele == "issueDate") {
             continue
           }
-
           that.viewVcRow.customName = ele
           that.viewVcRow.customContent = temp[ele]
         }
-
-        console.log(that.viewVcRow)
       },
       downloadOpRow(row) {
         let rawData = null
@@ -2460,7 +2445,8 @@ export default {
   line-height: 33px;
 }
 
-.display-right h3 {
+.display-right a {
+  display: block;
   margin-left: 20px;
   margin-top: 20px;
   width: 160px;

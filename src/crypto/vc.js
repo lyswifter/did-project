@@ -51,8 +51,9 @@ export default {
         const signer = ES256KSigner(hexToBytes(privateKey));
 
         let temp = JSON.parse(specifyVc.template)
+        temp.id = specifyVc.holderDid;
 
-        let issuerDid = specifyVc.issuerDid
+        let issuerDid = specifyVc.issuerDid;
 
         // Assembly verify credential payload information
         let vcPayload = {
@@ -71,8 +72,6 @@ export default {
             "expirationDate": specifyVc.expireDate,
             "credentialSubject": temp,
         }
-
-        // Object.defineProperty(vcPayload.credentialSubject, customName.toLowerCase(), customContent);
 
         const vcJwt = await createJWT(
             { iss: issuerDid, iat: undefined, vc: vcPayload },
