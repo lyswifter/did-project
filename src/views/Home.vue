@@ -81,7 +81,8 @@
                 <div class="display-right">
                   <h2 class="w-color">Credential Verifier</h2>
                   <br />
-                  <a class="w-color" href="javascript:void();" style="text-decoration: none" @click="toVerifyAction">Easy Verify</a>
+                  <a class="w-color" href="javascript:void();" style="text-decoration: none"
+                    @click="toVerifyAction">Easy Verify</a>
                 </div>
               </el-col>
             </el-row>
@@ -330,8 +331,8 @@
         </el-upload>
 
         <div class="fileShowView">
-          <el-button style="float: right;margin-top: 22px;margin-right: 20px;" size="large" type="primary" @click="verifyFileAction"
-                :disabled="fileList.length == 0 ? true : false" round>Verify</el-button>
+          <el-button style="float: right;margin-top: 22px;margin-right: 20px;" size="large" type="primary"
+            @click="verifyFileAction" :disabled="fileList.length == 0 ? true : false" round>Verify</el-button>
         </div>
 
         <div class="verifyResultView" v-if="verifyResultShow">
@@ -809,8 +810,8 @@ export default {
         let allkeys = Object.keys(that.viewVcRow.templateObj);
         for (let i = 0; i < allkeys.length; i++) {
           const ele = allkeys[i];
-          if (ele == "credential_title" || ele == "expireDate" || 
-          ele == "expireFlag" || ele == "holder" || ele == "holder_name" || ele == "issueDate") {
+          if (ele == "credential_title" || ele == "expireDate" ||
+            ele == "expireFlag" || ele == "holder" || ele == "holder_name" || ele == "issueDate") {
             continue
           }
           that.viewVcRow.customName = ele
@@ -1666,9 +1667,9 @@ export default {
             }
           }
 
-        this.vcStep = 3;
-        this.newVcNum = "Issued " + newCount + " Verifiable Credential";
-        this.createOk = true;
+          this.vcStep = 3;
+          this.newVcNum = "Issued " + newCount + " Verifiable Credential";
+          this.createOk = true;
         }
 
       }
@@ -1998,16 +1999,16 @@ export default {
                   tempId = 2
                 }
 
-                let tempStr = JSON.stringify(payload.vc.credentialSubject)
+                let tempStr = JSON.stringify(payload.vc.credentialSubject);
 
-                await dbvc.addVc({
+                let vcObj = {
                   credentialId: credentialId,
                   templateId: tempId,
                   template: tempStr,
                   credentialType: payload.vc.type[0],
                   issuerDid: payload.iss,
-                  holderEmail: payload.vc.credentialSubject.email,
-                  holderName: payload.vc.credentialSubject.holderName,
+                  holderEmail: "",
+                  holderName: payload.vc.credentialSubject.holder_name,
                   holderDid: payload.vc.credentialSubject.id,
                   expireFlag: state,
                   issueDate: payload.vc.issuanceDate,
@@ -2015,7 +2016,17 @@ export default {
                   filled: 1,
                   jwt: decryptJwt,
                   backuped: 1,
-                })
+                }
+
+                let holder = payload.vc.credentialSubject.holder;
+
+                if (holder.indexOf("did:dmaster") == -1) { // Email
+                  vcObj.holderEmail = holder
+                } else { // Did
+                  vcObj.holderDid = holder
+                }
+
+                await dbvc.addVc(vcObj)
               }
             }
           }
