@@ -169,7 +169,7 @@
             </div>
             <div v-else-if="vcStep == 3">
               <h3 v-if="createOk" class="step-title">
-                {{ newVcNum }}
+                {{  "Issued " + newVcNum + " Verifiable Credential" }}
               </h3>
               <h3 v-else class="step-title">Issue failed</h3>
 
@@ -711,7 +711,7 @@ export default {
 
       //credential
       newVcId: [],
-      newVcNum: "",
+      newVcNum: 0,
 
       //verify crendentail
       veriferVisible: ref(false),
@@ -1569,8 +1569,8 @@ export default {
       // need to ensure that items has the same format
       //
 
+      this.newVcNum = 0;
       this.newVcId = [];
-      let newCount = 0
       for (let i = 0; i < this.recipientCheckedRowKeys.length; i++) {
         let needClaims = [];
 
@@ -1627,8 +1627,6 @@ export default {
             return;
           }
 
-          newCount++
-
           let bindingObj = {
             list: []
           };
@@ -1647,10 +1645,6 @@ export default {
           if (bindingObj.list.length > 0) {
             await this.bindingHolderAndVCid(bindingObj)
           }
-
-          this.vcStep = 3;
-          this.newVcNum = "Issued " + newCount.length + " Verifiable Credential";
-          this.createOk = true;
         } else {
           // Did
           let vcValues = await vc.createVcTemplateWithDid(this.userInfo.company, this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
@@ -1661,8 +1655,6 @@ export default {
             });
             return;
           }
-
-          newCount++
 
           for (let i = 0; i < vcValues.length; i++) {
             const innelement = vcValues[i];
@@ -1678,11 +1670,11 @@ export default {
               continue
             }
           }
-
-          this.vcStep = 3;
-          this.newVcNum = "Issued " + newCount + " Verifiable Credential";
-          this.createOk = true;
         }
+
+        this.vcStep = 3;
+        this.createOk = true;
+        this.newVcNum == this.newVcNum++
       }
 
     },
