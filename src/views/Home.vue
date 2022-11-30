@@ -291,10 +291,10 @@
               </el-button>
             </el-col>
 
-            <el-col v-if="ableDownload" :span="2">
+            <!-- <el-col v-if="ableDownload" :span="2">
               <el-button type="primary" class="manually-add-btn" color="#1E5CEF" @click="toViewVcsAction" round>View
                 Credential</el-button>
-            </el-col>
+            </el-col> -->
 
             <el-col :span="2" style="margin-right: 20px;">
               <el-button type="primary" class="manually-add-btn" color="#1E5CEF" @click="dismissDrawer" round>Confirm
@@ -667,7 +667,7 @@ export default {
       percentageTotal: 100,
       timer: {},
       createOk: true,
-      ableDownload: false,
+      ableDownload: true,
 
       //schema
       schemaVisible: ref(false),
@@ -1268,23 +1268,29 @@ export default {
     },
     async getVcTableInfoLocal() {
       let localVals = await dbvc.queryVcs(this.userInfo.did);
-
+      
       for (let i = 0; i < localVals.length; i++) {
-        const outer = localVals[i];
+        let outer = localVals[i];
         let isHas = false;
+        let needUpate = false;
         for (let j = 0; j < this.data.length; j++) {
-          const inner = this.data[j];
+          let inner = this.data[j];
           if (outer.credentialId == inner.credentialId) {
             isHas = true
+            if (outer.filled != inner.filled) {
+              needUpate = true
+            }
             break
           }
         }
 
-        if (isHas) {
-          continue
+        if (!isHas) {
+          this.data.unshift(outer)
         }
 
-        this.data.unshift(outer)
+        if (isHas && needUpate) {
+          this.data[j] = outer
+        }
       }
 
       if (this.data.length == 0) {
@@ -1487,24 +1493,23 @@ export default {
 
       let needClaims = [];
       for (let i = 0; i < this.recipientCheckedRowKeys.length; i++) {
-        const idx = this.recipientCheckedRowKeys[i];
-        let element = this.recipientTableData[idx - 1];
+        let element = this.recipientTableData[this.recipientCheckedRowKeys[i] - 1];
 
-        if (element.holder.indexOf("did:dmaster") != -1) {
-          const res = await axios.get(queryDidDocUrl + element.holder, {
-            headers: {
-              Authorization: localStorage.getItem("token"),
-            },
-          });
+        // if (element.holder.indexOf("did:dmaster") != -1) {
+        //   const res = await axios.get(queryDidDocUrl + element.holder, {
+        //     headers: {
+        //       Authorization: localStorage.getItem("token"),
+        //     },
+        //   });
 
-          if (res.data.code != 0) {
-            ElMessage({
-              message: res.data.msg,
-              type: "error",
-            });
-            return
-          }
-        }
+        //   if (res.data.code != 0) {
+        //     ElMessage({
+        //       message: res.data.msg,
+        //       type: "error",
+        //     });
+        //     return
+        //   }
+        // }
 
         const allkeys = Object.keys(element)
         for (let i = 0; i < allkeys.length; i++) {
@@ -1565,15 +1570,15 @@ export default {
       for (let i = 0; i < vcValues.length; i++) {
         const element = vcValues[i];
 
-        if (element.holder.indexOf("did:dmaster") == -1) {
+        if (element.holder.indexOf("did:dmaster") == -1) { // Email
+          this.ableDownload = false;
           bindingObj.list.push({
             credentialId: element.vcid,
             holderEmail: element.holder,
             templateId: this.schemaId,
           })
-        } else {
+        } else { // Did
           this.newVcId.push(element.vcid)
-          this.ableDownload = true;
 
           // upload to remote service
           await this.queryVcWithProof({
@@ -1583,7 +1588,7 @@ export default {
       }
 
       if (bindingObj.list.length > 0) {
-        this.bindingHolderAndVCid(bindingObj)
+        await this.bindingHolderAndVCid(bindingObj)
       }
 
       // addition actions
