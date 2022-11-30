@@ -813,7 +813,7 @@ export default {
         for (let i = 0; i < allkeys.length; i++) {
           const ele = allkeys[i];
           if (ele == "credential_title" || ele == "expireDate" ||
-            ele == "expireFlag" || ele == "holder" || ele == "holder_name" || ele == "issueDate") {
+            ele == "expireFlag" || ele == "holder" || ele == "holder_name" || ele == "issueDate" || ele == "id") {
             continue
           }
           that.viewVcRow.customName = ele
@@ -1676,7 +1676,6 @@ export default {
         this.createOk = true;
         this.newVcNum == this.newVcNum++
       }
-
     },
     async toDownloadAction() {
       let newVCIds = null
