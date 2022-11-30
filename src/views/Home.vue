@@ -619,11 +619,9 @@
 
     <!-- Footer view -->
 
-    <el-footer>
-      <div class="bottomLogo">
+    <div class="bottomLogo">
         <img src="../assets/img/logo_Dmaster-white.svg" alt="" />
       </div>
-    </el-footer>
   </el-container>
 </template>
   
@@ -1806,7 +1804,20 @@ export default {
       this.multoVcFileList.push(...files)
     },
     async multiVcImportAction() {
-      let xlsxFile = toRaw(this.multoVcFileList)[0];
+      let multiFiles = null
+      if (isProxy(this.multoVcFileList)) {
+        multiFiles = toRaw(this.multoVcFileList)
+      }
+
+      if (!multiFiles) {
+        ElMessage({
+          message: "file is not exist",
+          type: "error",
+        });
+        return
+      }
+
+      let xlsxFile = multiFiles[0];
       xlsxFile = xlsxFile.raw ? xlsxFile.raw : xlsxFile;
       if (xlsxFile.name.indexOf(".xlsx") == -1) {
         ElMessage({
@@ -2462,11 +2473,12 @@ export default {
   border-radius: 8px;
 }
 
-.bottomLogo img {
-  width: 85px;
+.bottomLogo {
+  width: 165px;
   height: 25px;
-  margin-left: 100px;
-  margin-top: 20px;
+  margin-top: 40px;
+  margin-left: 120px;
+  margin-bottom: 40px;
 }
 
 .vctableHeaderView {
@@ -2500,7 +2512,7 @@ export default {
 }
 
 .step-title {
-  margin-top: 10px;
+  margin-top: 20px;
   padding-left: 10px;
   height: 31px;
   font-size: 22px;
@@ -2594,7 +2606,7 @@ export default {
 }
 
 .recipientTableView {
-  padding-bottom: 20px;
+  /* padding-bottom: 20px; */
   margin: 10px auto;
   width: 95%;
   border-radius: 8px;
@@ -2983,5 +2995,11 @@ export default {
   height: 100px;
   right: 40px;
   bottom: 40px;
+}
+</style>
+
+<style scoped>
+.page-style {
+  padding: 20px;
 }
 </style>
