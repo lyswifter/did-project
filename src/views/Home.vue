@@ -592,7 +592,7 @@
 
     <el-footer>
       <div class="bottomLogo">
-        <img src="../assets/img/logo_Dmaster.svg" alt="" />
+        <img src="../assets/img/logo_Dmaster-white.svg" alt="" />
       </div>
     </el-footer>
   </el-container>
@@ -1273,6 +1273,7 @@ export default {
         let outer = localVals[i];
         let isHas = false;
         let needUpate = false;
+        let idx = null
         for (let j = 0; j < this.data.length; j++) {
           let inner = this.data[j];
           if (outer.credentialId == inner.credentialId) {
@@ -1280,6 +1281,7 @@ export default {
             if (outer.filled != inner.filled) {
               needUpate = true
             }
+            idx = j
             break
           }
         }
@@ -1289,7 +1291,7 @@ export default {
         }
 
         if (isHas && needUpate) {
-          this.data[j] = outer
+          this.data[idx] = outer
         }
       }
 
@@ -2423,7 +2425,7 @@ export default {
 .bottomLogo img {
   width: 85px;
   height: 25px;
-  margin-left: 120px;
+  margin-left: 100px;
   margin-top: 20px;
 }
 
