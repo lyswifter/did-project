@@ -36,7 +36,7 @@ export default {
             {
                 templateId: 1,
                 claimName: "Membership level",
-                claimCode: "level",
+                claimCode: "Membership level",
                 claimDesc: null,
                 claimContent: null,
                 claimRequired: 1,
@@ -79,7 +79,7 @@ export default {
             {
                 "templateId": 2,
                 "claimName": "Sessions",
-                "claimCode": "sessions",
+                "claimCode": "Sessions",
                 "claimDesc": null,
                 "claimContent": null,
                 "claimRequired": 1,

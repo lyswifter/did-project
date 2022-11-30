@@ -73,6 +73,8 @@ export default {
             "credentialSubject": temp,
         }
 
+        console.log("vcPayload " + JSON.stringify(vcPayload))
+
         const vcJwt = await createJWT(
             { iss: issuerDid, iat: undefined, vc: vcPayload },
             { issuer: issuerDid, signer },

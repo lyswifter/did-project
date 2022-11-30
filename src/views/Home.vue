@@ -344,7 +344,7 @@
           <div class="resBotView">
             <h3>
               <span>{{ vcVerifyRet.vc.issueName ? vcVerifyRet.vc.issueName : vcVerifyRet.vc.issuer }}</span> issued to
-              <span>{{ vcVerifyRet.vc.credentialSubject.holderName }}</span>
+              <span>{{ vcVerifyRet.vc.credentialSubject.holder_name }}</span>
             </h3>
 
             <h4>Issuer: {{ vcVerifyRet.vc.issueName ? vcVerifyRet.vc.issueName : vcVerifyRet.vc.issuer }}</h4>
@@ -929,10 +929,13 @@ export default {
           // generate our share secret
           let shareSecret = ecdh.generateShareKey(this.userInfo.privateKey, holderPublicKey);
           let encryptJwt = await ecdh.encrypt(element.jwt, shareSecret);
+          let decryptJwt = await ecdh.decryptFromString(encryptJwt, shareSecret);
 
+          console.log("element.jwt " + element.jwt)
           console.log("holderPublicKey " + holderPublicKey)
           console.log("shareSecret " + secp.utils.bytesToHex(shareSecret))
           console.log("encryptJwt " + encryptJwt)
+          console.log("decryptJwt " + decryptJwt)
 
           let obj = {
             credentialId: element.credentialId,
@@ -1436,6 +1439,7 @@ export default {
       });
     },
     dismissDrawer() {
+      this.recipientCheckedRowKeys = []
       this.schemaVisible = false
       this.getVcTableInfoLocal();
     },
@@ -1615,7 +1619,6 @@ export default {
         if (element.holder.indexOf("did:dmaster") === -1) {
           // Email
           let vcValues = await vc.createVcTemplateWithEmail(this.userInfo.company, this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
-
           if (!vcValues) {
             ElMessage({
               message: "could not create vc with condition",
@@ -1639,7 +1642,6 @@ export default {
               holderEmail: innelement.holder,
               templateId: this.schemaId,
             })
-
           }
 
           if (bindingObj.list.length > 0) {
@@ -1647,12 +1649,11 @@ export default {
           }
 
           this.vcStep = 3;
-          this.newVcNum = "Issued " + vcValues.length + " Verifiable Credential";
+          this.newVcNum = "Issued " + newCount.length + " Verifiable Credential";
           this.createOk = true;
         } else {
           // Did
           let vcValues = await vc.createVcTemplateWithDid(this.userInfo.company, this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
-
           if (!vcValues) {
             ElMessage({
               message: "could not create vc with condition",
@@ -1682,10 +1683,8 @@ export default {
           this.newVcNum = "Issued " + newCount + " Verifiable Credential";
           this.createOk = true;
         }
-
       }
 
-      this.recipientCheckedRowKeys = []
     },
     async toDownloadAction() {
       let newVCIds = null
@@ -1916,6 +1915,7 @@ export default {
 
       this.isEmptyRecipient = false;
       this.issuleMultiVCVisiable = false;
+      this.recipientCheckedRowKeys = [];
     },
     multiVcCancelAction() {
       this.excelTempelUrl = "";
