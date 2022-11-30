@@ -102,7 +102,7 @@
               </el-col>
               <el-col :span="4">
                 <a class="create-vc-btn" href="javascript:void(0)" @click="toCreateVcAction">Create Verifiable
-                    Credential</a>
+                  Credential</a>
               </el-col>
             </el-row>
           </div>
@@ -132,10 +132,14 @@
     <el-drawer v-model="schemaVisible" :show-close="false" size="90%" :direction="direction"
       :before-close="handleVcDrawerClose" @close="createVcDrawerDismissAction">
       <template #header="{ close }">
-        <div style="padding: 30px 60px;">
-          <h4 class="drawer-title">Create Verifiable Credential</h4>
-        <img class="drawer-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
-        </div>
+        <el-row style="padding: 30px 60px;">
+          <el-col :span="23">
+            <h4 class="drawer-title">Create Verifiable Credential</h4>
+          </el-col>
+          <el-col :span="1">
+            <img class="drawer-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
+          </el-col>
+        </el-row>
       </template>
 
       <div class="select-schema-step">
@@ -146,7 +150,7 @@
             <el-button v-else-if="vcStep == 3" type="primary" class="step-btn" circle>{{ vcStep }}</el-button>
           </el-col>
 
-          <el-col :span="18">
+          <el-col :xl="21" :lg="21" :md="20" :sm="18" :xs="16">
             <div v-if="vcStep == 1">
               <h3 class="step-title">Select Schema</h3>
               <h4 class="step-subtitle">
@@ -251,19 +255,17 @@
 
         <div v-else class="recipientTableView">
           <div class="recipientTopView">
-            <el-row :gutter="5">
-              <el-col :span="18">
+            <el-row>
+              <el-col :xl="21" :lg="21" :md="20" :sm="18" :xs="16">
                 <el-button type="primary" class="manually-add-btn" color="#1D2129" @click="addManualAction" round>Add
                   Manually</el-button>
-              </el-col>
-
-              <el-col :span="3">
                 <el-button type="default" class="import-btn" @click="importSheetAction" round>Import Spreadsheet
                 </el-button>
               </el-col>
 
               <el-col :span="3">
-                <el-button type="primary" class="issue-btn" :disabled="disableIssueVc" @click="toIssueCredentials">
+                <el-button type="primary" class="issue-btn" :disabled="disableIssueVc" @click="toIssueCredentials"
+                  round>
                   Issue Credentials
                 </el-button>
               </el-col>
@@ -306,8 +308,14 @@
 
     <el-drawer v-model="veriferVisible" :show-close="false" size="90%" :direction="direction">
       <template #header="{ close }">
-        <h4 class="drawer-title">Credential Verifier</h4>
-        <img class="drawer-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
+        <el-row style="padding: 30px 60px;">
+          <el-col :span="23">
+            <h4 class="drawer-title">Credential Verifier</h4>
+          </el-col>
+          <el-col :span="1">
+            <img class="drawer-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
+          </el-col>
+        </el-row>
       </template>
 
       <div class="verifyContentView">
@@ -365,8 +373,14 @@
 
     <el-dialog v-model="inputRecipientVisiable" :show-close="false" :direction="direction" :width="680">
       <template #header="{ close }">
-        <h4 class="dialog-header-title-recipient">Add Recipients</h4>
-        <img class="dialog-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
+        <el-row>
+          <el-col :span="23">
+            <h4 class="drawer-title">Add Recipients</h4>
+          </el-col>
+          <el-col :span="1">
+            <img class="drawer-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
+          </el-col>
+        </el-row>
       </template>
 
       <div class="addRecipientContent">
@@ -433,8 +447,14 @@
     <!-- Dialog View Processing View -->
     <el-dialog v-model="vcStateVisiable" :show-close="false" :width="540">
       <template #header="{ close }">
-        <h4 class="dialog-header-title-m-credential">State</h4>
-        <img class="dialog-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
+        <el-row>
+          <el-col :span="23">
+            <h4 class="drawer-title">State</h4>
+          </el-col>
+          <el-col :span="1">
+            <img class="drawer-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
+          </el-col>
+        </el-row>
       </template>
 
       <div>
@@ -477,8 +497,14 @@
 
     <el-dialog v-model="issuleMultiVCVisiable" :show-close="false" :width="540">
       <template #header="{ close }">
-        <h4 class="dialog-header-title-m-credential">Issue multiple credentials</h4>
-        <img class="dialog-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
+        <el-row>
+          <el-col :span="23">
+            <h4 class="drawer-title">Issue multiple credentials</h4>
+          </el-col>
+          <el-col :span="1">
+            <img class="drawer-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
+          </el-col>
+        </el-row>
       </template>
 
       <div class="multiVcView">
@@ -525,16 +551,18 @@
 
     <el-dialog v-model="personalTagsVisiable" :show-close="false" :direction="direction" :width="540">
       <template #header="{ close }">
-        <div>
-          <div class="dialog-header-view">
-            <h4 class="dialog-header-title">{{ personalTagTitle }}</h4>
-            <h3>{{ personalTagDis }}</h3>
-          </div>
-          <img class="dialog-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
-        </div>
+        <el-row>
+          <el-col :span="23">
+            <h4 class="drawer-title">{{ personalTagTitle }}</h4>
+          </el-col>
+          <el-col :span="1">
+            <img class="drawer-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
+          </el-col>
+        </el-row>
       </template>
 
       <div class="tagsView">
+        <h3>{{ personalTagDis }}</h3>
         <el-tag v-for="(item, index) in personalTags" :key="item.label" :type="item.type" size="large" class="mx-1"
           effect="dark" @click="clickTagAction(index)" round>
           <a class="w-color" href="javascript:void();" style="text-decoration: none"># {{ item.tagName }}</a>
@@ -546,10 +574,14 @@
 
     <el-dialog v-model="personalTagsDetailVisiable" :show-close="false" :direction="direction" :width="540">
       <template #header="{ close }">
-        <h4 class="dialog-header-title-detail">
-          {{ personalTagDetail.tagName }}
-        </h4>
-        <img class="dialog-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
+        <el-row>
+          <el-col :span="23">
+            <h4 class="drawer-title">{{ personalTagDetail.tagName }}</h4>
+          </el-col>
+          <el-col :span="1">
+            <img class="drawer-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
+          </el-col>
+        </el-row>
       </template>
 
       <div class="tagsDetailView">
@@ -612,8 +644,6 @@ let bindingVcUrl = Domain.domainUrl + "/api/did-document-credential/bind-credent
 let newRelationUrl = Domain.domainUrl + "/api/did-document-credential/new-user-relation";
 let queryRemoteVcsUrl = Domain.domainUrl + "/api/did-document-credential/credential-list";
 
-import Header from "./Header.vue";
-
 import { ElMessage, ElButton, ElTooltip } from "element-plus";
 import { NButton, NIcon, NPopover } from "naive-ui";
 import {
@@ -638,7 +668,6 @@ import user from "../db/user.js";
 export default {
   name: "Home",
   components: {
-    Header,
   },
   data() {
     return {
@@ -937,7 +966,6 @@ export default {
       }
     },
     async queryDidDocmentWith(did) {
-      //queryDidDocUrl
       const res = await axios.get(queryDidDocUrl + did, {
         headers: {
           Authorization: localStorage.getItem("token"),
@@ -2104,8 +2132,6 @@ export default {
 }
 
 .drawer-title {
-  float: left;
-  width: 98%;
   height: 39px;
   font-size: 28px;
   font-weight: bold;

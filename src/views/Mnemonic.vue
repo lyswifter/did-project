@@ -20,7 +20,6 @@ export default defineComponent({
             single: 3,
             originWords: "",
             mnemonicWords: [],
-
             backFunc: null,
             forwardFunc: null,
         }
