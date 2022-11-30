@@ -31,8 +31,8 @@ export default defineComponent({
     mounted() {
         this.sendCount = this.countLimit;
 
-        localStorage.removeItem("token")
-        localStorage.removeItem("userdid")
+        // localStorage.removeItem("token")
+        // localStorage.removeItem("userdid")
     },
     watch: {
         sendCount(newVal, oldVal) {
