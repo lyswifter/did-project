@@ -422,10 +422,10 @@
       <div style="text-align: center;">
         <div id="vc-image" class="vc-image-view" :class="viewVcRow.template">
           <h3 class="sub-title" :class="viewVcRow.color">{{ viewVcRow.credentialType }}</h3>
-          <h2 class="main-title" :class="viewVcRow.color">{{ viewVcRow.credentialTitle }}</h2>
-          <h1 class="hoder-name" :class="viewVcRow.color">{{ viewVcRow.holderName }}</h1>
+          <h2 class="main-title" :class="viewVcRow.color">{{ viewVcRow.templateObj.credential_title }}</h2>
+          <h1 class="hoder-name" :class="viewVcRow.color">{{ viewVcRow.templateObj.holder_name }}</h1>
           <h3 class="holder-email" :class="viewVcRow.color">{{ viewVcRow.holderEmail }}</h3>
-          <h3 class="holder-did" :class="viewVcRow.color">{{ viewVcRow.holderDid }} </h3>
+          <h3 class="holder-did" :class="viewVcRow.color">{{ viewVcRow.templateObj.holder }} </h3>
 
           <h3 class="custom-title g-color">{{ viewVcRow.customName }}</h3>
           <span class="custom-title-content" :class="viewVcRow.color">{{ viewVcRow.customContent }}</span>
@@ -646,7 +646,6 @@ import { ElMessage, ElButton, ElTooltip } from "element-plus";
 import { NButton, NIcon, NPopover } from "naive-ui";
 import {
   DotsVertical,
-  CircleCheck,
 } from "@vicons/tabler";
 
 import VueQrcode from 'vue-qrcode'
@@ -809,10 +808,29 @@ export default {
         that.popviewShow = !that.popviewShow;
       },
       viewOpRow(row) {
+        console.log(row)
+        let temp = JSON.parse(row.template);
+
         that.viewVcRow = row;
+        that.viewVcRow.templateObj = temp;
         that.viewVcRow.template = "vc-bg-tmpl-" + row.templateId;
         that.viewVcRow.color = "vc-color-tmpl-" + + row.templateId;
         that.vcViewVisiable = true;
+
+        let allkeys = Object.keys(that.viewVcRow.templateObj);
+        for (let i = 0; i < allkeys.length; i++) {
+          const ele = allkeys[i];
+          
+          if (ele == "credential_title" || ele == "expireDate" || 
+          ele == "expireFlag" || ele == "holder" || ele == "holder_name" || ele == "issueDate") {
+            continue
+          }
+
+          that.viewVcRow.customName = ele
+          that.viewVcRow.customContent = temp[ele]
+        }
+
+        console.log(that.viewVcRow)
       },
       downloadOpRow(row) {
         let rawData = null
@@ -909,6 +927,10 @@ export default {
           let myEncryptJwt = await ecdh.encrypt(element.jwt, myShareSecret);
 
           let holderDoc = await this.queryDidDocmentWith(element.holderDid);
+          if (!holderDoc) {
+            return undefined
+          }
+
           let holderPublicKey = vc.convertPubKey(holderDoc.verificationMethod[0].publicKeyHex);
 
           // generate our share secret
@@ -977,6 +999,8 @@ export default {
           message: res.data.msg,
           type: "error",
         });
+
+        return undefined
       }
     },
     queryHolderDidWithEmail(email) {
@@ -1121,7 +1145,7 @@ export default {
           key: "",
           width: 50,
           render(row, index) {
-            if (row.filled == 0) {
+            if (row.filled == 0 || row.backuped == 0) {
               return h(
                 "a", {
                 href: "javascript:void(0)",
@@ -1133,35 +1157,63 @@ export default {
               }, [
                 h("img", {
                   style: {
-                    'width': "18px",
-                    'height': "18px",
+                    'width': "20px",
+                    'height': "20px",
                     'vertical-align': "middle",
                   },
                   src: "https://dmaster.com/dcommon/img/loading.svg",
-                }), "Waiting"]
+                }), " Waiting"]
               )
             } else {
               if (row.expireDate == "Never") {
                 return h(
-                  NIcon,
-                  {
-                    size: 33,
+                  "div", {
+                  style: {
                     color: "#A9AEB8",
                   },
-                  { default: () => h(CircleCheck) }
-                );
+                }, [
+                  h("img", {
+                    style: {
+                      'width': "32px",
+                      'height': "32px",
+                      'vertical-align': "middle",
+                    },
+                    src: "https://dmaster.com/dcommon/img/state-nor.svg",
+                  }), "Success"]
+                )
               } else {
                 if (Date.parse(row.expireDate) > Date.now()) {
                   return h(
-                    NIcon,
-                    {
-                      size: 33,
+                    "div", {
+                    style: {
                       color: "#A9AEB8",
                     },
-                    { default: () => h(CircleCheck) }
-                  );
+                  }, [
+                    h("img", {
+                      style: {
+                        'width': "32px",
+                        'height': "32px",
+                        'vertical-align': "middle",
+                      },
+                      src: "https://dmaster.com/dcommon/img/state-nor.svg",
+                    }), "Success"]
+                  )
                 } else {
-                  return h("span", ["Expired"]);
+                  return h(
+                    "div", {
+                    style: {
+                      color: "#A9AEB8",
+                    },
+                  }, [
+                    h("img", {
+                      style: {
+                        'width': "32px",
+                        'height': "32px",
+                        'vertical-align': "middle",
+                      },
+                      src: "https://dmaster.com/dcommon/img/expired.svg",
+                    }), "Expired"]
+                  )
                 }
               }
             }
@@ -1488,7 +1540,6 @@ export default {
       let obj = {};
       this.inputRecipientsData.forEach((element) => {
         obj[element.claimCode] = element.claimContent
-        obj['claimName'] = element.claimName
       });
 
       if (Date.parse(this.issueDate) > Date.parse(this.expireDate)) {
@@ -1517,7 +1568,7 @@ export default {
       // need to ensure that items has the same format
       //
 
-      let vcValues = null
+      this.newVcId = [];
       for (let i = 0; i < this.recipientCheckedRowKeys.length; i++) {
         let needClaims = [];
 
@@ -1565,61 +1616,72 @@ export default {
 
         if (element.holder.indexOf("did:dmaster") === -1) {
           // Email
-          vcValues = await vc.createVcTemplateWithEmail(this.userInfo.company, this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
+          let vcValues = await vc.createVcTemplateWithEmail(this.userInfo.company, this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
+
+          if (!vcValues) {
+            ElMessage({
+              message: "could not create vc with condition",
+              type: "error",
+            });
+            return;
+          }
+
+          let bindingObj = {
+            list: []
+          };
+
+          for (let i = 0; i < vcValues.length; i++) {
+            const innelement = vcValues[i];
+
+            this.ableDownload = false;
+            bindingObj.list.push({
+              credentialId: innelement.vcid,
+              holderEmail: innelement.holder,
+              templateId: this.schemaId,
+            })
+
+          }
+
+          if (bindingObj.list.length > 0) {
+            await this.bindingHolderAndVCid(bindingObj)
+          }
+
+          this.vcStep = 3;
+          this.newVcNum = "Issued " + vcValues.length + " Verifiable Credential";
+          this.createOk = true;
         } else {
           // Did
-          vcValues = await vc.createVcTemplateWithDid(this.userInfo.company, this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
+          let vcValues = await vc.createVcTemplateWithDid(this.userInfo.company, this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
+
+          if (!vcValues) {
+            ElMessage({
+              message: "could not create vc with condition",
+              type: "error",
+            });
+            return;
+          }
+
+          for (let i = 0; i < vcValues.length; i++) {
+            const innelement = vcValues[i];
+
+            this.newVcId.push(innelement.vcid)
+
+            // upload to remote service
+            let queryRet = await this.queryVcWithProof({
+              credentialId: innelement.vcid
+            });
+
+            if (!queryRet) {
+              continue
+            }
+          }
+
+          this.vcStep = 3;
+        this.newVcNum = "Issued " + vcValues.length + " Verifiable Credential";
+        this.createOk = true;
         }
+
       }
-
-      if (!vcValues) {
-        ElMessage({
-          message: "could not create vc with condition",
-          type: "error",
-        });
-        return;
-      }
-
-      this.newVcId = [];
-      let bindingObj = {
-        list: []
-      };
-
-      for (let i = 0; i < vcValues.length; i++) {
-        const element = vcValues[i];
-
-        if (element.holder.indexOf("did:dmaster") == -1) { // Email
-          this.ableDownload = false;
-          bindingObj.list.push({
-            credentialId: element.vcid,
-            holderEmail: element.holder,
-            templateId: this.schemaId,
-          })
-        } else { // Did
-          this.newVcId.push(element.vcid)
-
-          // upload to remote service
-          await this.queryVcWithProof({
-            credentialId: element.vcid
-          })
-        }
-      }
-
-      if (bindingObj.list.length > 0) {
-        await this.bindingHolderAndVCid(bindingObj)
-      }
-
-      // // addition actions
-      // clearInterval(timer);
-      // this.percentageCount += 100;
-      // if (this.percentageCount > 100) {
-      //   this.percentageCount = 100;
-      // }
-      // this.processing = false;
-
-      this.vcStep = 3;
-      this.newVcNum = "Issued " + vcValues.length + " Verifiable Credential";
-      this.createOk = true;
     },
     async toDownloadAction() {
       let newVCIds = null
@@ -1740,10 +1802,10 @@ export default {
     async singleDownloadAction(rowData) {
       if (!rowData.jwt) {
         ElMessage({
-            message: "vc information is not available now",
-            type: "warning",
-          });
-          return;
+          message: "vc information is not available now",
+          type: "warning",
+        });
+        return;
       }
 
       let blob = new Blob([rowData.jwt]);
@@ -1825,7 +1887,6 @@ export default {
           let claimCode = inner['claimCode'];
           let claimContent = outer[claimName];
           claimObj[claimCode] = claimContent;
-          claimObj['claimName'] = claimName;
         });
 
         let issueDate = outer['Issue Date']
@@ -1884,8 +1945,6 @@ export default {
     async syncVcsFromRemote() {
       // // retrieve vc info remote remote
       let localvcs = await dbvc.queryVcs(this.userInfo.did);
-
-      console.log(localvcs)
 
       const res = await axios.post(queryRemoteVcsUrl, {
         detail: 0,
@@ -1947,17 +2006,17 @@ export default {
                   tempId = 2
                 }
 
+                let tempStr = JSON.stringify(payload.vc.credentialSubject)
+
                 await dbvc.addVc({
                   credentialId: credentialId,
                   templateId: tempId,
+                  template: tempStr,
                   credentialType: payload.vc.type[0],
                   issuerDid: payload.iss,
                   holderEmail: payload.vc.credentialSubject.email,
                   holderName: payload.vc.credentialSubject.holderName,
                   holderDid: payload.vc.credentialSubject.id,
-                  credentialTitle: payload.vc.credentialSubject.credentialTitle,
-                  customName: payload.vc.credentialSubject.customName,
-                  customContent: payload.vc.credentialSubject.customContent,
                   expireFlag: state,
                   issueDate: payload.vc.issuanceDate,
                   expireDate: payload.vc.expirationDate,

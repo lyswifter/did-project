@@ -33,7 +33,6 @@ export default {
             }
             vcs.push(newVc);
         }
-
         return vcs
     },
 
@@ -51,8 +50,12 @@ export default {
     async createVcJwt(specifyVc, privateKey) {
         const signer = ES256KSigner(hexToBytes(privateKey));
 
+        let temp = JSON.parse(specifyVc.template)
+
+        let issuerDid = specifyVc.issuerDid
+
         // Assembly verify credential payload information
-        const vcPayload = {
+        let vcPayload = {
             "@context": [
                 "https://www.w3.org/2018/credentials/v1",
                 "https://www.w3.org/2018/credentials/examples/v1",
@@ -62,23 +65,18 @@ export default {
             "type": [
                 specifyVc.credentialType,
             ],
-            "issueName": specifyVc.issueName,
-            "issuer": specifyVc.issuerDid,
+            "issueName": specifyVc.issuerName,
+            "issuer": issuerDid,
             "issuanceDate": specifyVc.issueDate,
             "expirationDate": specifyVc.expireDate,
-            "credentialSubject": {
-                "id": specifyVc.holderDid,
-                "holderName": specifyVc.holderName,
-                "credentialTitle": specifyVc.credentialTitle,
-                "email": specifyVc.holderEmail,
-                "customName": specifyVc.customName,
-                "customContent": specifyVc.customContent,
-            }
+            "credentialSubject": temp,
         }
 
+        // Object.defineProperty(vcPayload.credentialSubject, customName.toLowerCase(), customContent);
+
         const vcJwt = await createJWT(
-            { iss: specifyVc.issuerDid, iat: undefined, vc: vcPayload },
-            { issuer: specifyVc.issuerDid, signer },
+            { iss: issuerDid, iat: undefined, vc: vcPayload },
+            { issuer: issuerDid, signer },
             { alg: 'ES256K' })
 
         await dbvc.updateVc(specifyVc.id, specifyVc.holderDid, vcJwt)

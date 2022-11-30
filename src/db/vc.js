@@ -14,29 +14,16 @@ export default {
             type = "Activity Certificate"
         }
 
-        let customName = claim.claimName
-        let customContent = ""
-        let keys = Object.keys(claim);
-        for (let i = 0; i < keys.length; i++) {
-            const key = keys[i];
-            if (key=="credential_title" || key=="holder_name" || key=="holder" || key==customName) {
-                continue 
-            }
-            customContent = claim[key]
-        }
-
         let vcObj = {
             credentialId: vcid,
             templateId: tempId,
+            template: needClaim.claimsStr,
             credentialType: type,
             issuerName: iname,
             issuerDid: idid,
             holderEmail: "",
             holderName: claim.holder_name,
             holderDid: "",
-            credentialTitle: claim.credential_title,
-            customName: customName,
-            customContent: customContent,
             expireFlag: needClaim.expireFlag,
             issueDate: needClaim.issueDate,
             expireDate: needClaim.expireDate,
