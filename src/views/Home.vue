@@ -1502,7 +1502,9 @@ export default {
       this.vcStep = 2;
       this.isEmptyRecipient = true;
       this.recipientTableData = [];
+      this.recipientCheckedRowKeys = [];
       this.recipientIdx = 1;
+      this.disableIssueVc = true;
 
       if (this.schemaType == "Membership Card") {
         this.schemaId = 1;
@@ -1516,6 +1518,8 @@ export default {
           this.createRecipientColumns(this.inputRecipientsData);
         }
       )
+
+      console.log(this.disableIssueVc)
     },
     async addManualAction() {
       this.inputRecipientsData.forEach((element) => {
@@ -1565,10 +1569,6 @@ export default {
       this.issuleMultiVCVisiable = true;
     },
     async toIssueCredentials() {
-      //
-      // need to ensure that items has the same format
-      //
-
       this.newVcNum = 0;
       this.ableDownload = true;
       this.newVcId = [];
@@ -1907,7 +1907,6 @@ export default {
 
       this.isEmptyRecipient = false;
       this.issuleMultiVCVisiable = false;
-      this.recipientCheckedRowKeys = [];
     },
     multiVcCancelAction() {
       this.excelTempelUrl = "";
