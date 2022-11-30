@@ -1571,6 +1571,7 @@ export default {
 
       this.newVcNum = 0;
       this.newVcId = [];
+      this.vcStep = 3;
       for (let i = 0; i < this.recipientCheckedRowKeys.length; i++) {
         let needClaims = [];
 
@@ -1672,7 +1673,6 @@ export default {
           }
         }
 
-        this.vcStep = 3;
         this.createOk = true;
         this.newVcNum == this.newVcNum++
       }
