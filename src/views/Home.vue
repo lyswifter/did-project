@@ -90,8 +90,8 @@
           </div>
 
           <div class="verify-entrance-view">
-            <el-row :gutter="20" justify="space-between">
-              <el-col :span="20">
+            <el-row justify="space-between">
+              <el-col :span="17">
                 <div class="verify-left">
                   <h2 class="f-color">Verifiable Credentials</h2>
                   <h4 class="l-color">
@@ -101,11 +101,8 @@
                 </div>
               </el-col>
               <el-col :span="4">
-                <div class="verify-right">
-                  <el-button color="#1E5CEF" v-if="hasVc" class="verify-btn" type="primary" @click="toCreateVcAction"
-                    round>Create
-                    Verifiable Credential</el-button>
-                </div>
+                <a class="create-vc-btn" href="javascript:void(0)" @click="toCreateVcAction">Create Verifiable
+                    Credential</a>
               </el-col>
             </el-row>
           </div>
@@ -125,8 +122,6 @@
           </div>
 
           <div v-else class="emptyView">
-            <el-button color="#1E5CEF" class="verify-btn create-vc-btn" type="primary" @click="toCreateVcAction" round>
-              Create Verifiable Credential</el-button>
           </div>
         </div>
       </div>
@@ -808,7 +803,7 @@ export default {
 
     that.getUserInfoLocal().then(val => {
       that.getVcTableInfoLocal().then(val1 => {
-        that.syncVcsFromRemote();
+        // that.syncVcsFromRemote();
       });
     });
 
@@ -1100,7 +1095,9 @@ export default {
           render(row, index) {
             if (row.filled == 0) {
               return h(
-                "div", {
+                "a", {
+                'text-decoration': none,
+                href: "javascript:void(0)",
                 style: {
                   color: "#1E5CEF",
                 },
@@ -1268,7 +1265,6 @@ export default {
     },
     async getVcTableInfoLocal() {
       let localVals = await dbvc.queryVcs(this.userInfo.did);
-      
       for (let i = 0; i < localVals.length; i++) {
         let outer = localVals[i];
         let isHas = false;
@@ -2390,11 +2386,26 @@ export default {
 }
 
 .verify-entrance-view {
-  width: 94%;
+  width: 91%;
   margin: 0 auto;
   height: 116px;
   margin-top: 30px;
   background: #ffffff;
+}
+
+.create-vc-btn {
+  display: block;
+  width: 240px;
+  height: 44px;
+  margin-top: 8px;
+  background: #1E5CEF;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #FFFFFF;
+  line-height: 44px;
+  text-align: center;
+  text-decoration: none;
 }
 </style>
 
@@ -2403,15 +2414,12 @@ export default {
 <style scoped>
 .emptyView {
   margin: 0 auto;
-  width: 95%;
-  height: 326px;
-  background: linear-gradient(270deg, #0b224f 0%, #1d2129 100%);
+  width: 100%;
+  height: 290px;
+  background-image: url(../assets/img/empty.svg);
+  background-size: cover;
   border-radius: 8px;
   text-align: center;
-}
-
-.create-vc-btn {
-  margin-top: 150px;
 }
 
 .vctable-view {
@@ -2775,6 +2783,7 @@ export default {
 }
 
 .vc-image-view {
+  margin: auto;
   width: 600px;
   height: 842px;
   background-repeat: no-repeat;
