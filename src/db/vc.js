@@ -60,9 +60,7 @@ export default {
     },
 
     async queryVcs(issuerDid) {
-        console.log(issuerDid)
         let ret = await db.vc.where("issuerDid").equalsIgnoreCase(issuerDid).toArray();
-        console.log(ret)
         return ret
     },
 

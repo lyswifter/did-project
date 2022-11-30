@@ -620,8 +620,8 @@
     <!-- Footer view -->
 
     <div class="bottomLogo">
-        <img src="../assets/img/logo_Dmaster-white.svg" alt="" />
-      </div>
+      <img src="../assets/img/logo_Dmaster-white.svg" alt="" />
+    </div>
   </el-container>
 </template>
   
@@ -1124,10 +1124,10 @@ export default {
             if (row.filled == 0) {
               return h(
                 "a", {
-                'text-decoration': none,
                 href: "javascript:void(0)",
                 style: {
                   color: "#1E5CEF",
+                  'text-decoration': 'none',
                 },
                 onClick: () => viewStateRow(row),
               }, [
@@ -1517,25 +1517,11 @@ export default {
       // need to ensure that items has the same format
       //
 
-      let needClaims = [];
+      let vcValues = null
       for (let i = 0; i < this.recipientCheckedRowKeys.length; i++) {
-        let element = this.recipientTableData[this.recipientCheckedRowKeys[i] - 1];
+        let needClaims = [];
 
-        // if (element.holder.indexOf("did:dmaster") != -1) {
-        //   const res = await axios.get(queryDidDocUrl + element.holder, {
-        //     headers: {
-        //       Authorization: localStorage.getItem("token"),
-        //     },
-        //   });
-
-        //   if (res.data.code != 0) {
-        //     ElMessage({
-        //       message: res.data.msg,
-        //       type: "error",
-        //     });
-        //     return
-        //   }
-        // }
+        let element = toRaw(this.recipientTableData[this.recipientCheckedRowKeys[i] - 1]);
 
         const allkeys = Object.keys(element)
         for (let i = 0; i < allkeys.length; i++) {
@@ -1568,29 +1554,22 @@ export default {
         obj2["claimsStr"] = JSON.stringify(obj2);
 
         needClaims.push(obj2);
-      }
 
-      if (needClaims.length == 0) {
-        ElMessage({
-          message: "need claim must not be empty",
-          type: "error",
-        });
-        return;
-      }
-
-      this.processing = true;
-      let timer = setInterval(() => {
-        this.percentageCount += 1;
-        if (this.percentageCount > 100) {
-          this.percentageCount = 100;
+        if (needClaims.length == 0) {
+          ElMessage({
+            message: "need claim must not be empty",
+            type: "error",
+          });
+          return;
         }
-      }, 30);
 
-      let vcValues = null
-      if (element.holder.indexOf("did:dmaster") != -1) { // Email
-        vcValues = await vc.createVcTemplateWithEmail(this.userInfo.company, this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
-      } else { // Did
-        vcValues = await vc.createVcTemplateWithDid(this.userInfo.company, this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
+        if (element.holder.indexOf("did:dmaster") === -1) {
+          // Email
+          vcValues = await vc.createVcTemplateWithEmail(this.userInfo.company, this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
+        } else {
+          // Did
+          vcValues = await vc.createVcTemplateWithDid(this.userInfo.company, this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
+        }
       }
 
       if (!vcValues) {
@@ -1630,13 +1609,13 @@ export default {
         await this.bindingHolderAndVCid(bindingObj)
       }
 
-      // addition actions
-      clearInterval(timer);
-      this.percentageCount += 100;
-      if (this.percentageCount > 100) {
-        this.percentageCount = 100;
-      }
-      this.processing = false;
+      // // addition actions
+      // clearInterval(timer);
+      // this.percentageCount += 100;
+      // if (this.percentageCount > 100) {
+      //   this.percentageCount = 100;
+      // }
+      // this.processing = false;
 
       this.vcStep = 3;
       this.newVcNum = "Issued " + vcValues.length + " Verifiable Credential";
@@ -1759,6 +1738,14 @@ export default {
       });
     },
     async singleDownloadAction(rowData) {
+      if (!rowData.jwt) {
+        ElMessage({
+            message: "vc information is not available now",
+            type: "warning",
+          });
+          return;
+      }
+
       let blob = new Blob([rowData.jwt]);
       let url = window.URL.createObjectURL(blob);
       let a = document.createElement("a");
