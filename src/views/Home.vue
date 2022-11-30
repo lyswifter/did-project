@@ -438,17 +438,17 @@
     <el-dialog v-model="vcStateVisiable" :show-close="false" :width="540">
       <template #header="{ close }">
         <el-row>
-          <el-col :span="23">
+          <el-col :span="22">
             <h4 class="drawer-title">State</h4>
           </el-col>
-          <el-col :span="1">
+          <el-col :span="2">
             <img class="drawer-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
           </el-col>
         </el-row>
       </template>
 
       <div>
-        <el-timeline>
+        <el-timeline class="dm-timeline">
           <el-timeline-item hide-timestamp=true placement="bottom">
             <template #dot>
               <div class="dot-normal">1</div>
@@ -1554,6 +1554,7 @@ export default {
       //
 
       this.newVcId = [];
+      let newCount = 0
       for (let i = 0; i < this.recipientCheckedRowKeys.length; i++) {
         let needClaims = [];
 
@@ -1611,6 +1612,8 @@ export default {
             return;
           }
 
+          newCount++
+
           let bindingObj = {
             list: []
           };
@@ -1646,6 +1649,8 @@ export default {
             return;
           }
 
+          newCount++
+
           for (let i = 0; i < vcValues.length; i++) {
             const innelement = vcValues[i];
 
@@ -1661,12 +1666,14 @@ export default {
             }
           }
 
-          this.vcStep = 3;
-        this.newVcNum = "Issued " + vcValues.length + " Verifiable Credential";
+        this.vcStep = 3;
+        this.newVcNum = "Issued " + newCount + " Verifiable Credential";
         this.createOk = true;
         }
 
       }
+
+      this.recipientCheckedRowKeys = []
     },
     async toDownloadAction() {
       let newVCIds = null
@@ -2094,6 +2101,10 @@ export default {
   background: rgb(243, 246, 253);
 }
 
+.dm-timeline {
+  padding-right: 40px;
+}
+
 .dot-normal {
   width: 24px;
   height: 24px;
@@ -2460,8 +2471,8 @@ export default {
 .verify-entrance-view {
   padding: 0 64px;
   margin: 0 auto;
-  height: 116px;
-  margin-top: 30px;
+  height: 86px;
+  margin-top: 40px;
   background: #ffffff;
 }
 
