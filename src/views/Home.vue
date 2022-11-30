@@ -93,7 +93,7 @@
             <el-row justify="space-between">
               <el-col :span="17">
                 <div class="verify-left">
-                  <h2 class="f-color">Verifiable Credentials</h2>
+                  <h2 class="f-color verify-left-title">Verifiable Credentials</h2>
                   <h4 class="l-color">
                     Here are all the verifiable credentials you have issued. You can view, download persistent
                     credentials in Dmaster.
@@ -132,8 +132,10 @@
     <el-drawer v-model="schemaVisible" :show-close="false" size="90%" :direction="direction"
       :before-close="handleVcDrawerClose" @close="createVcDrawerDismissAction">
       <template #header="{ close }">
-        <h4 class="drawer-title">Create Verifiable Credential</h4>
+        <div style="padding: 30px 60px;">
+          <h4 class="drawer-title">Create Verifiable Credential</h4>
         <img class="drawer-close" src="../assets/img/close_black@2x.png" @click="close" alt="" />
+        </div>
       </template>
 
       <div class="select-schema-step">
@@ -803,7 +805,7 @@ export default {
 
     that.getUserInfoLocal().then(val => {
       that.getVcTableInfoLocal().then(val1 => {
-        // that.syncVcsFromRemote();
+        that.syncVcsFromRemote();
       });
     });
 
@@ -2102,7 +2104,8 @@ export default {
 }
 
 .drawer-title {
-  width: 403px;
+  float: left;
+  width: 98%;
   height: 39px;
   font-size: 28px;
   font-weight: bold;
@@ -2386,16 +2389,19 @@ export default {
 }
 
 .verify-entrance-view {
-  width: 91%;
+  padding: 0 64px;
   margin: 0 auto;
   height: 116px;
   margin-top: 30px;
   background: #ffffff;
 }
 
+.verify-left-title {
+  font-weight: 800;
+}
+
 .create-vc-btn {
   display: block;
-  width: 240px;
   height: 44px;
   margin-top: 8px;
   background: #1E5CEF;
