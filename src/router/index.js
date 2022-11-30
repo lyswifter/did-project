@@ -1,6 +1,4 @@
 import { createRouter, createWebHistory, createWebHashHistory } from "vue-router";
-import LoginView from "../views/Login.vue";
-import PersonInfo from "../views/PersonInfo.vue";
 import HomeView from "../views/Home.vue";
 import EntryView from "../views/Entry.vue";
 import RecoveryView from "../views/Recovery.vue";
@@ -45,16 +43,6 @@ const router = createRouter({
       path: "/confirm",
       name: "confirm",
       component: ConfirmView,
-    },
-    {
-      path: "/login",
-      name: "login",
-      component: LoginView,
-    },
-    {
-      path: "/personinfo",
-      name: "personInfo",
-      component: PersonInfo,
     },
   ],
 });
