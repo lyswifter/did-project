@@ -133,6 +133,11 @@ export default {
         let signature = decodedJwt.signature;
 
         let publicKey = await this.queryDidDocmentWith(payload.vc.issuer)
+        if (!publicKey) {
+            return {
+                verify: false,
+            }
+        }
 
         let dataByte = u8a.fromString(data)
 
@@ -174,7 +179,10 @@ export default {
         });
 
         if (res.data.code == 0) {
-            return this.convertPubKey(res.data.data.verificationMethod[0].publicKeyHex)
+            let pubKey = res.data.data.verificationMethod[0].publicKeyHex
+            return this.convertPubKey(pubKey)
+        } else {
+            return undefined
         }
     },
 
