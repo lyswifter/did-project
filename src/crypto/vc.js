@@ -16,7 +16,7 @@ const secp256k1 = new elliptic.ec('secp256k1')
 let queryDidDocUrl = Domain.domainUrl + "/api/did-document/read/";
 
 export default {
-    async createVcTemplate(issueName, issueDid, claims, tempId, privateKey) {
+    async createVcTemplateWithDid(issueName, issueDid, claims, tempId, privateKey) {
         let vcs = []
         for (let i = 0; i < claims.length; i++) {
             const element = claims[i];
@@ -24,17 +24,24 @@ export default {
             let claim = JSON.parse(element.claimsStr);
             let newVc = await dbvc.createVcModel(issueName, issueDid, element, tempId, privateKey);
 
-            if (claim.holder.indexOf("did:dmaster") != -1) {
-                let noProofVcs = await dbvc.queryNoFilledVc(newVc.vcid);
+            let noProofVcs = await dbvc.queryNoFilledVc(newVc.vcid);
+            for (let j = 0; j < noProofVcs.length; j++) {
+                const innerEle = noProofVcs[j];
 
-                for (let j = 0; j < noProofVcs.length; j++) {
-                    const innerEle = noProofVcs[j];
-
-                    innerEle.holderDid = claim.holder;
-                    await this.createVcJwt(innerEle, privateKey)
-                }
+                innerEle.holderDid = claim.holder;
+                await this.createVcJwt(innerEle, privateKey)
             }
+            vcs.push(newVc);
+        }
 
+        return vcs
+    },
+
+    async createVcTemplateWithEmail(issueName, issueDid, claims, tempId, privateKey) {
+        let vcs = []
+        for (let i = 0; i < claims.length; i++) {
+            const element = claims[i];
+            let newVc = await dbvc.createVcModel(issueName, issueDid, element, tempId, privateKey);
             vcs.push(newVc);
         }
 
@@ -205,5 +212,5 @@ export default {
 
     decodeBase64url(s) {
         return u8a.toString(base64ToBytes(s))
-      }
+    }
 }

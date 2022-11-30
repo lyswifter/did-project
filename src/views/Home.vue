@@ -1560,7 +1560,20 @@ export default {
         }
       }, 30);
 
-      let vcValues = await vc.createVcTemplate(this.userInfo.company, this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
+      let vcValues = null
+      if (element.holder.indexOf("did:dmaster") != -1) { // Email
+        vcValues = await vc.createVcTemplateWithEmail(this.userInfo.company, this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
+      } else { // Did
+        vcValues = await vc.createVcTemplateWithDid(this.userInfo.company, this.userInfo.did, needClaims, this.schemaId, this.userInfo.privateKey);
+      }
+
+      if (!vcValues) {
+        ElMessage({
+          message: "could not create vc with condition",
+          type: "error",
+        });
+        return;
+      }
 
       this.newVcId = [];
       let bindingObj = {
@@ -2231,7 +2244,7 @@ export default {
 }
 
 .did-main {
-  width: 100%;
+  width: 1440px;
   margin: 0 auto;
 }
 
