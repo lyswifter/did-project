@@ -1570,6 +1570,7 @@ export default {
       //
 
       this.newVcNum = 0;
+      this.ableDownload = true;
       this.newVcId = [];
       this.vcStep = 3;
       for (let i = 0; i < this.recipientCheckedRowKeys.length; i++) {
